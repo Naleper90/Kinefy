@@ -13,9 +13,25 @@ Kinefy es una solución digital diseñada para mejorar la comunicación entre fi
 
 ```text
 kinefy/
+├── docs/              # Documentación oficial del proyecto
 ├── kinefy-backend/    # Servidor API Node.js/Express
 └── kinefy-frontend/   # Cliente React/Vite
 ```
+
+## Documentación del Proyecto
+
+El seguimiento y la documentación detallada del proyecto se encuentra en la carpeta `docs/`:
+
+1. [Introducción, objetivos y antecedentes](docs/01-introduccion.md)
+2. [Descripción del proyecto](docs/02-descripcion.md)
+3. [Instalación y preparación](docs/03-instalacion.md)
+4. [Guía de estilos y prototipado](docs/04-guia-estilos.md)
+5. [Diseño técnico](docs/05-diseno.md)
+6. [Desarrollo](docs/06-desarrollo.md)
+7. [Pruebas](docs/07-pruebas.md)
+8. [Despliegue](docs/08-despliegue.md)
+9. [Manual de usuario](docs/09-manual-usuario.md)
+10. [Conclusiones](docs/10-conclusiones.md)
 
 ## Configuración y Despliegue
 
@@ -41,6 +57,7 @@ kinefy/
 **Sprint 1 – Análisis y diseño**
 - [x] Propuesta formal del proyecto.
 - [x] Estructura inicial del repositorio.
+- [x] Estructura de documentación oficial (guion DAW).
 - [ ] Implementación de modelos y autenticación base.
 
 ## Enlaces de Interés
