@@ -7,13 +7,13 @@ const register = async (req, res) => {
         const { name, email, password, role } = req.body;
 
         if (!name || !email || !password) {
-            return res.status(400).json({ msg: 'Por favor incluye todos los campos obligatorios' });
+            return res.status(400).json({ error: 'Faltan campos obligatorios', code: 'VALIDATION_ERROR' });
         }
 
         const userExists = await User.findOne({ email });
 
         if (userExists) {
-            return res.status(400).json({ msg: 'Este correo ya está registrado' });
+            return res.status(400).json({ error: 'Este correo ya está registrado', code: 'USER_EXISTS' });
         }
 
         const user = new User({
@@ -28,7 +28,7 @@ const register = async (req, res) => {
         res.status(201).json({ msg: 'Usuario registrado correctamente' });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ msg: 'Error de servidor' });
+        res.status(500).json({ error: 'Error interno del servidor', code: 'SERVER_ERROR' });
     }
 };
 
@@ -37,17 +37,17 @@ const login = async (req, res) => {
         const { email, password } = req.body;
 
         if (!email || !password) {
-            return res.status(400).json({ msg: 'Falta email o contraseña' });
+            return res.status(400).json({ error: 'Faltan credenciales', code: 'VALIDATION_ERROR' });
         }
 
         const user = await User.findOne({ email });
         if (!user) {
-            return res.status(400).json({ msg: 'Credenciales inválidas' });
+            return res.status(400).json({ error: 'Credenciales inválidas', code: 'AUTH_INVALID_CREDENTIALS' });
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return res.status(400).json({ msg: 'Credenciales inválidas' });
+            return res.status(400).json({ error: 'Credenciales inválidas', code: 'AUTH_INVALID_CREDENTIALS' });
         }
 
         const payload = {
@@ -67,7 +67,7 @@ const login = async (req, res) => {
 
     } catch (err) {
         console.error(err);
-        res.status(500).json({ msg: 'Error de servidor' });
+        res.status(500).json({ error: 'Error interno del servidor', code: 'SERVER_ERROR' });
     }
 };
 
