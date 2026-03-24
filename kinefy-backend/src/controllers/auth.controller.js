@@ -71,7 +71,24 @@ const login = async (req, res) => {
     }
 };
 
+const getMe = async (req, res) => {
+    try {
+        // req.user viene inyectado por nuestro middleware de seguridad
+        const user = await User.findById(req.user.id).select('-password');
+
+        if (!user) {
+            return res.status(404).json({ error: 'Usuario no encontrado', code: 'USER_NOT_FOUND' });
+        }
+
+        res.json(user);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Error interno del servidor', code: 'SERVER_ERROR' });
+    }
+};
+
 module.exports = {
     register,
-    login
+    login,
+    getMe
 };
