@@ -19,3 +19,6 @@ Thumbs.db
 .vscode/
 .idea/
 *.log
+
+# Presentación y scripts
+guion-video.md
