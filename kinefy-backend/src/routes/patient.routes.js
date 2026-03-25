@@ -8,4 +8,9 @@ const authMiddleware = require('../middleware/auth.middleware');
 // @access  Privado (Solo fisioterapeutas)
 router.post('/', authMiddleware, patientController.createPatient);
 
+// @route   GET /api/patients
+// @desc    Obtener todos los pacientes del fisioterapeuta
+// @access  Privado
+router.get('/', authMiddleware, patientController.getPatients);
+
 module.exports = router;

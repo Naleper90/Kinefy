@@ -4,16 +4,15 @@ const createPatient = async (req, res) => {
     try {
         const { nombre, fechaInicio, estado } = req.body;
 
-        // Seguridad: Solo los fisioterapeutas pueden dar de alta pacientes
         if (req.user.role !== 'fisioterapeuta') {
             return res.status(403).json({
-                error: 'Acceso denegado. Solo los fisioterapeutas pueden realizar esta acción.',
+                error: 'Acceso denegado',
                 code: 'FORBIDDEN_ACCESS'
             });
         }
 
         if (!nombre) {
-            return res.status(400).json({ error: 'El nombre del paciente es obligatorio', code: 'VALIDATION_ERROR' });
+            return res.status(400).json({ error: 'El nombre es obligatorio', code: 'VALIDATION_ERROR' });
         }
 
         const newPatient = new Patient({
@@ -26,18 +25,35 @@ const createPatient = async (req, res) => {
         const patient = await newPatient.save();
         res.status(201).json(patient);
     } catch (err) {
-        // Manejar errores de validación de Mongoose (como valores inválidos de enum en 'estado')
         if (err.name === 'ValidationError') {
             return res.status(400).json({
-                error: 'Datos inválidos transmitidos en la petición',
+                error: 'Datos inválidos',
                 code: 'BAD_REQUEST'
             });
         }
         console.error(err);
-        res.status(500).json({ error: 'Error al crear el paciente', code: 'SERVER_ERROR' });
+        res.status(500).json({ error: 'Error del servidor', code: 'SERVER_ERROR' });
+    }
+};
+
+const getPatients = async (req, res) => {
+    try {
+        if (req.user.role !== 'fisioterapeuta') {
+            return res.status(403).json({
+                error: 'Acceso denegado',
+                code: 'FORBIDDEN_ACCESS'
+            });
+        }
+
+        const patients = await Patient.find({ fisioterapeuta: req.user.id }).sort({ createdAt: -1 });
+        res.json(patients);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Error del servidor', code: 'SERVER_ERROR' });
     }
 };
 
 module.exports = {
-    createPatient
+    createPatient,
+    getPatients
 };
