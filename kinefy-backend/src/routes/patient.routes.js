@@ -3,7 +3,9 @@ const router = express.Router();
 const patientController = require('../controllers/patient.controller');
 const authMiddleware = require('../middleware/auth.middleware');
 
-// Todas las rutas de pacientes deben estar protegidas por el middleware
-// router.use(authMiddleware);
+// @route   POST /api/patients
+// @desc    Crear un nuevo paciente
+// @access  Privado (Solo fisioterapeutas)
+router.post('/', authMiddleware, patientController.createPatient);
 
 module.exports = router;
