@@ -53,7 +53,63 @@ const getPatients = async (req, res) => {
     }
 };
 
+const updatePatient = async (req, res) => {
+    try {
+        if (req.user.role !== 'fisioterapeuta') {
+            return res.status(403).json({ error: 'Acceso denegado', code: 'FORBIDDEN_ACCESS' });
+        }
+
+        let patient = await Patient.findById(req.params.id);
+
+        if (!patient) {
+            return res.status(404).json({ error: 'Paciente no encontrado', code: 'NOT_FOUND' });
+        }
+
+        if (patient.fisioterapeuta.toString() !== req.user.id) {
+            return res.status(403).json({ error: 'Acceso denegado', code: 'FORBIDDEN_ACCESS' });
+        }
+
+        patient = await Patient.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        res.json(patient);
+    } catch (err) {
+        if (err.name === 'CastError') {
+            return res.status(400).json({ error: 'ID de paciente inválido', code: 'BAD_REQUEST' });
+        }
+        console.error(err);
+        res.status(500).json({ error: 'Error del servidor', code: 'SERVER_ERROR' });
+    }
+};
+
+const deletePatient = async (req, res) => {
+    try {
+        if (req.user.role !== 'fisioterapeuta') {
+            return res.status(403).json({ error: 'Acceso denegado', code: 'FORBIDDEN_ACCESS' });
+        }
+
+        const patient = await Patient.findById(req.params.id);
+
+        if (!patient) {
+            return res.status(404).json({ error: 'Paciente no encontrado', code: 'NOT_FOUND' });
+        }
+
+        if (patient.fisioterapeuta.toString() !== req.user.id) {
+            return res.status(403).json({ error: 'Acceso denegado', code: 'FORBIDDEN_ACCESS' });
+        }
+
+        await patient.deleteOne();
+        res.json({ msg: 'Paciente eliminado correctamente' });
+    } catch (err) {
+        if (err.name === 'CastError') {
+            return res.status(400).json({ error: 'ID de paciente inválido', code: 'BAD_REQUEST' });
+        }
+        console.error(err);
+        res.status(500).json({ error: 'Error del servidor', code: 'SERVER_ERROR' });
+    }
+};
+
 module.exports = {
     createPatient,
-    getPatients
+    getPatients,
+    updatePatient,
+    deletePatient
 };

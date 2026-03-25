@@ -13,4 +13,14 @@ router.post('/', authMiddleware, patientController.createPatient);
 // @access  Privado
 router.get('/', authMiddleware, patientController.getPatients);
 
+// @route   PUT /api/patients/:id
+// @desc    Actualizar un paciente
+// @access  Privado
+router.put('/:id', authMiddleware, patientController.updatePatient);
+
+// @route   DELETE /api/patients/:id
+// @desc    Eliminar un paciente
+// @access  Privado
+router.delete('/:id', authMiddleware, patientController.deletePatient);
+
 module.exports = router;
