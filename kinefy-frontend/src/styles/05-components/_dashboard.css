@@ -1,0 +1,75 @@
+/* Dashboard Components - BEM Methodology */
+
+.dashboard {
+  padding: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.dashboard__header {
+  border-bottom: 2px solid var(--color-mint-light);
+  padding-bottom: var(--spacing-sm);
+}
+
+.dashboard__title {
+  color: var(--color-mint-dark);
+}
+
+.dashboard__welcome {
+  color: var(--color-text-muted);
+  font-size: 1.1rem;
+}
+
+.dashboard__content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.dashboard__card {
+  background-color: var(--color-white);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-soft);
+  border: 1px solid var(--color-blue-light);
+}
+
+.dashboard__subtitle {
+  color: var(--color-mint-dark);
+  margin-bottom: var(--spacing-sm);
+}
+
+.dashboard__list {
+  padding-left: var(--spacing-sm);
+}
+
+.dashboard__list-item {
+  margin-bottom: var(--spacing-xs);
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.dashboard__list-item::before {
+  content: "•";
+  color: var(--color-mint-dark);
+  position: absolute;
+  left: 0;
+  font-weight: bold;
+}
+
+.dashboard__button {
+  width: fit-content;
+  background-color: transparent;
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-text-muted);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.dashboard__button:hover {
+  border-color: var(--color-mint-dark);
+  color: var(--color-mint-dark);
+}

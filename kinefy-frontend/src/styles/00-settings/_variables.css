@@ -1,0 +1,33 @@
+:root {
+  /* Colors - Health & Calm Palette (Imagen 3 Inspiration) */
+  --color-mint-light: #E0F2F1;
+  --color-mint-medium: #80CBC4;
+  --color-mint-dark: #4DB6AC;
+  
+  --color-blue-light: #E3F2FD;
+  --color-blue-medium: #90CAF9;
+  --color-blue-dark: #42A5F5;
+  
+  --color-white: #FFFFFF;
+  --color-bg: #FAFAFA;
+  --color-text-main: #2C3E50;
+  --color-text-muted: #7F8C8D;
+  
+  /* Typography */
+  --font-display: 'Outfit', sans-serif;
+  --font-main: 'Inter', sans-serif;
+  
+  /* Spacing */
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 1rem;
+  --spacing-md: 1.5rem;
+  --spacing-lg: 2.5rem;
+  
+  /* Border Radius */
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  
+  /* Shadows */
+  --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.04);
+}

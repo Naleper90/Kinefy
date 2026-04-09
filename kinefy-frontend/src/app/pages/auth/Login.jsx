@@ -12,34 +12,36 @@ const Login = () => {
     };
 
     return (
-        <div style={{ padding: '20px', maxWidth: '400px', margin: 'auto' }}>
-            <h1>Kinefy - Login</h1>
-            <form onSubmit={handleSubmit}>
-                <div style={{ marginBottom: '10px' }}>
-                    <label>Email:</label><br />
+        <section className="auth">
+            <h1 className="auth__title">Kinefy - Login</h1>
+            <form className="auth__form" onSubmit={handleSubmit}>
+                <fieldset className="auth__group">
+                    <label className="auth__label" htmlFor="email">Email:</label>
                     <input
+                        id="email"
+                        className="auth__input"
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
-                        style={{ width: '100%' }}
                     />
-                </div>
-                <div style={{ marginBottom: '10px' }}>
-                    <label>Password:</label><br />
+                </fieldset>
+                <fieldset className="auth__group">
+                    <label className="auth__label" htmlFor="password">Password:</label>
                     <input
+                        id="password"
+                        className="auth__input"
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
-                        style={{ width: '100%' }}
                     />
-                </div>
-                <button type="submit" style={{ width: '100%', padding: '10px' }}>
+                </fieldset>
+                <button className="auth__button" type="submit">
                     Entrar
                 </button>
             </form>
-        </div>
+        </section>
     );
 };
 
