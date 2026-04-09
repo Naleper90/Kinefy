@@ -2,23 +2,37 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import AuthLayout from '../../components/auth/AuthLayout';
 
-const Login = () => {
+const Register = () => {
+    const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        window.location.href = '/dashboard';
+        console.log('Register attempt:', { name, email, password });
     };
 
     return (
         <AuthLayout 
-            title="Bienvenido de nuevo" 
-            subtitle="Inicia sesión en tu cuenta de fisioterapeuta"
+            title="Crear cuenta" 
+            subtitle="Únete a la red de fisioterapeutas de Kinefy"
         >
             <form className="auth__form" onSubmit={handleSubmit}>
-                <label className="auth__field" htmlFor="email">
+                <label className="auth__field" htmlFor="name">
                     <svg className="auth__field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    <input
+                        id="name"
+                        className="auth__input"
+                        type="text"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        required
+                        placeholder="Nombre completo"
+                    />
+                </label>
+
+                <label className="auth__field" htmlFor="email">
+                    <svg className="auth__field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
                     <input
                         id="email"
                         className="auth__input"
@@ -39,21 +53,21 @@ const Login = () => {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
-                        placeholder="Contraseña"
+                        placeholder="Crear contraseña"
                     />
                 </label>
 
                 <button className="auth__button" type="submit">
-                    Iniciar Sesión
+                    Registrarse
                 </button>
 
                 <nav className="auth__nav">
-                    <Link to="#">¿Olvidaste tu contraseña?</Link>
-                    <Link to="/register">Crear una cuenta</Link>
+                    <span style={{ color: 'var(--color-text-soft)', fontSize: '0.85rem' }}>¿Ya tienes cuenta?</span>
+                    <Link to="/login">Inicia sesión</Link>
                 </nav>
             </form>
         </AuthLayout>
     );
 };
 
-export default Login;
+export default Register;

@@ -1,33 +1,33 @@
 :root {
-  /* Colors - Health & Calm Palette (Imagen 3 Inspiration) */
-  --color-mint-light: #E0F2F1;
-  --color-mint-medium: #80CBC4;
-  --color-mint-dark: #4DB6AC;
+  /* Colors - Botanical Watercolor Palette */
+  --color-mint-dark: #5FB3AA;
+  --color-mint-medium: #5FB3AA;
   
-  --color-blue-light: #E3F2FD;
-  --color-blue-medium: #90CAF9;
-  --color-blue-dark: #42A5F5;
+  /* Colors - Senior Health UI/UX Palette */
+  --color-mint-pale: #F5F9F8;
+  --color-sky-blue-dark: #1A4B6E;
   
   --color-white: #FFFFFF;
-  --color-bg: #FAFAFA;
-  --color-text-main: #2C3E50;
-  --color-text-muted: #7F8C8D;
+  --color-bg: #FFFFFF;
+  --color-border-dark: #2D3436;
+  --color-text-main: #2D3436;
+  --color-text-muted: #636E72;
   
   /* Typography */
-  --font-display: 'Outfit', sans-serif;
+  --font-display: 'Playfair Display', serif;
   --font-main: 'Inter', sans-serif;
   
   /* Spacing */
   --spacing-xs: 0.5rem;
   --spacing-sm: 1rem;
-  --spacing-md: 1.5rem;
-  --spacing-lg: 2.5rem;
+  --spacing-md: 2rem;
+  --spacing-lg: 3.5rem;
   
   /* Border Radius */
-  --radius-sm: 8px;
-  --radius-md: 16px;
-  --radius-lg: 24px;
+  --radius-sm: 12px;
+  --radius-md: 24px;
+  --radius-lg: 32px;
   
-  /* Shadows */
-  --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.04);
+  /* Shadows - Estilo Soft UI de la Imagen 3 */
+  --shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.03);
 }
