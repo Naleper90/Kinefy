@@ -1,0 +1,33 @@
+:root {
+  /* Colors - Botanical Watercolor Palette */
+  --color-mint-dark: #5FB3AA;
+  --color-mint-medium: #5FB3AA;
+  
+  /* Colors - Senior Health UI/UX Palette */
+  --color-mint-pale: #F5F9F8;
+  --color-sky-blue-dark: #1A4B6E;
+  
+  --color-white: #FFFFFF;
+  --color-bg: #FFFFFF;
+  --color-border-dark: #2D3436;
+  --color-text-main: #2D3436;
+  --color-text-muted: #636E72;
+  
+  /* Typography */
+  --font-display: 'Playfair Display', serif;
+  --font-main: 'Inter', sans-serif;
+  
+  /* Spacing */
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 1rem;
+  --spacing-md: 2rem;
+  --spacing-lg: 3.5rem;
+  
+  /* Border Radius */
+  --radius-sm: 12px;
+  --radius-md: 24px;
+  --radius-lg: 32px;
+  
+  /* Shadows - Estilo Soft UI de la Imagen 3 */
+  --shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.03);
+}

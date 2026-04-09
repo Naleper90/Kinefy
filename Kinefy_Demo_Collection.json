@@ -1,0 +1,162 @@
+{
+    "client": "Thunder Client",
+    "collectionName": "Kinefy Demo",
+    "dateExported": "2026-03-26T10:00:00.000Z",
+    "version": "1.1",
+    "folders": [],
+    "requests": [
+        {
+            "containerId": "",
+            "sortNum": 10000,
+            "headers": [],
+            "colId": "kinefy-demo-id",
+            "name": "1. Register (Fisio)",
+            "url": "http://localhost:5000/api/auth/register",
+            "method": "POST",
+            "modifiedAt": "2026-03-26T10:00:00.000Z",
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"name\": \"Natalia Demo\",\n  \"email\": \"demo@kinefy.com\",\n  \"password\": \"demo1234\",\n  \"role\": \"fisioterapeuta\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "containerId": "",
+            "sortNum": 20000,
+            "headers": [],
+            "colId": "kinefy-demo-id",
+            "name": "2. Login",
+            "url": "http://localhost:5000/api/auth/login",
+            "method": "POST",
+            "modifiedAt": "2026-03-26T10:00:00.000Z",
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"email\": \"demo@kinefy.com\",\n  \"password\": \"demo1234\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "containerId": "",
+            "sortNum": 30000,
+            "headers": [
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ],
+            "colId": "kinefy-demo-id",
+            "name": "3. Get Me",
+            "url": "http://localhost:5000/api/auth/me",
+            "method": "GET",
+            "modifiedAt": "2026-03-26T10:00:00.000Z",
+            "body": {
+                "type": "json",
+                "raw": "",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "containerId": "",
+            "sortNum": 40000,
+            "headers": [
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ],
+            "colId": "kinefy-demo-id",
+            "name": "4. Create Patient",
+            "url": "http://localhost:5000/api/patients",
+            "method": "POST",
+            "modifiedAt": "2026-03-26T10:00:00.000Z",
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"nombre\": \"Paciente Demo\",\n  \"fechaInicio\": \"2026-03-26\",\n  \"estado\": \"activo\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "containerId": "",
+            "sortNum": 50000,
+            "headers": [
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ],
+            "colId": "kinefy-demo-id",
+            "name": "5. List Patients",
+            "url": "http://localhost:5000/api/patients",
+            "method": "GET",
+            "modifiedAt": "2026-03-26T10:00:00.000Z",
+            "body": {
+                "type": "json",
+                "raw": "",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "containerId": "",
+            "sortNum": 60000,
+            "headers": [
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ],
+            "colId": "kinefy-demo-id",
+            "name": "6. Update Patient",
+            "url": "http://localhost:5000/api/patients/{{patient_id}}",
+            "method": "PUT",
+            "modifiedAt": "2026-03-26T10:00:00.000Z",
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"estado\": \"finalizado\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "containerId": "",
+            "sortNum": 70000,
+            "headers": [
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ],
+            "colId": "kinefy-demo-id",
+            "name": "7. Delete Patient",
+            "url": "http://localhost:5000/api/patients/{{patient_id}}",
+            "method": "DELETE",
+            "modifiedAt": "2026-03-26T10:00:00.000Z",
+            "body": {
+                "type": "json",
+                "raw": "",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "containerId": "",
+            "sortNum": 80000,
+            "headers": [],
+            "colId": "kinefy-demo-id",
+            "name": "8. List Patients (Sin Token - Error 401)",
+            "url": "http://localhost:5000/api/patients",
+            "method": "GET",
+            "modifiedAt": "2026-03-26T10:00:00.000Z",
+            "body": {
+                "type": "json",
+                "raw": "",
+                "form": []
+            },
+            "tests": []
+        }
+    ]
+}

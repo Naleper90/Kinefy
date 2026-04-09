@@ -1,0 +1,12 @@
+/* ITCSS Entry Point - Kinefy Design System */
+
+@import './00-settings/_variables.css';
+@import './02-generic/_reset.css';
+
+/* 01-tools - Mixins & Utilities (empty for now) */
+/* 03-elements - Base unclassed HTML tags */
+/* 04-layout - Global layout structures */
+@import './04-layout/_layout.css';
+/* 05-components - Component specific styles (BEM) */
+@import './05-components/_auth.css';
+@import './05-components/_dashboard.css';
