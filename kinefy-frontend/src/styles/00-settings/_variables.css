@@ -1,20 +1,20 @@
 :root {
-  /* Colors - Botanical Watercolor Palette */
-  --color-mint-dark: #5FB3AA;
-  --color-mint-medium: #5FB3AA;
-  
-  /* Colors - Senior Health UI/UX Palette */
+  /* Colors - Purist & Premium Palette */
+  --color-brand: #98D2C1;
+  --color-brand-hover: #87C1B0;
   --color-mint-pale: #F5F9F8;
-  --color-sky-blue-dark: #1A4B6E;
+  --color-text-dark: #1A2E35;  /* Azul marino profundo del boceto (no negro) */
+  --color-text-soft: #5A6B6D;
+  --color-text-link: #3B7A8E;
   
   --color-white: #FFFFFF;
   --color-bg: #FFFFFF;
-  --color-border-dark: #2D3436;
-  --color-text-main: #2D3436;
-  --color-text-muted: #636E72;
+  --color-border-light: rgba(0, 0, 0, 0.05);
+  --color-text-main: #1A2E35;
+  --color-text-muted: #5A6B6D;
   
   /* Typography */
-  --font-display: 'Playfair Display', serif;
+  --font-display: 'Fraunces', serif;
   --font-main: 'Inter', sans-serif;
   
   /* Spacing */

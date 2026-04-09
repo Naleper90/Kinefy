@@ -1,64 +1,64 @@
-# Kinefy – Plataforma web de seguimiento de rehabilitación física
+# Kinefy – Seguimiento de Rehabilitación Física
 
-Kinefy es una solución digital diseñada para mejorar la comunicación entre fisioterapeutas y pacientes durante los procesos de rehabilitación. Permite a los profesionales asignar ejercicios y monitorizar la evolución del dolor, mientras que los pacientes disponen de un diario estructurado para registrar su actividad y sensaciones.
+Kinefy es una aplicación web centrada en facilitar el registro de ejercicios y la monitorización del dolor en procesos de rehabilitación. El proyecto surge para cubrir la falta de comunicación estructural entre las sesiones presenciales de fisioterapia, proporcionando un canal de datos real entre el profesional y el paciente.
+
+## Enfoque y Diseño: Organic Minimalism
+
+El proyecto se aleja de los frameworks de componentes tradicionales para priorizar la mantenibilidad y el rendimiento mediante código artesanal:
+- **CSS Puro y BEM**: Arquitectura de estilos basada en bloques, sin dependencias externas.
+- **Identidad Visual**: Paleta basada en tonos menta y azul con elementos orgánicos para reducir la carga cognitiva del paciente.
+- **Accesibilidad**: Cumplimiento de WCAG AA para asegurar la legibilidad y usabilidad.
+
+## Estado del Proyecto (Sprint 2)
+
+Actualmente se ha completado la base visual y la estructura de navegación:
+- **Arquitectura de componentes**: Sistema escalable siguiendo patrones de React.
+- **Sistema de diseño**: Variables CSS centralizadas y diseño completamente adaptativo.
+- **Interfaz del Paciente**: Registro de actividad, escalas de dolor (1-10) y panel de observaciones.
+- **Módulo de Acceso**: Flujo de autenticación con diseño minimalista.
+- **API (Desarrollo)**: Estructura base en Node.js/Express con persistencia en MongoDB.
 
 ## Stack Tecnológico
 
-- **Frontend:** React (Vite) + React Router + Axios
-- **Backend:** Node.js + Express
-- **Base de Datos:** MongoDB (Mongoose)
-- **Autenticación:** JWT (JSON Web Tokens) + Bcryptjs
-
-## Estructura del Repositorio
-
-```text
-kinefy/
-├── docs/              # Documentación oficial del proyecto
-├── kinefy-backend/    # Servidor API Node.js/Express
-└── kinefy-frontend/   # Cliente React/Vite
-```
+| Capa | Tecnología | Justificación |
+| :--- | :--- | :--- |
+| **Frontend** | React (Vite) | SPA para evitar recargas constantes en el uso diario. |
+| **Estilos** | CSS Pure / BEM | Control total sobre la jerarquía y rendimiento. |
+| **Backend** | Node.js / Express | API REST escalable con separación de responsabilidades. |
+| **Base de Datos** | MongoDB | Modelo de datos flexible para pautas de salud variables. |
+| **Seguridad** | JWT / Bcrypt | Gestión de sesiones segura y cifrado de contraseñas. |
 
 ## Documentación del Proyecto
 
-El seguimiento y la documentación detallada del proyecto se encuentra en la carpeta `docs/`:
+El detalle técnico y académico se encuentra en la carpeta `docs/`:
 
-1. [Introducción, objetivos y antecedentes](docs/01-introduccion.md)
-2. [Descripción del proyecto](docs/02-descripcion.md)
-3. [Instalación y preparación](docs/03-instalacion.md)
-4. [Guía de estilos y prototipado](docs/04-guia-estilos.md)
-5. [Diseño técnico](docs/05-diseno.md)
-6. [Desarrollo](docs/06-desarrollo.md)
-7. [Pruebas](docs/07-pruebas.md)
-8. [Despliegue](docs/08-despliegue.md)
-9. [Manual de usuario](docs/09-manual-usuario.md)
-10. [Conclusiones](docs/10-conclusiones.md)
+1.  [Introducción y Justificación](docs/01-introduccion.md)
+2.  [Descripción del MVP](docs/02-descripcion.md)
+3.  [Instalación](docs/03-instalacion.md)
+4.  [Guía de Estilos](docs/04-guia-estilos.md)
+5.  [Arquitectura Técnica](docs/05-diseno.md)
+6.  [Paso a paso del Desarrollo](docs/06-desarrollo.md)
+7.  [Pruebas de Sistema](docs/07-pruebas.md)
+8.  [Despliegue](docs/08-despliegue.md)
+9.  [Guía de Uso](docs/09-manual-usuario.md)
+10. [Conclusiones finales](docs/10-conclusiones.md)
 
-## Configuración y Despliegue
+---
 
-### Requisitos Previos
+## Inicio Rápido
 
+### Requisitos
 - Node.js (v18+)
-- MongoDB (Local o Atlas)
+- MongoDB Atlas o local
 
-### Backend
+### Instalación
+```bash
+# Servidor
+cd kinefy-backend && npm install && npm run dev
 
-1. Entra en `kinefy-backend/`.
-2. Instala las dependencias: `npm install`.
-3. Copia `.env.example` a `.env` y configura tus variables.
-4. Inicia el servidor: `npm start` o `npm run dev`.
+# Cliente
+cd kinefy-frontend && npm install && npm run dev
+```
 
-### Frontend
-
-1. Entra en `kinefy-frontend/`.
-2. Instala las dependencias: `npm install`.
-3. Inicia el cliente: `npm run dev`.
-
-## Estado Actual
-**Sprint 1 – Análisis y diseño**
-- [x] Propuesta formal del proyecto.
-- [x] Estructura inicial del repositorio.
-- [x] Estructura de documentación oficial (guion DAW).
-- [ ] Implementación de modelos y autenticación base.
-
-## Enlaces de Interés
-- [GitHub Projects](https://github.com/Naleper90/Kinefy/projects)
+---
+Proyecto Final de Ciclo (2º DAW) - **Natalia Alejo Pérez**.
