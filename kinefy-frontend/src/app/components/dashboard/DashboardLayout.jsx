@@ -1,6 +1,8 @@
 import React from 'react';
+import { NavLink } from 'react-router-dom';
 import Sidebar from './Sidebar';
-import { BellIcon, SearchIcon, SketchUserIcon, BlobIcon } from './DashboardIcons';
+import { BellIcon, SearchIcon, BlobIcon } from './DashboardIcons';
+import { KinefyLogo } from '../auth/AuthIcons';
 
 const DashboardLayout = ({ 
     children, 
@@ -10,6 +12,11 @@ const DashboardLayout = ({
 }) => {
     return (
         <section className="layout">
+            {/* Header for Mobile only */}
+            <header className="mobile-header" aria-hidden="true">
+                <KinefyLogo className="sidebar__brand" />
+            </header>
+
             <Sidebar navItems={navItems} />
 
             <main className="layout__wrapper">
@@ -64,8 +71,26 @@ const DashboardLayout = ({
                     </svg>
                 </footer>
             </main>
+
+            {/* Bottom Nav for Mobile only */}
+            <nav className="mobile-nav" aria-label="Navegación móvil">
+                {navItems.map((item, index) => (
+                    <NavLink 
+                        key={index} 
+                        to={item.to} 
+                        end={item.end}
+                        className={({ isActive }) => 
+                            `mobile-nav__link ${isActive ? 'mobile-nav__link--active' : ''}`
+                        }
+                    >
+                        <item.icon className="mobile-nav__icon" />
+                        <span>{item.label}</span>
+                    </NavLink>
+                ))}
+            </nav>
         </section>
     );
 };
+
 
 export default DashboardLayout;
