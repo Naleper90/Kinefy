@@ -1,9 +1,9 @@
 :root {
-  /* Colors - Purist & Premium Palette */
-  --color-brand: #98D2C1;
-  --color-brand-hover: #87C1B0;
-  --color-mint-pale: #F5F9F8;
-  --color-text-dark: #1A2E35;  /* Azul marino profundo del boceto (no negro) */
+  /* Colors */
+  --color-brand: #55A98A;
+  --color-brand-hover: #6BA38E;
+  --color-mint-pale: #F3F8F6;
+  --color-text-dark: #1A2E35;
   --color-text-soft: #5A6B6D;
   --color-text-link: #3B7A8E;
   
@@ -15,7 +15,7 @@
   
   /* Typography */
   --font-display: 'Fraunces', serif;
-  --font-main: 'Inter', sans-serif;
+  --font-main: 'Outfit', sans-serif;
   
   /* Spacing */
   --spacing-xs: 0.5rem;
@@ -28,6 +28,6 @@
   --radius-md: 24px;
   --radius-lg: 32px;
   
-  /* Shadows - Estilo Soft UI de la Imagen 3 */
+  /* Shadows */
   --shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.03);
 }

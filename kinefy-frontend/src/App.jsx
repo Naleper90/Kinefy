@@ -4,6 +4,9 @@ import Login from './app/pages/auth/Login';
 import Register from './app/pages/auth/Register';
 import Dashboard from './app/pages/dashboard/Dashboard';
 import PatientDashboard from './app/pages/dashboard/PatientDashboard';
+import LegalNotice from './app/pages/legal/LegalNotice';
+import PrivacyPolicy from './app/pages/legal/PrivacyPolicy';
+
 
 /**
  * ProtectedRoute - Valida rol del usuario en localStorage
@@ -15,8 +18,8 @@ const ProtectedRoute = ({ children, requiredRole }) => {
     
     const user = JSON.parse(stored);
     if (requiredRole && user.role !== requiredRole) {
-        // Redirige al dashboard correcto según rol
-        return <Navigate to={user.role === 'patient' ? '/dashboard/patient' : '/dashboard/physio'} replace />;
+        // Redirige al dashboard correcto según rol real de DB
+        return <Navigate to={user.role === 'paciente' ? '/dashboard/patient' : '/dashboard/physio'} replace />;
     }
     return children;
 };
@@ -31,15 +34,15 @@ function App() {
                 <Route path="/register" element={<Register />} />
 
                 {/* Dashboard Fisioterapeuta */}
-                <Route path="/dashboard/physio" element={
-                    <ProtectedRoute requiredRole="physio">
+                <Route path="/dashboard/physio/*" element={
+                    <ProtectedRoute requiredRole="fisioterapeuta">
                         <Dashboard />
                     </ProtectedRoute>
                 } />
 
                 {/* Dashboard Paciente */}
-                <Route path="/dashboard/patient" element={
-                    <ProtectedRoute requiredRole="patient">
+                <Route path="/dashboard/patient/*" element={
+                    <ProtectedRoute requiredRole="paciente">
                         <PatientDashboard />
                     </ProtectedRoute>
                 } />
@@ -52,7 +55,12 @@ function App() {
                     </ProtectedRoute>
                 } />
 
+                {/* Páginas Legales */}
+                <Route path="/legal" element={<LegalNotice />} />
+                <Route path="/privacy" element={<PrivacyPolicy />} />
+
                 {/* Fallback */}
+
                 <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
         </Router>
