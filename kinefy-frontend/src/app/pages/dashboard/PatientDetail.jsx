@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../api/api';
 import { KneeIcon, BlobIcon } from '../../components/dashboard/DashboardIcons';
@@ -20,9 +21,13 @@ const PatientDetail = () => {
         diagnostico: '', notas: '', ejercicios: []
     });
     const [statusMsg, setStatusMsg] = useState(null);
+    const [uploading, setUploading] = useState(false);
     const [showActivityMenu, setShowActivityMenu] = useState(false);
     const [newDoc, setNewDoc] = useState({ nombre: '', url: '' });
     const [isAddingDoc, setIsAddingDoc] = useState(false);
+    const [library, setLibrary] = useState([]);
+    const [showLibraryModal, setShowLibraryModal] = useState(false);
+
 
     const activityOptions = [
         { value: 'sedentario', label: 'Sedentario (Oficina / Poco movimiento)' },
@@ -59,7 +64,11 @@ const PatientDetail = () => {
             const resAppts = await api.get('/appointments');
             const patientAppts = resAppts.data.filter(a => a.paciente?._id === id);
             setAppointments(patientAppts);
+
+            const resLib = await api.get('/exercises');
+            setLibrary(resLib.data);
         } catch (err) {
+
             // Error manejado silenciosamente
         } finally {
             setLoading(false);
@@ -99,10 +108,46 @@ const PatientDetail = () => {
         setEditForm({ ...editForm, ejercicios: newEx });
     };
 
+    const importFromLibrary = (libEx) => {
+        setEditForm({
+            ...editForm,
+            ejercicios: [...editForm.ejercicios, { 
+                nombre: libEx.nombre, 
+                series: libEx.seriesDefecto || '', 
+                completado: false,
+                mediaUrl: libEx.mediaUrl || '' 
+            }]
+        });
+        setShowLibraryModal(false);
+        showNotification(`Ejercicio "${libEx.nombre}" importado`);
+    };
+
+
     const updateExercise = (index, field, value) => {
         const newEx = [...editForm.ejercicios];
         newEx[index][field] = value;
         setEditForm({ ...editForm, ejercicios: newEx });
+    };
+
+    const handleFileUpload = async (e, index) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        setUploading(true);
+        try {
+            const res = await api.post('/upload', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+            updateExercise(index, 'mediaUrl', res.data.url);
+            showNotification("Archivo multimedia subido correctamente");
+        } catch (err) {
+            showNotification("Error al subir el archivo");
+        } finally {
+            setUploading(false);
+        }
     };
 
     const handleAddDocument = async () => {
@@ -232,7 +277,7 @@ const PatientDetail = () => {
                         <div className="form-group">
                             <label className="meta-label">Profesión</label>
                             {isEditing ? (
-                                <input className="auth__input" value={editForm.profesion} onChange={e => setEditForm({...editForm, profesion: e.target.value})} />
+                                <input className="dashboard__input" value={editForm.profesion} onChange={e => setEditForm({...editForm, profesion: e.target.value})} />
                             ) : (
                                 <span className="activity-list__value">{patient.profesion || 'No registrada'}</span>
                             )}
@@ -272,36 +317,58 @@ const PatientDetail = () => {
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
                         <h3 className="card-title-big">Plan de Entrenamiento</h3>
                         {isEditing && (
-                            <button className="btn-primary" style={{ width: 'auto', padding: '0.5rem 1rem', fontSize: '0.8rem' }} onClick={addExercise}>
-                                + Añadir Ejercicio
-                            </button>
+                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                <button className="btn-ghost" style={{ width: 'auto', padding: '0.5rem 1rem', fontSize: '0.8rem', borderColor: '#55A98A', color: '#55A98A' }} onClick={() => setShowLibraryModal(true)}>
+                                    📚 Biblioteca
+                                </button>
+                                <button className="btn-primary" style={{ width: 'auto', padding: '0.5rem 1rem', fontSize: '0.8rem' }} onClick={addExercise}>
+                                    + Nuevo
+                                </button>
+                            </div>
                         )}
                     </div>
+
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                         {isEditing ? (
                             editForm.ejercicios.map((ex, i) => (
-                                <div key={i} style={{ display: 'flex', gap: '0.8rem', alignItems: 'center', background: '#F9FBFB', padding: '1rem', borderRadius: '16px' }}>
-                                    <input 
-                                        className="auth__input" 
-                                        placeholder="Nombre ejercicio" 
-                                        style={{ flex: 2 }}
-                                        value={ex.nombre} 
-                                        onChange={e => updateExercise(i, 'nombre', e.target.value)} 
-                                    />
-                                    <input 
-                                        className="auth__input" 
-                                        placeholder="3x12, 1min..." 
-                                        style={{ flex: 1 }}
-                                        value={ex.series} 
-                                        onChange={e => updateExercise(i, 'series', e.target.value)} 
-                                    />
-                                    <button 
-                                        onClick={() => removeExercise(i)}
-                                        style={{ background: '#FEE2E2', border: 'none', color: '#EF4444', width: '36px', height: '36px', borderRadius: '10px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                                    >
-                                        ✕
-                                    </button>
+                                <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', background: '#F9FBFB', padding: '1rem', borderRadius: '16px', border: '1px solid #F0F4F4' }}>
+                                    <div style={{ display: 'flex', gap: '0.8rem', alignItems: 'center' }}>
+                                        <input 
+                                            className="dashboard__input" 
+                                            placeholder="Nombre ejercicio" 
+                                            style={{ flex: 2, height: '44px' }}
+                                            value={ex.nombre} 
+                                            onChange={e => updateExercise(i, 'nombre', e.target.value)} 
+                                        />
+                                        <input 
+                                            className="dashboard__input" 
+                                            placeholder="3x12, 1min..." 
+                                            style={{ flex: 1, height: '44px' }}
+                                            value={ex.series} 
+                                            onChange={e => updateExercise(i, 'series', e.target.value)} 
+                                        />
+                                        <button 
+                                            onClick={() => removeExercise(i)}
+                                            style={{ background: '#FEE2E2', border: 'none', color: '#EF4444', width: '44px', height: '44px', borderRadius: '10px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                        >
+                                            ✕
+                                        </button>
+                                    </div>
+                                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                                        <input 
+                                            className="dashboard__input" 
+                                            placeholder="URL de Vídeo o Imagen (opcional)" 
+                                            style={{ fontSize: '0.75rem', height: '36px', borderRadius: '8px', flex: 1 }}
+                                            value={ex.mediaUrl || ''} 
+                                            onChange={e => updateExercise(i, 'mediaUrl', e.target.value)} 
+                                        />
+                                        <label className="btn-ghost" style={{ height: '36px', padding: '0 1rem', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer', borderColor: '#55A98A', color: '#55A98A', whiteSpace: 'nowrap' }}>
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                                            {uploading ? '...' : 'Subir'}
+                                            <input type="file" hidden onChange={e => handleFileUpload(e, i)} accept="image/*,video/*" />
+                                        </label>
+                                    </div>
                                 </div>
                             ))
                         ) : (
@@ -324,11 +391,20 @@ const PatientDetail = () => {
                     </div>
 
                     <div style={{ marginTop: '2.5rem' }}>
-                        <h4 className="meta-label">Diagnóstico Clínico</h4>
+                        <label className="meta-label" style={{ fontWeight: '700', color: '#55A98A', marginBottom: '0.8rem', display: 'block' }}>Diagnóstico Clínico</label>
                         {isEditing ? (
-                            <textarea className="auth__input" style={{ width: '100%', minHeight: '80px', marginTop: '0.5rem' }} value={editForm.diagnostico} onChange={e => setEditForm({...editForm, diagnostico: e.target.value})} />
+                            <textarea 
+                                className="dashboard__input" 
+                                placeholder="Escribe aquí el diagnóstico detallado..."
+                                value={editForm.diagnostico} 
+                                onChange={e => setEditForm({...editForm, diagnostico: e.target.value})} 
+                            />
                         ) : (
-                            <p style={{ fontSize: '0.95rem', color: '#1A2E35', marginTop: '0.5rem' }}>{patient.diagnostico || 'Pendiente de valoración.'}</p>
+                            <div style={{ background: '#F9FBFB', padding: '1.5rem', borderRadius: '18px', border: '1px solid #F0F4F4', marginTop: '0.5rem' }}>
+                                <p style={{ fontSize: '0.95rem', color: '#1A2E35', margin: 0, lineHeight: '1.6' }}>
+                                    {patient.diagnostico || 'Pendiente de valoración clínica.'}
+                                </p>
+                            </div>
                         )}
                     </div>
                 </article>
@@ -417,8 +493,62 @@ const PatientDetail = () => {
                     )}
                 </article>
             </section>
+
+            {/* MODAL DE BIBLIOTECA */}
+            {showLibraryModal && createPortal(
+                <div style={{ position: 'fixed', inset: 0, background: 'rgba(26, 46, 53, 0.4)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999999, padding: '1.5rem' }}>
+                    <div className="dashboard-card animate-in" style={{ maxWidth: '580px', width: '100%', padding: '0', borderRadius: '28px', maxHeight: '92vh', overflow: 'hidden', display: 'flex', flexDirection: 'column', background: '#FFFFFF', border: 'none', boxShadow: '0 40px 100px rgba(0,0,0,0.25)' }}>
+                        <header style={{ padding: '2rem 2.5rem 1.5rem', background: '#F9FBFB', borderBottom: '1px solid #F0F4F4', position: 'relative' }}>
+                            <h2 style={{ margin: 0, color: '#1A2E35', fontSize: '1.8rem', fontWeight: '800' }}>Biblioteca de Ejercicios</h2>
+                            <p style={{ color: '#5A6B6D', fontSize: '0.85rem', marginTop: '0.4rem' }}>Selecciona un ejercicio para añadirlo al plan de este paciente.</p>
+                            <button 
+                                onClick={() => setShowLibraryModal(false)}
+                                style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', background: 'rgba(0,0,0,0.05)', border: 'none', width: '32px', height: '32px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#5A6B6D', fontSize: '1rem', fontWeight: 'bold' }}
+                                onMouseOver={e => e.currentTarget.style.background = 'rgba(0,0,0,0.1)'}
+                                onMouseOut={e => e.currentTarget.style.background = 'rgba(0,0,0,0.05)'}
+                            >
+                                ✕
+                            </button>
+                        </header>
+                        
+                        <div style={{ padding: '2rem 2.5rem', overflowY: 'auto', flex: 1 }}>
+                            {library.length > 0 ? (
+                                <div style={{ display: 'grid', gap: '1rem' }}>
+                                    {library.map(ex => (
+                                        <article 
+                                            key={ex._id} 
+                                            onClick={() => importFromLibrary(ex)} 
+                                            style={{ padding: '1.2rem', border: '1.5px solid #F0F4F4', borderRadius: '18px', cursor: 'pointer', transition: 'all 0.2s', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                                            onMouseOver={e => { e.currentTarget.style.borderColor = '#55A98A'; e.currentTarget.style.background = '#F8FFFE'; }}
+                                            onMouseOut={e => { e.currentTarget.style.borderColor = '#F0F4F4'; e.currentTarget.style.background = 'transparent'; }}
+                                        >
+                                            <div>
+                                                <h4 style={{ margin: 0, color: '#1A2E35', fontSize: '1.05rem', fontWeight: '700' }}>{ex.nombre}</h4>
+                                                <span style={{ fontSize: '0.75rem', color: '#55A98A', fontWeight: '800', textTransform: 'uppercase' }}>{ex.categoria}</span>
+                                            </div>
+                                            <div style={{ textAlign: 'right' }}>
+                                                <div style={{ fontSize: '0.85rem', color: '#1A2E35', fontWeight: '600' }}>{ex.seriesDefecto || '—'}</div>
+                                                <div style={{ fontSize: '0.7rem', color: '#A0AEC0' }}>Series Sugeridas</div>
+                                            </div>
+                                        </article>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div style={{ textAlign: 'center', padding: '3rem 1rem' }}>
+                                    <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📚</div>
+                                    <p style={{ color: '#5A6B6D', margin: 0 }}>No tienes ejercicios en la biblioteca.</p>
+                                    <button className="btn-ghost" onClick={() => navigate('/dashboard/physio/exercises')}>Ir a Biblioteca</button>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>,
+                document.body
+            )}
+
         </main>
     );
 };
 
 export default PatientDetail;
+

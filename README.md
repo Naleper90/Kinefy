@@ -47,11 +47,18 @@ El detalle técnico y académico se encuentra en la carpeta `docs/`:
 
 ## Inicio Rápido
 
-### Requisitos
-- Node.js (v18+)
-- MongoDB Atlas o local
+### Opción A: Docker (Recomendado)
+Requisito: Docker Desktop instalado.
 
-### Instalación
+```bash
+# Clonar y levantar todo el sistema (Base de datos + API + Web)
+docker compose up --build
+```
+La aplicación estará disponible en `http://localhost`.
+
+### Opción B: Desarrollo Local
+Requisitos: Node.js (v18+) y MongoDB local.
+
 ```bash
 # Servidor
 cd kinefy-backend && npm install && npm run dev
@@ -59,6 +66,7 @@ cd kinefy-backend && npm install && npm run dev
 # Cliente
 cd kinefy-frontend && npm install && npm run dev
 ```
+
 
 ---
 Proyecto Final de Ciclo (2º DAW) - **Natalia Alejo Pérez**.

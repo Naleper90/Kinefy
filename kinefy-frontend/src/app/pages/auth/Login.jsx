@@ -1,28 +1,32 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import AuthLayout from '../../components/auth/AuthLayout';
+import api from '../../api/api';
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        setError('');
 
-        // Limpiar sesión anterior
-        localStorage.removeItem('kinefy_user');
+        try {
+            const res = await api.post('/auth/login', { email, password });
+            
+            // Guardamos el token y el usuario real en localStorage
+            localStorage.setItem('token', res.data.token);
+            localStorage.setItem('kinefy_user', JSON.stringify(res.data.user));
 
-        // Rol mock basado en el email (se sustituirá por JWT de la API)
-        const role = email.toLowerCase().includes('paciente') ? 'patient' : 'physio';
+            const role = res.data.user.role;
 
-        localStorage.setItem('kinefy_user', JSON.stringify({
-            email,
-            role,
-            name: role === 'patient' ? 'Carlos' : 'Natalia',
-        }));
-
-        // window.location.href fuerza recarga completa → ProtectedRoute lee localStorage limpiamente
-        window.location.href = role === 'patient' ? '/dashboard/patient' : '/dashboard/physio';
+            // Redirección basada en el rol real de la base de datos
+            window.location.href = role === 'paciente' ? '/dashboard/patient' : '/dashboard/physio';
+        } catch (err) {
+            console.error("Error en login:", err);
+            setError('Credenciales incorrectas o problema de servidor.');
+        }
     };
 
     return (
@@ -37,6 +41,7 @@ const Login = () => {
             }
         >
             <form className="auth__form" onSubmit={handleSubmit}>
+                {error && <div className="auth__error-message" style={{ color: '#ff4d4d', marginBottom: '1rem', textAlign: 'center', fontSize: '0.9rem' }}>{error}</div>}
                 <label className="auth__field" htmlFor="email">
                     <svg className="auth__field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                     <input

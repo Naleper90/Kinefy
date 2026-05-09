@@ -1,8 +1,8 @@
 :root {
-  --color-brand: #98D2C1;
-  --color-brand-hover: #87C1B0;
+  --color-brand: #81BAA5;
+  --color-brand-hover: #6BA38E;
   --color-bg-paper: #FDFEFE;
-  --color-bg-alt: #F3F9F7;
+  --color-bg-alt: #F3F8F6;
   --color-text-dark: #1A2E35;
   --color-text-soft: #5A6B6D;
   --color-text-link: #3B7A8E;
@@ -191,13 +191,13 @@ button.auth__button {
   margin-top: 1.5rem;
   transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
   letter-spacing: -0.01em;
-  box-shadow: 0 8px 25px rgba(152, 210, 193, 0.2);
+  box-shadow: 0 8px 25px rgba(85, 169, 138, 0.2);
 }
 
 button.auth__button:hover {
   background: var(--color-brand-hover);
   transform: translateY(-2px);
-  box-shadow: 0 10px 30px rgba(152, 210, 193, 0.2);
+  box-shadow: 0 10px 30px rgba(85, 169, 138, 0.2);
 }
 
 footer.auth__footer {
