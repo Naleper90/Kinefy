@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  # Base de Datos (MongoDB)
+  mongodb:
+    image: mongo:latest
+    container_name: kinefy-db
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - kinefy-network
+
+  # Backend (API)
+  backend:
+    build: ./kinefy-backend
+    container_name: kinefy-api
+    ports:
+      - "5000:5000"
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017/kinefy
+      - JWT_SECRET=${JWT_SECRET}
+      - PORT=5000
+
+    depends_on:
+      - mongodb
+    networks:
+      - kinefy-network
+
+  # Frontend (Nginx)
+  frontend:
+    build: ./kinefy-frontend
+    container_name: kinefy-web
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - kinefy-network
+
+networks:
+  kinefy-network:
+    driver: bridge
+
+volumes:
+  mongo-data:
