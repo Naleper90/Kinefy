@@ -118,3 +118,16 @@ export const BlobIcon = ({ className = "", color = "#EBF5F1" }) => (
         <path d="M85 55 Q 75 75, 45 80 Q 20 75, 25 50 Q 20 25, 50 15 Q 80 25, 85 55" />
     </svg>
 );
+export const FolderIcon = ({ className = "dashboard__icon", size = 20 }) => (
+    <svg width={size} height={size} className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+    </svg>
+);
+
+export const ClinicalFolderIcon = ({ size = 24, color = "#55A98A" }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4 4H9L11 6H20C21.1 6 22 6.9 22 8V18C22 19.1 21.1 20 20 20H4C2.9 20 2 19.1 2 18V6C2 4.9 2.9 4 4 4Z" stroke={color} strokeWidth="1.5" strokeLinejoin="round"/>
+        <path d="M12 11V15M10 13H14" stroke={color} strokeWidth="1.5" strokeLinecap="round"/>
+        <rect x="10" y="8" width="4" height="1" rx="0.5" fill={color}/>
+    </svg>
+);

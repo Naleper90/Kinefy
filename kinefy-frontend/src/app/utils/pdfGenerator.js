@@ -4,61 +4,116 @@ import 'jspdf-autotable';
 export const generatePatientReport = (patient, appointments = []) => {
     const doc = jsPDF();
     const brandColor = [85, 169, 138]; // #55A98A
+    const darkColor = [26, 46, 53];   // #1A2E35
 
-    // Cabecera
+    // 1. Cabecera Premium
     doc.setFillColor(...brandColor);
-    doc.rect(0, 0, 210, 40, 'F');
+    doc.rect(0, 0, 210, 45, 'F');
     
     doc.setTextColor(255, 255, 255);
-    doc.setFontSize(24);
-    doc.text('KINEFY', 15, 25);
+    doc.setFontSize(28);
+    doc.setFont("helvetica", "bold");
+    doc.text('KINEFY', 20, 25);
+    
     doc.setFontSize(10);
-    doc.text('Informe Clínico de Seguimiento', 15, 33);
-    
-    // Datos del Paciente
-    doc.setTextColor(26, 46, 53);
-    doc.setFontSize(16);
-    doc.text('Datos del Paciente', 15, 55);
-    
-    doc.setFontSize(11);
-    doc.text(`Nombre: ${patient.nombre}`, 15, 65);
-    doc.text(`Email: ${patient.email}`, 15, 72);
-    doc.text(`Diagnóstico: ${patient.diagnostico || 'No especificado'}`, 15, 79);
-    doc.text(`Fecha de Informe: ${new Date().toLocaleDateString('es-ES')}`, 15, 86);
+    doc.setFont("helvetica", "normal");
+    doc.text('CENTRO DE FISIOTERAPIA AVANZADA', 20, 32);
+    doc.text('Informe Clínico Oficial de Seguimiento', 20, 37);
 
-    // Tabla de Citas/Evolución
+    // 2. Información del Paciente (Estructura de Ficha)
+    doc.setTextColor(...darkColor);
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "bold");
+    doc.text('INFORMACIÓN DEL PACIENTE', 20, 60);
+    
+    doc.setDrawColor(...brandColor);
+    doc.setLineWidth(0.5);
+    doc.line(20, 63, 190, 63);
+
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "bold");
+    doc.text('Nombre:', 20, 72);
+    doc.text('Email:', 20, 78);
+    doc.text('Teléfono:', 20, 84);
+    doc.text('Estado:', 20, 90);
+
+    doc.setFont("helvetica", "normal");
+    doc.text(patient.nombre || 'Sin nombre', 50, 72);
+    doc.text(patient.email || 'Sin email', 50, 78);
+    doc.text(patient.telefono || 'No registrado', 50, 84);
+    doc.text(patient.estado?.toUpperCase() || 'ACTIVO', 50, 90);
+
+    doc.setFont("helvetica", "bold");
+    doc.text('Profesión:', 110, 72);
+    doc.text('Actividad:', 110, 78);
+    doc.text('Expediente:', 110, 84);
+    doc.text('Fecha:', 110, 90);
+
+    doc.setFont("helvetica", "normal");
+    doc.text(patient.profesion || '-', 135, 72);
+    doc.text(patient.actividadFisica || '-', 135, 78);
+    doc.text((patient._id || '').substring(0, 8).toUpperCase(), 135, 84);
+    doc.text(new Date().toLocaleDateString('es-ES'), 135, 90);
+
+    // 3. Valoración Clínica
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "bold");
+    doc.text('VALORACIÓN CLÍNICA', 20, 105);
+    doc.line(20, 108, 190, 108);
+
+    doc.setFontSize(10);
+    doc.text('DIAGNÓSTICO:', 20, 115);
+    doc.setFont("helvetica", "normal");
+    const diagLines = doc.splitTextToSize(patient.diagnostico || 'Sin diagnóstico registrado en el sistema.', 170);
+    doc.text(diagLines, 20, 120);
+
+    let nextY = 120 + (diagLines.length * 5) + 10;
+    
+    doc.setFont("helvetica", "bold");
+    doc.text('NOTAS Y OBSERVACIONES:', 20, nextY);
+    doc.setFont("helvetica", "normal");
+    const notesLines = doc.splitTextToSize(patient.notes || patient.notas || 'Sin notas adicionales registradas.', 170);
+    doc.text(notesLines, 20, nextY + 5);
+
+    nextY = nextY + (notesLines.length * 5) + 20;
+
+    // 4. Tabla de Seguimiento
     if (appointments.length > 0) {
-        doc.setFontSize(16);
-        doc.text('Historial de Sesiones', 15, 105);
-        
+        doc.setFontSize(14);
+        doc.setFont("helvetica", "bold");
+        doc.text('HISTORIAL DE SESIONES', 20, nextY);
+        doc.line(20, nextY + 3, 190, nextY + 3);
+
         const tableData = appointments.map(appt => [
             new Date(appt.fecha).toLocaleDateString('es-ES'),
             appt.hora,
-            appt.tipo,
-            appt.estado === 'completada' ? 'Asistida' : 'Pendiente',
-            appt.notas || '-'
+            appt.tipo ? appt.tipo.toUpperCase() : 'SESIÓN GENERAL',
+            appt.estado === 'completada' ? 'ASISTIDA' : 'PENDIENTE'
         ]);
 
         doc.autoTable({
-            startY: 110,
-            head: [['Fecha', 'Hora', 'Tipo', 'Estado', 'Notas']],
+            startY: nextY + 7,
+            margin: { left: 20, right: 20 },
+            head: [['FECHA', 'HORA', 'TIPO DE SESIÓN', 'ESTADO']],
             body: tableData,
-            headStyles: { fillColor: brandColor },
-            theme: 'striped'
+            headStyles: { fillColor: brandColor, textColor: 255, fontStyle: 'bold', fontSize: 9 },
+            bodyStyles: { textColor: darkColor, fontSize: 9 },
+            alternateRowStyles: { fillColor: [245, 249, 248] },
+            theme: 'grid'
         });
     }
 
-    // Pie de página
+    // 5. Pie de Página con Línea
     const pageCount = doc.internal.getNumberOfPages();
     for (let i = 1; i <= pageCount; i++) {
         doc.setPage(i);
-        doc.setFontSize(9);
+        doc.setDrawColor(200);
+        doc.line(20, 280, 190, 280);
+        doc.setFontSize(8);
         doc.setTextColor(150);
-        doc.text(
-            'Este documento es un resumen clínico generado por la plataforma Kinefy. Uso exclusivo profesional.',
-            105, 285, { align: 'center' }
-        );
+        doc.text('KINEFY - Plataforma Digital de Gestión Clínica', 20, 285);
+        doc.text(`Página ${i} de ${pageCount}`, 190, 285, { align: 'right' });
     }
 
-    doc.save(`Informe_Kinefy_${patient.nombre.replace(/\s+/g, '_')}.pdf`);
+    doc.save(`Informe_Clinico_Kinefy_${patient.nombre.replace(/\s+/g, '_')}.pdf`);
 };
