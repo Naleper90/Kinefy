@@ -240,10 +240,6 @@ const updateExerciseStatus = async (req, res) => {
 
 const addDocument = async (req, res) => {
     try {
-        if (req.user.role !== 'fisioterapeuta') {
-            return res.status(403).json({ error: 'Acceso denegado' });
-        }
-
         const { nombre, url } = req.body;
         const patient = await Patient.findById(req.params.id);
 
@@ -251,7 +247,16 @@ const addDocument = async (req, res) => {
             return res.status(404).json({ error: 'Paciente no encontrado' });
         }
 
-        if (patient.fisioterapeuta.toString() !== req.user.id) {
+        // Autorización flexible: el Fisioterapeuta responsable o el Paciente dueño de la ficha
+        if (req.user.role === 'fisioterapeuta') {
+            if (patient.fisioterapeuta.toString() !== req.user.id) {
+                return res.status(403).json({ error: 'Acceso denegado' });
+            }
+        } else if (req.user.role === 'paciente') {
+            if (!patient.usuario || patient.usuario.toString() !== req.user.id) {
+                return res.status(403).json({ error: 'Acceso denegado' });
+            }
+        } else {
             return res.status(403).json({ error: 'Acceso denegado' });
         }
 
@@ -267,14 +272,19 @@ const addDocument = async (req, res) => {
 
 const deleteDocument = async (req, res) => {
     try {
-        if (req.user.role !== 'fisioterapeuta') {
-            return res.status(403).json({ error: 'Acceso denegado' });
-        }
-
         const patient = await Patient.findById(req.params.id);
         if (!patient) return res.status(404).json({ error: 'Paciente no encontrado' });
 
-        if (patient.fisioterapeuta.toString() !== req.user.id) {
+        // Autorización flexible: el Fisioterapeuta responsable o el Paciente dueño de la ficha
+        if (req.user.role === 'fisioterapeuta') {
+            if (patient.fisioterapeuta.toString() !== req.user.id) {
+                return res.status(403).json({ error: 'Acceso denegado' });
+            }
+        } else if (req.user.role === 'paciente') {
+            if (!patient.usuario || patient.usuario.toString() !== req.user.id) {
+                return res.status(403).json({ error: 'Acceso denegado' });
+            }
+        } else {
             return res.status(403).json({ error: 'Acceso denegado' });
         }
 
