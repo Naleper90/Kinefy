@@ -184,20 +184,21 @@ button.auth__button {
   color: var(--color-text-dark);
   border: none;
   padding: 1.2rem;
-  border-radius: 50px;
+  border-radius: 22px 38px 25px 42px / 35px 28px 45px 32px;
   font-weight: 700;
   font-size: 1.1rem;
   cursor: pointer;
   margin-top: 1.5rem;
-  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   letter-spacing: -0.01em;
   box-shadow: 0 8px 25px rgba(85, 169, 138, 0.2);
 }
 
 button.auth__button:hover {
   background: var(--color-brand-hover);
-  transform: translateY(-2px);
-  box-shadow: 0 10px 30px rgba(85, 169, 138, 0.2);
+  transform: translateY(-3px) scale(1.02) rotate(0.5deg);
+  border-radius: 38px 22px 42px 25px / 28px 35px 32px 45px;
+  box-shadow: 0 10px 30px rgba(85, 169, 138, 0.25);
 }
 
 footer.auth__footer {
