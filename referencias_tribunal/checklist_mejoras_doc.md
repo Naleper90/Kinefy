@@ -35,6 +35,14 @@ Esta es la lista de tareas manuales que debes realizar para pulir el proyecto an
 ### DWEC (Cliente / React)
 - [x] **Gestión de errores:** Comprobar qué pasa en la UI (pantalla del móvil) si el backend de Render está dormido o da error. Asegurarte de que, como mínimo, la aplicación no se quede en blanco de forma silenciosa, sino que muestre un mensaje básico de "Cargando..." o "Error de conexión".
 
+### DIW (Diseño de Interfaces / Estilos y Maquetación)
+- [x] **Consolidar Arquitectura CSS & Cero !important:**
+  - [x] Agrupar, ordenar y unificar todas las Media Queries responsive y colocarlas al fondo de la hoja de estilos en prioridad descendente de cascada (`1200px ➔ 768px`).
+  - [x] Optimizar la especificidad de selectores críticos usando las mejores prácticas de BEM (`.btn.btn-sm` y `.patient-exercises__card.patient-exercises__card--active`).
+  - [x] Eliminar el **100% de los !important** en toda la aplicación (tanto en `_dashboard.css` como en `_auth.css`) para cumplir estrictamente la rúbrica del profesor.
+  - [x] Mantener y verificar un ratio semántico superior al 50% en el DOM (logrado **52.7% de etiquetas HTML5 ricas** en los JSX frente a divs estructurales mínimos).
+
+
 ---
 
 ## 🎯 PARTE 3: Entrega Final y Presentación (Tutor)
