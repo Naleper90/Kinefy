@@ -178,16 +178,16 @@ const DashboardHome = () => {
                                 </section>
 
                                 <footer style={{ marginTop: '2.5rem', display: 'flex', gap: '1.2rem' }}>
-                                    <button className="btn-ghost" style={{ flex: 1, borderRadius: '14px' }} onClick={() => navigate(`/dashboard/physio/patients/${nextAppointment.paciente?._id}`)}>Ficha Clínica</button>
+                                    <button className="btn-ghost" style={{ flex: 1 }} onClick={() => navigate(`/dashboard/physio/patients/${nextAppointment.paciente?._id}`)}>Ficha Clínica</button>
                                     
                                     {nextAppointment.estado === 'pendiente' && (
-                                        <button className="btn-primary" style={{ flex: 1.5, borderRadius: '14px' }} onClick={() => handleUpdateAppointmentStatus('en-curso')}>Atender ahora</button>
+                                        <button className="btn-primary" style={{ flex: 1.5 }} onClick={() => handleUpdateAppointmentStatus('en-curso')}>Atender ahora</button>
                                     )}
                                     {nextAppointment.estado === 'en-curso' && (
-                                        <button className="btn-primary" style={{ flex: 1.5, borderRadius: '14px', background: '#3182CE', borderColor: '#3182CE', boxShadow: '0 10px 25px rgba(49, 130, 206, 0.3)' }} onClick={() => handleUpdateAppointmentStatus('completada')}>Finalizar Sesión</button>
+                                        <button className="btn-primary" style={{ flex: 1.5, background: '#3182CE', borderColor: '#3182CE', boxShadow: '0 10px 25px rgba(49, 130, 206, 0.3)' }} onClick={() => handleUpdateAppointmentStatus('completada')}>Finalizar Sesión</button>
                                     )}
                                     {nextAppointment.estado === 'completada' && (
-                                        <button className="btn-primary" style={{ flex: 1.5, borderRadius: '14px', background: 'var(--color-mint-pale)', color: 'var(--color-brand)', borderColor: 'var(--color-mint-pale)', cursor: 'default' }}>✓ Completada</button>
+                                        <button className="btn-primary" style={{ flex: 1.5, background: 'var(--color-mint-pale)', color: 'var(--color-brand)', borderColor: 'var(--color-mint-pale)', cursor: 'default' }}>✓ Completada</button>
                                     )}
                                 </footer>
                             </>

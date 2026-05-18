@@ -104,7 +104,7 @@ const PatientExercises = () => {
                             <button 
                                 onClick={() => toggleExercise(selectedExercise._id)}
                                 className={selectedExercise.completado ? "btn-ghost" : "btn-primary"}
-                                style={{ width: 'auto', padding: '0 2rem', height: '54px', borderRadius: '14px' }}
+                                style={{ width: 'auto', padding: '0 2rem', height: '54px' }}
                             >
                                 {selectedExercise.completado ? "Completado ✓" : "Marcar como hecho"}
                             </button>
