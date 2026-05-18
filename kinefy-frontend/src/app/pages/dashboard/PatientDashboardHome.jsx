@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { useNavigate } from 'react-router-dom';
 import { AppointmentsIcon, ExercisesIcon } from '../../components/dashboard/DashboardIcons';
 import api from '../../api/api';
 
 const PatientDashboardHome = () => {
+    const navigate = useNavigate();
     const [exercises, setExercises] = useState([]);
     const [loading, setLoading] = useState(true);
     const [patientData, setPatientData] = useState(null);
@@ -206,6 +208,13 @@ const PatientDashboardHome = () => {
                                         Confirmar Asistencia
                                     </button>
                                 )}
+                                <button 
+                                    className="btn-ghost" 
+                                    style={{ marginTop: '1rem', width: '100%', height: '40px' }}
+                                    onClick={() => navigate('/dashboard/patient/appointments')}
+                                >
+                                    Ver mi agenda de citas
+                                </button>
                             </>
                         ) : (
                             <div style={{ textAlign: 'center', padding: '1rem' }}>
@@ -240,6 +249,15 @@ const PatientDashboardHome = () => {
                                         </a>
                                     </div>
                                 ))}
+                                {patientData?.informes?.length > 0 && (
+                                    <button 
+                                        className="btn-ghost" 
+                                        style={{ marginTop: '1rem', width: '100%', height: '36px', fontSize: '0.8rem' }}
+                                        onClick={() => navigate('/dashboard/patient/docs')}
+                                    >
+                                        Ver todos los informes ({patientData.informes.length})
+                                    </button>
+                                )}
                             </div>
                         ) : (
                             <p style={{ color: '#A0AEC0', fontSize: '0.85rem', textAlign: 'center' }}>Aún no hay informes en tu expediente.</p>
@@ -287,6 +305,15 @@ const PatientDashboardHome = () => {
 
                             )) : (
                                 <p style={{ color: '#A0AEC0', fontSize: '0.9rem', textAlign: 'center', padding: '1rem' }}>No tienes ejercicios asignados por tu fisio.</p>
+                            )}
+                            {exercises.length > 0 && (
+                                <button 
+                                    className="btn-ghost" 
+                                    style={{ marginTop: '1.2rem', width: '100%', height: '36px', fontSize: '0.8rem' }}
+                                    onClick={() => navigate('/dashboard/patient/exercises')}
+                                >
+                                    Ver mis ejercicios detallados
+                                </button>
                             )}
                         </ul>
                     </article>
@@ -357,6 +384,13 @@ const PatientDashboardHome = () => {
                                 <span className="activity-list__value" style={{ color: '#55A98A', fontWeight: '700' }}>Activo</span>
                             </li>
                         </ul>
+                        <button 
+                            className="btn-ghost" 
+                            style={{ marginTop: '1.2rem', width: '100%', height: '36px', fontSize: '0.8rem' }}
+                            onClick={() => navigate('/dashboard/patient/evolution')}
+                        >
+                            Ver evolución y gráfico completo
+                        </button>
                     </article>
                 </section>
             </section>
