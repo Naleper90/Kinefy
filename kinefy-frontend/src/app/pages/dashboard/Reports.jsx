@@ -24,7 +24,7 @@ const Reports = () => {
                 const res = await api.get('/patients');
                 setPatients(res.data);
             } catch (err) {
-                console.error("Error fetching patients", err);
+                console.error("Error al obtener pacientes", err);
             } finally {
                 setLoading(false);
             }
@@ -101,7 +101,7 @@ const Reports = () => {
             setSelectedPatient(null);
             showNotification("Documento importado con éxito");
         } catch (err) {
-            console.error("Error uploading file", err);
+            console.error("Error al subir el archivo", err);
             showNotification("Error al subir el archivo");
         } finally {
             setUploading(false);
@@ -144,23 +144,23 @@ const Reports = () => {
                             reportsByPatient.map((patientGroup) => (
                                 <details key={patientGroup.id} className="reports__folder">
                                     <summary className="reports__folder-summary">
-                                        <div className="reports__folder-info">
+                                        <hgroup className="reports__folder-info">
                                             <ClinicalFolderIcon />
                                             <strong className="reports__folder-name">{patientGroup.name}</strong>
-                                        </div>
+                                        </hgroup>
                                         <span className="meta-label">{patientGroup.reports.length} {patientGroup.reports.length === 1 ? 'doc' : 'docs'}</span>
                                     </summary>
                                     
                                     <nav className="reports__folder-content">
                                         {patientGroup.reports.map((report, i) => (
                                             <article key={i} className="reports__item">
-                                                <div className="reports__item-icon">
+                                                <figure className="reports__item-icon">
                                                     <DocsIcon size={18} />
-                                                </div>
-                                                <div className="reports__item-info">
+                                                </figure>
+                                                <hgroup className="reports__item-info">
                                                     <h4 className="reports__item-title">{report.nombre}</h4>
                                                     <p className="reports__item-meta">{new Date(report.fecha).toLocaleDateString()}</p>
-                                                </div>
+                                                </hgroup>
                                                 <a href={report.url} target="_blank" rel="noopener noreferrer" className="status-badge status-badge--done" style={{ textDecoration: 'none' }}>
                                                     Abrir
                                                 </a>
@@ -233,7 +233,7 @@ const Reports = () => {
                             {patients.map(p => (
                                 <button
                                     key={p._id}
-                                    className="exercise-list__item"
+                                    className="modal-patient-btn"
                                     onClick={() => {
                                         if (modal.type === 'generate') {
                                             generatePatientReport(p, p.citas || []);
@@ -243,10 +243,11 @@ const Reports = () => {
                                             document.getElementById('report-upload').click();
                                         }
                                     }}
-                                    style={{ textAlign: 'left', width: '100%', padding: '1.2rem' }}
                                 >
-                                    <strong>{p.nombre}</strong>
-                                    <span style={{ display: 'block', fontSize: '0.75rem', opacity: 0.6 }}>{p.email}</span>
+                                    <hgroup className="modal-patient-info">
+                                        <strong>{p.nombre}</strong>
+                                        <span className="modal-patient-meta">{p.email}</span>
+                                    </hgroup>
                                 </button>
                             ))}
                         </nav>

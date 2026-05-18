@@ -28,6 +28,7 @@ app.use('/api/patients', require('./routes/patient.routes'));
 app.use('/api/appointments', require('./routes/appointment.routes'));
 app.use('/api/exercises', require('./routes/exercise.routes'));
 app.use('/api/upload', require('./routes/upload.routes'));
+app.use('/api/notifications', require('./routes/notifications'));
 
 
 app.get('/', (req, res) => {

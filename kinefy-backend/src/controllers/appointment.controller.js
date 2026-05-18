@@ -1,26 +1,70 @@
 const Appointment = require('../models/Appointment');
 const Patient = require('../models/Patient');
+const { createNotification } = require('./notification.controller');
 
 const createAppointment = async (req, res) => {
     try {
-        const { paciente, fecha, hora, tipo, notas } = req.body;
+        let { paciente, fisioterapeuta, fecha, hora, tipo, notas } = req.body;
+
+        // Si el que crea la cita es un paciente, buscamos su perfil para saber su fisio
+        if (req.user.role === 'paciente') {
+            const patientProfile = await Patient.findOne({ usuario: req.user.id });
+            if (!patientProfile) {
+                return res.status(404).json({ error: 'Perfil clínico no encontrado' });
+            }
+            paciente = patientProfile._id;
+            fisioterapeuta = patientProfile.fisioterapeuta;
+        } else {
+            // Si es un fisio, él es el fisioterapeuta de la cita
+            fisioterapeuta = req.user.id;
+        }
+
+        // COMPROBACIÓN DE COLISIONES (CONFLICTOS DE HORARIO)
+        const conflict = await Appointment.findOne({ 
+            fisioterapeuta, 
+            fecha: new Date(fecha), 
+            hora,
+            estado: { $ne: 'cancelada' } 
+        });
+
+        if (conflict) {
+            return res.status(400).json({ 
+                error: 'Este horario ya está ocupado en la agenda. Por favor, selecciona otro.',
+                code: 'APPOINTMENT_CONFLICT'
+            });
+        }
 
         const newAppointment = new Appointment({
             paciente,
-            fisioterapeuta: req.user.id,
+            fisioterapeuta,
             fecha,
             hora,
             tipo,
-            notas
+            notas,
+            estado: req.user.role === 'paciente' ? 'pendiente' : 'confirmada'
         });
 
         const appointment = await newAppointment.save();
-        const populated = await Appointment.findById(appointment._id).populate('paciente', 'nombre email');
+        const populated = await Appointment.findById(appointment._id)
+            .populate('paciente', 'nombre usuario')
+            .populate('fisioterapeuta', 'name');
+
+        // NOTIFICACIONES
+        if (req.user.role === 'paciente') {
+            // Notificar al fisio que tiene una nueva solicitud
+            await createNotification(
+                fisioterapeuta,
+                'Nueva solicitud de cita',
+                `${populated.paciente.nombre} ha solicitado una cita para el ${new Date(fecha).toLocaleDateString()} a las ${hora}.`,
+                'cita_solicitada',
+                { appointmentId: appointment._id }
+            );
+        }
         
         res.status(201).json(populated);
     } catch (err) {
         console.error(err);
-        res.status(500).json({ error: 'Error al crear la cita' });
+        res.status(500).json({ error: 'Error al procesar la cita' });
     }
 };
 
@@ -82,7 +126,30 @@ const updateAppointmentStatus = async (req, res) => {
             req.params.id, 
             { estado }, 
             { new: true }
-        ).populate('paciente', 'nombre email');
+        ).populate('paciente', 'nombre usuario');
+
+        if (appointment && appointment.paciente && appointment.paciente.usuario) {
+            let msg = '';
+            let tipo = '';
+            
+            if (estado === 'confirmada') {
+                msg = `¡Buenas noticias! Tu cita para el ${new Date(appointment.fecha).toLocaleDateString()} a las ${appointment.hora} ha sido confirmada.`;
+                tipo = 'cita_confirmada';
+            } else if (estado === 'cancelada') {
+                msg = `Lo sentimos, tu cita para el ${new Date(appointment.fecha).toLocaleDateString()} ha sido cancelada o reprogramada.`;
+                tipo = 'cita_cancelada';
+            }
+
+            if (msg) {
+                await createNotification(
+                    appointment.paciente.usuario,
+                    estado === 'confirmada' ? 'Cita Confirmada' : 'Cita Actualizada',
+                    msg,
+                    tipo,
+                    { appointmentId: appointment._id }
+                );
+            }
+        }
         
         res.json(appointment);
     } catch (err) {

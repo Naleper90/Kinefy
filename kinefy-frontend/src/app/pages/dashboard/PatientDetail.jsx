@@ -2,10 +2,26 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../api/api';
-import { KneeIcon, BlobIcon } from '../../components/dashboard/DashboardIcons';
+import { 
+    KneeIcon, 
+    BlobIcon, 
+    DownloadIcon, 
+    EditIcon, 
+    CheckIcon, 
+    SaveIcon, 
+    ArrowLeftIcon,
+    TrashIcon,
+    UploadIcon,
+    ChevronIcon,
+    FilePdfIcon
+} from '../../components/dashboard/DashboardIcons';
 import { generatePatientReport } from '../../utils/pdfGenerator';
 
-
+/**
+ * Componente Detalle del Paciente
+ * Gestiona la visualización y edición de la ficha clínica, plan de ejercicios
+ * y documentación médica del paciente.
+ */
 const PatientDetail = () => {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -17,7 +33,7 @@ const PatientDetail = () => {
 
     const [editForm, setEditForm] = useState({ 
         nombre: '', email: '', password: '', 
-        telefono: '', profesion: '', actividadFisica: '',
+        telefono: '', profesion: '', actividadFisica: 'moderado',
         diagnostico: '', notas: '', ejercicios: []
     });
     const [statusMsg, setStatusMsg] = useState(null);
@@ -68,8 +84,7 @@ const PatientDetail = () => {
             const resLib = await api.get('/exercises');
             setLibrary(resLib.data);
         } catch (err) {
-
-            // Error manejado silenciosamente
+            // Error controlado en la petición de datos
         } finally {
             setLoading(false);
         }
@@ -149,12 +164,45 @@ const PatientDetail = () => {
             setUploading(false);
         }
     };
+    const handleDocUpload = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        // Auto-rellenar el nombre si está vacío
+        if (!newDoc.nombre) {
+            const cleanName = file.name.split('.').slice(0, -1).join('.');
+            setNewDoc(prev => ({ ...prev, nombre: cleanName }));
+        }
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        setUploading(true);
+        try {
+            const res = await api.post('/upload', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+            setNewDoc(prev => ({ ...prev, url: res.data.url }));
+            showNotification("Archivo cargado correctamente");
+        } catch (err) {
+            console.error("Error upload doc:", err);
+            showNotification("Error al cargar el archivo");
+        } finally {
+            setUploading(false);
+        }
+    };
 
     const handleAddDocument = async () => {
-        if (!newDoc.nombre) return;
+        if (!newDoc.nombre) {
+            showNotification("Por favor, indica un nombre para el documento");
+            return;
+        }
+        if (!newDoc.url) {
+            showNotification("Por favor, sube un archivo o pega un enlace primero");
+            return;
+        }
+        
         try {
-            // En un entorno real, aquí subiríamos el archivo y obtendríamos la URL
-            // Por ahora simulamos la subida registrando el nombre del informe
             const res = await api.post(`/patients/${id}/documents`, { 
                 nombre: newDoc.nombre, 
                 url: newDoc.url || '#' 
@@ -164,7 +212,8 @@ const PatientDetail = () => {
             setIsAddingDoc(false);
             showNotification("Documento adjuntado correctamente");
         } catch (err) {
-            showNotification("Error al subir el documento");
+            console.error("Error adding doc:", err);
+            showNotification("Error al adjuntar el documento");
         }
     };
 
@@ -178,13 +227,28 @@ const PatientDetail = () => {
         }
     };
 
-    if (loading) return <p style={{ padding: '3rem', textAlign: 'center' }}>Cargando expediente clínico...</p>;
-    if (!patient) return <p style={{ padding: '3rem', textAlign: 'center' }}>Paciente no encontrado.</p>;
+    if (loading) {
+        return (
+            <article className="loading-state">
+                <div className="loader clinical-loader"></div>
+                <p>Sincronizando expediente clínico...</p>
+            </article>
+        );
+    }
 
-    const initials = patient.nombre.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+    if (!patient) {
+        return (
+            <article className="empty-state">
+                <p>No se ha encontrado el expediente del paciente.</p>
+                <button className="btn-ghost" onClick={() => navigate('/dashboard/physio/patients')}>Volver al listado</button>
+            </article>
+        );
+    }
+
+    const initials = (patient.nombre || 'Paciente').split(' ').filter(n => n).map(n => n[0]).join('').toUpperCase().substring(0, 2);
 
     return (
-        <main className="patient-detail animate-in">
+        <main className="patients-page animate-in">
             {statusMsg && (
                 <article className="toast-notification">
                     <span className="toast-notification__dot">●</span>
@@ -195,51 +259,53 @@ const PatientDetail = () => {
             <header className="patient-detail__header">
                 <nav className="patient-detail__nav">
                     <button onClick={() => navigate('/dashboard/physio/patients')} className="btn-back">
-                        ← Volver al listado
+                        <ArrowLeftIcon />
+                        <span>Volver al listado</span>
                     </button>
                 </nav>
                 
                 <section className="patient-detail__identity">
-                    <div className="patient-detail__profile">
+                    <header className="patient-detail__profile">
                         <figure className="patient-avatar patient-avatar--large">
                             <BlobIcon color="#E8F5F1" />
                             <span className="patient-avatar__initials">{initials}</span>
                         </figure>
-                        <div className="patient-detail__info">
+                        <hgroup className="patient-detail__info">
                             {isEditing ? (
                                 <input 
-                                    className="auth__input auth__input--title"
+                                    className="dashboard__input dashboard__input--title"
                                     value={editForm.nombre}
                                     onChange={e => setEditForm({...editForm, nombre: e.target.value})}
                                 />
                             ) : (
-                                <h1 className="patient-detail__name">{patient.nombre}</h1>
+                                <h1 className="patient-detail__name">{patient.nombre || 'Paciente Sin Nombre'}</h1>
                             )}
                             <p className="patient-detail__id">Expediente Clínico # {patient._id.substring(0, 8).toUpperCase()}</p>
-                        </div>
-                    </div>
+                        </hgroup>
+                    </header>
 
-                    <div className="patient-detail__actions" style={{ display: 'flex', gap: '1rem' }}>
+                    <nav className="patient-detail__actions">
                         {!isEditing && (
-                            <button 
-                                className="btn-ghost" 
-                                style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', borderColor: '#55A98A', color: '#55A98A' }}
-                                onClick={() => generatePatientReport(patient, appointments)}
-                            >
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                                Descargar Informe PDF
+                            <button className="btn-pdf" onClick={() => generatePatientReport(patient, appointments, evolution)}>
+                                <FilePdfIcon size={20} />
+                                <span>Descargar Informe PDF</span>
                             </button>
                         )}
                         {isEditing ? (
-                            <>
-                                <button className="btn-ghost" onClick={() => setIsEditing(false)}>Cancelar</button>
-                                <button className="btn-primary" onClick={handleUpdate}>Guardar Cambios</button>
-                            </>
+                            <hgroup className="patient-detail__edit-actions">
+                                <button type="button" className="btn-ghost" onClick={() => setIsEditing(false)}>Cancelar</button>
+                                <button type="button" className="btn-primary" onClick={handleUpdate}>
+                                    <SaveIcon />
+                                    <span>Guardar Cambios</span>
+                                </button>
+                            </hgroup>
                         ) : (
-                            <button className="btn-primary" onClick={() => setIsEditing(true)}>Editar Ficha</button>
+                            <button type="button" className="btn-primary" onClick={() => setIsEditing(true)}>
+                                <EditIcon />
+                                <span>Editar Ficha</span>
+                            </button>
                         )}
-                    </div>
-
+                    </nav>
                 </section>
             </header>
 
@@ -247,228 +313,260 @@ const PatientDetail = () => {
                 {/* COLUMNA IZQUIERDA: DATOS PERSONALES */}
                 <article className="dashboard-card patient-detail__card">
                     <h3 className="card-title-big">Información General</h3>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem', marginTop: '1.5rem' }}>
+                    <dl className="clinical-data-list">
                         
-                        <div className="form-group">
-                            <label className="meta-label">Email de Acceso</label>
-                            {isEditing ? (
-                                <input className="auth__input" value={editForm.email} onChange={e => setEditForm({...editForm, email: e.target.value})} />
-                            ) : (
-                                <span className="activity-list__value" style={{ fontSize: '1rem' }}>{patient.email}</span>
-                            )}
+                        <div className="clinical-data-item">
+                            <dt className="meta-label">Email de Acceso</dt>
+                            <dd>
+                                {isEditing ? (
+                                    <input className="dashboard__input" value={editForm.email} onChange={e => setEditForm({...editForm, email: e.target.value})} />
+                                ) : (
+                                    <span className="clinical-value">{patient.email}</span>
+                                )}
+                            </dd>
                         </div>
 
                         {isEditing && (
-                            <div className="form-group">
-                                <label className="meta-label">Nueva Contraseña (Opcional)</label>
-                                <input className="auth__input" type="password" placeholder="Mín. 6 caracteres" value={editForm.password} onChange={e => setEditForm({...editForm, password: e.target.value})} />
+                            <div className="clinical-data-item">
+                                <dt className="meta-label">Nueva Contraseña (Opcional)</dt>
+                                <dd>
+                                    <input className="dashboard__input" type="password" placeholder="Mín. 6 caracteres" value={editForm.password} onChange={e => setEditForm({...editForm, password: e.target.value})} />
+                                </dd>
                             </div>
                         )}
 
-                        <div className="form-group">
-                            <label className="meta-label">Teléfono</label>
-                            {isEditing ? (
-                                <input className="auth__input" value={editForm.telefono} onChange={e => setEditForm({...editForm, telefono: e.target.value})} />
-                            ) : (
-                                <span className="activity-list__value">{patient.telefono || 'No registrado'}</span>
-                            )}
+                        <div className="clinical-data-item">
+                            <dt className="meta-label">Teléfono</dt>
+                            <dd>
+                                {isEditing ? (
+                                    <input className="dashboard__input" value={editForm.telefono} onChange={e => setEditForm({...editForm, telefono: e.target.value})} />
+                                ) : (
+                                    <span className="clinical-value">{patient.telefono || 'No registrado'}</span>
+                                )}
+                            </dd>
                         </div>
 
-                        <div className="form-group">
-                            <label className="meta-label">Profesión</label>
-                            {isEditing ? (
-                                <input className="dashboard__input" value={editForm.profesion} onChange={e => setEditForm({...editForm, profesion: e.target.value})} />
-                            ) : (
-                                <span className="activity-list__value">{patient.profesion || 'No registrada'}</span>
-                            )}
+                        <div className="clinical-data-item">
+                            <dt className="meta-label">Profesión</dt>
+                            <dd>
+                                {isEditing ? (
+                                    <input className="dashboard__input" value={editForm.profesion} onChange={e => setEditForm({...editForm, profesion: e.target.value})} />
+                                ) : (
+                                    <span className="clinical-value">{patient.profesion || 'No registrada'}</span>
+                                )}
+                            </dd>
                         </div>
 
-                        <div className="form-group">
-                            <label className="meta-label">Actividad Física</label>
-                            {isEditing ? (
-                                <div className="custom-select-container" style={{ position: 'relative' }}>
-                                    <div 
-                                        className="auth__input" 
-                                        style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
-                                        onClick={() => setShowActivityMenu(!showActivityMenu)}
-                                    >
-                                        <span>{activityOptions.find(o => o.value === editForm.actividadFisica)?.label || 'Seleccionar...'}</span>
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                                    </div>
-                                    {showActivityMenu && (
-                                        <div style={{ position: 'absolute', top: '100%', left: 0, width: '100%', background: 'white', borderRadius: '12px', boxShadow: '0 10px 30px rgba(0,0,0,0.1)', zIndex: 10, border: '1px solid #eee' }}>
-                                            {activityOptions.map(o => (
-                                                <div key={o.value} style={{ padding: '0.8rem 1rem', cursor: 'pointer', fontSize: '0.85rem' }} onClick={() => { setEditForm({...editForm, actividadFisica: o.value}); setShowActivityMenu(false); }}>
-                                                    {o.label}
-                                                </div>
-                                            ))}
+                        <div className="clinical-data-item">
+                            <dt className="meta-label">Actividad Física</dt>
+                            <dd>
+                                {isEditing ? (
+                                    <div className="clinical-select">
+                                        <div 
+                                            className="clinical-select__trigger" 
+                                            onClick={() => setShowActivityMenu(!showActivityMenu)}
+                                        >
+                                            <span>{activityOptions.find(o => o.value === editForm.actividadFisica)?.label || 'Seleccionar...'}</span>
+                                            <ChevronIcon />
                                         </div>
-                                    )}
-                                </div>
-                            ) : (
-                                <span className="activity-list__value" style={{ textTransform: 'capitalize' }}>{patient.actividadFisica}</span>
-                            )}
+                                        {showActivityMenu && (
+                                            <div className="clinical-select__menu">
+                                                {activityOptions.map(o => (
+                                                    <div key={o.value} className="clinical-select__option" onClick={() => { setEditForm({...editForm, actividadFisica: o.value}); setShowActivityMenu(false); }}>
+                                                        {o.label}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                ) : (
+                                    <span className="clinical-value clinical-value--capitalize">{patient.actividadFisica}</span>
+                                )}
+                            </dd>
                         </div>
-                    </div>
+                    </dl>
                 </article>
 
                 {/* COLUMNA DERECHA: TRATAMIENTO Y EJERCICIOS */}
                 <article className="dashboard-card patient-detail__card patient-detail__card--wide">
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                    <header className="card-header-flex">
                         <h3 className="card-title-big">Plan de Entrenamiento</h3>
                         {isEditing && (
-                            <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                <button className="btn-ghost" style={{ width: 'auto', padding: '0.5rem 1rem', fontSize: '0.8rem', borderColor: '#55A98A', color: '#55A98A' }} onClick={() => setShowLibraryModal(true)}>
+                            <nav className="card-actions-nav">
+                                <button 
+                                    type="button" 
+                                    className="btn-ghost btn-sm" 
+                                    onClick={(e) => { 
+                                        e.preventDefault(); 
+                                        e.stopPropagation();
+                                        setShowLibraryModal(true); 
+                                    }}
+                                >
                                     📚 Biblioteca
                                 </button>
-                                <button className="btn-primary" style={{ width: 'auto', padding: '0.5rem 1rem', fontSize: '0.8rem' }} onClick={addExercise}>
+                                <button type="button" className="btn-primary btn-sm" onClick={addExercise}>
                                     + Nuevo
                                 </button>
-                            </div>
+                            </nav>
                         )}
-                    </div>
+                    </header>
 
 
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    <section className="exercise-grid">
                         {isEditing ? (
                             editForm.ejercicios.map((ex, i) => (
-                                <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', background: '#F9FBFB', padding: '1rem', borderRadius: '16px', border: '1px solid #F0F4F4' }}>
-                                    <div style={{ display: 'flex', gap: '0.8rem', alignItems: 'center' }}>
+                                <article key={i} className="exercise-card">
+                                    <div className="exercise-card__inputs">
                                         <input 
                                             className="dashboard__input" 
                                             placeholder="Nombre ejercicio" 
-                                            style={{ flex: 2, height: '44px' }}
                                             value={ex.nombre} 
                                             onChange={e => updateExercise(i, 'nombre', e.target.value)} 
                                         />
                                         <input 
                                             className="dashboard__input" 
-                                            placeholder="3x12, 1min..." 
-                                            style={{ flex: 1, height: '44px' }}
+                                            placeholder="Series/Reps" 
                                             value={ex.series} 
                                             onChange={e => updateExercise(i, 'series', e.target.value)} 
                                         />
                                         <button 
+                                            type="button"
+                                            className="btn-delete-icon"
                                             onClick={() => removeExercise(i)}
-                                            style={{ background: '#FEE2E2', border: 'none', color: '#EF4444', width: '44px', height: '44px', borderRadius: '10px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                            title="Eliminar ejercicio"
                                         >
-                                            ✕
+                                            <TrashIcon />
                                         </button>
                                     </div>
-                                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                                    <div className="exercise-card__media-actions">
                                         <input 
-                                            className="dashboard__input" 
-                                            placeholder="URL de Vídeo o Imagen (opcional)" 
-                                            style={{ fontSize: '0.75rem', height: '36px', borderRadius: '8px', flex: 1 }}
+                                            className="dashboard__input dashboard__input--sm" 
+                                            placeholder="URL del vídeo" 
                                             value={ex.mediaUrl || ''} 
                                             onChange={e => updateExercise(i, 'mediaUrl', e.target.value)} 
                                         />
-                                        <label className="btn-ghost" style={{ height: '36px', padding: '0 1rem', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer', borderColor: '#55A98A', color: '#55A98A', whiteSpace: 'nowrap' }}>
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                                            {uploading ? '...' : 'Subir'}
+                                        <label className="btn-upload-label">
+                                            <UploadIcon size={14} />
+                                            <span>{uploading ? '...' : 'Subir'}</span>
                                             <input type="file" hidden onChange={e => handleFileUpload(e, i)} accept="image/*,video/*" />
                                         </label>
                                     </div>
-                                </div>
+                                </article>
                             ))
                         ) : (
                             <ul className="exercise-list">
                                 {patient.ejercicios?.filter(ex => ex.nombre).length > 0 ? (
                                     patient.ejercicios.filter(ex => ex.nombre).map((ex, i) => (
                                         <li key={i} className={`exercise-list__item ${ex.completado ? 'exercise-list__item--done' : ''}`}>
-                                            <span className="exercise-list__check">{ex.completado ? '✓' : ''}</span>
-                                            <section className="exercise-list__info">
+                                            <span className="exercise-list__check">
+                                                {ex.completado && <CheckIcon size={12} />}
+                                            </span>
+                                            <div className="exercise-list__content">
                                                 <span className="exercise-list__name">{ex.nombre}</span>
                                                 <span className="exercise-list__series">{ex.series}</span>
-                                            </section>
+                                            </div>
                                         </li>
                                     ))
                                 ) : (
-                                    <p className="empty-state">No hay ejercicios asignados todavía.</p>
+                                    <div className="clinical-empty-state">
+                                        <p>No hay ejercicios asignados todavía en este plan.</p>
+                                    </div>
                                 )}
                             </ul>
                         )}
-                    </div>
+                    </section>
 
-                    <div style={{ marginTop: '2.5rem' }}>
-                        <label className="meta-label" style={{ fontWeight: '700', color: '#55A98A', marginBottom: '0.8rem', display: 'block' }}>Diagnóstico Clínico</label>
+                    <footer className="clinical-diagnosis">
+                        <label className="meta-label">Diagnóstico Clínico</label>
                         {isEditing ? (
                             <textarea 
-                                className="dashboard__input" 
+                                className="dashboard__input dashboard__input--textarea" 
                                 placeholder="Escribe aquí el diagnóstico detallado..."
                                 value={editForm.diagnostico} 
                                 onChange={e => setEditForm({...editForm, diagnostico: e.target.value})} 
                             />
                         ) : (
-                            <div style={{ background: '#F9FBFB', padding: '1.5rem', borderRadius: '18px', border: '1px solid #F0F4F4', marginTop: '0.5rem' }}>
-                                <p style={{ fontSize: '0.95rem', color: '#1A2E35', margin: 0, lineHeight: '1.6' }}>
-                                    {patient.diagnostico || 'Pendiente de valoración clínica.'}
-                                </p>
-                            </div>
+                            <article className="clinical-report-box">
+                                <p>{patient.diagnostico || 'Pendiente de valoración clínica.'}</p>
+                            </article>
                         )}
-                    </div>
+                    </footer>
                 </article>
 
                 {/* DOCUMENTACIÓN CLÍNICA */}
-                <article className="dashboard-card patient-detail__card patient-detail__card--full" style={{ background: 'linear-gradient(135deg, #FFFFFF 0%, #F9FBFB 100%)' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-                        <div>
+                <article className="dashboard-card patient-detail__card patient-detail__card--full">
+                    <header className="card-header-flex">
+                        <hgroup>
                             <h3 className="card-title-big">Documentación Clínica</h3>
-                            <p style={{ fontSize: '0.85rem', color: '#5A6B6D', marginTop: '0.3rem' }}>Informes externos, radiografías y derivaciones en PDF.</p>
-                        </div>
+                            <p className="card-subtitle">Informes externos, radiografías y derivaciones en PDF.</p>
+                        </hgroup>
                         {isEditing && (
-                            <button className="btn-primary" onClick={() => setIsAddingDoc(true)} style={{ width: 'auto', padding: '0 1.2rem', borderRadius: '12px' }}>
+                            <button type="button" className="btn-primary btn-sm" onClick={() => setIsAddingDoc(true)}>
                                 + Adjuntar Informe
                             </button>
                         )}
-                    </div>
+                    </header>
 
                     {isAddingDoc && (
-                        <div className="animate-in" style={{ background: '#E8F5F1', padding: '1.5rem', borderRadius: '18px', marginBottom: '2rem', display: 'flex', gap: '1rem', alignItems: 'flex-end', border: '1.5px dashed #55A98A' }}>
-                            <div className="form-group" style={{ flex: 2 }}>
-                                <label className="meta-label">Nombre del Documento</label>
-                                <input className="auth__input" placeholder="Ej: Resonancia Rodilla Izquierda" value={newDoc.nombre} onChange={e => setNewDoc({...newDoc, nombre: e.target.value})} style={{ background: '#FFF' }} />
+                        <article className="clinical-upload-zone animate-in">
+                            <div className="clinical-upload-zone__fields">
+                                <div className="clinical-data-item">
+                                    <label className="meta-label">Nombre del Documento</label>
+                                    <input className="dashboard__input" placeholder="Ej: Resonancia Rodilla" value={newDoc.nombre} onChange={e => setNewDoc({...newDoc, nombre: e.target.value})} />
+                                </div>
+                                <div className="clinical-data-item">
+                                    <label className="meta-label">Archivo / Enlace</label>
+                                    <div className="flex-center gap-2">
+                                        <input 
+                                            className="dashboard__input" 
+                                            placeholder="URL o link del documento..."
+                                            value={newDoc.url}
+                                            onChange={e => setNewDoc({...newDoc, url: e.target.value})}
+                                        />
+                                        <label className="btn-upload-label" style={{ whiteSpace: 'nowrap' }}>
+                                            <UploadIcon size={14} />
+                                            <span>{uploading ? '...' : 'Subir PDF'}</span>
+                                            <input type="file" hidden onChange={handleDocUpload} accept=".pdf,.doc,.docx" />
+                                        </label>
+                                    </div>
+                                </div>
                             </div>
-                            <div className="form-group" style={{ flex: 1.5 }}>
-                                <label className="meta-label">Archivo / Enlace</label>
-                                <input className="auth__input" placeholder="Subir PDF o pegar link..." value={newDoc.url} onChange={e => setNewDoc({...newDoc, url: e.target.value})} style={{ background: '#FFF' }} />
-                            </div>
-                            <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                <button className="btn-ghost" onClick={() => setIsAddingDoc(false)} style={{ height: '54px', borderRadius: '12px' }}>Cancelar</button>
-                                <button className="btn-primary" onClick={handleAddDocument} style={{ height: '54px', borderRadius: '12px', padding: '0 1.5rem' }}>Adjuntar</button>
-                            </div>
-                        </div>
+                            <nav className="clinical-upload-zone__actions">
+                                <button type="button" className="btn-ghost" onClick={() => setIsAddingDoc(false)}>Cancelar</button>
+                                <button type="button" className="btn-primary" onClick={handleAddDocument}>Adjuntar</button>
+                            </nav>
+                        </article>
                     )}
 
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
+                    <section className="document-grid">
                         {patient.informes?.length > 0 ? (
                             patient.informes.map((doc, i) => (
-                                <article key={doc._id || i} style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1.2rem', background: '#FFFFFF', borderRadius: '18px', border: '1px solid #F0F4F4', transition: 'transform 0.2s' }}>
-                                    <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: '#FDF2F2', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#E57373' }}>
-                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                                <article key={doc._id || i} className="document-card">
+                                    <figure className="document-card__icon">
+                                        <KneeIcon size={24} />
+                                    </figure>
+                                    <div className="document-card__info">
+                                        <h4 className="document-card__name">{doc.nombre}</h4>
+                                        <time className="document-card__date">{new Date(doc.fecha).toLocaleDateString()}</time>
                                     </div>
-                                    <div style={{ flex: 1, minWidth: 0 }}>
-                                        <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: '700', color: '#1A2E35', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{doc.nombre}</h4>
-                                        <time style={{ fontSize: '0.75rem', color: '#A0AEC0' }}>{new Date(doc.fecha).toLocaleDateString()}</time>
-                                    </div>
-                                    <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                        <a href={doc.url} target="_blank" rel="noopener noreferrer" style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#E8F5F1', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#55A98A' }}>
-                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                                    <nav className="document-card__actions">
+                                        <a href={doc.url} target="_blank" rel="noopener noreferrer" className="btn-icon-link" title="Descargar">
+                                            <DownloadIcon size={18} />
                                         </a>
                                         {isEditing && (
-                                            <button onClick={() => handleDeleteDocument(doc._id)} style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#FDF2F2', border: 'none', color: '#E57373', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                            <button onClick={() => handleDeleteDocument(doc._id)} className="btn-delete-icon" title="Eliminar">
+                                                <TrashIcon size={16} />
                                             </button>
                                         )}
-                                    </div>
+                                    </nav>
                                 </article>
                             ))
                         ) : (
-                            <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '2rem', background: '#F9FBFB', borderRadius: '18px', border: '1px dashed #E2E8F0' }}>
-                                <p style={{ color: '#A0AEC0', fontSize: '0.9rem' }}>No hay documentos adjuntos en este expediente.</p>
+                            <div className="clinical-empty-state">
+                                <p>No hay documentos adjuntos en este expediente todavía.</p>
                             </div>
                         )}
-                    </div>
+                    </section>
                 </article>
 
                 <article className="dashboard-card patient-detail__card patient-detail__card--full">
@@ -486,62 +584,99 @@ const PatientDetail = () => {
                                     </div>
                                 ))}
                             </div>
-                            <p className="evolution-chart__note">* Datos extraídos del diario clínico.</p>
+                            <p className="evolution-chart__note">* Datos extraídos del diario clínico del paciente.</p>
                         </section>
                     ) : (
-                        <p className="empty-state empty-state--centered">El paciente aún no ha registrado datos de dolor.</p>
+                        <div className="clinical-empty-state">
+                            <p>El paciente aún no ha registrado datos de dolor.</p>
+                        </div>
                     )}
+                </article>
+
+                <article className="dashboard-card patient-detail__card patient-detail__card--full">
+                    <hgroup className="card-header-flex">
+                        <div>
+                            <h3 className="card-title-big">Diario de Observaciones</h3>
+                            <p className="card-subtitle">Comentarios detallados del paciente sobre su evolución diaria.</p>
+                        </div>
+                    </hgroup>
+                    
+                    <div className="evolution-feed">
+                        {evolution.length > 0 ? (
+                            [...evolution].sort((a,b) => new Date(b.fecha) - new Date(a.fecha)).map((entry, idx) => (
+                                <article key={idx} className="evolution-feed__item">
+                                    <header className="evolution-feed__header">
+                                        <time className="evolution-feed__date">
+                                            {new Date(entry.fecha).toLocaleDateString('es-ES', { 
+                                                day: '2-digit', 
+                                                month: 'long', 
+                                                year: 'numeric',
+                                                hour: '2-digit',
+                                                minute: '2-digit'
+                                            })}
+                                        </time>
+                                        <span className={`status-badge status-badge--eva-${entry.nivelDolor > 6 ? 'high' : entry.nivelDolor > 3 ? 'mid' : 'low'}`}>
+                                            Nivel EVA: {entry.nivelDolor}
+                                        </span>
+                                    </header>
+                                    <div className="evolution-feed__body">
+                                        <p className="evolution-feed__text">
+                                            {entry.observaciones || "Sin observaciones adicionales para este registro."}
+                                        </p>
+                                    </div>
+                                </article>
+                            ))
+                        ) : (
+                            <div className="clinical-empty-state">
+                                <p>No existen notas u observaciones en el historial del paciente.</p>
+                            </div>
+                        )}
+                    </div>
                 </article>
             </section>
 
             {/* MODAL DE BIBLIOTECA */}
             {showLibraryModal && createPortal(
-                <div style={{ position: 'fixed', inset: 0, background: 'rgba(26, 46, 53, 0.4)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999999, padding: '1.5rem' }}>
-                    <div className="dashboard-card animate-in" style={{ maxWidth: '580px', width: '100%', padding: '0', borderRadius: '28px', maxHeight: '92vh', overflow: 'hidden', display: 'flex', flexDirection: 'column', background: '#FFFFFF', border: 'none', boxShadow: '0 40px 100px rgba(0,0,0,0.25)' }}>
-                        <header style={{ padding: '2rem 2.5rem 1.5rem', background: '#F9FBFB', borderBottom: '1px solid #F0F4F4', position: 'relative' }}>
-                            <h2 style={{ margin: 0, color: '#1A2E35', fontSize: '1.8rem', fontWeight: '800' }}>Biblioteca de Ejercicios</h2>
-                            <p style={{ color: '#5A6B6D', fontSize: '0.85rem', marginTop: '0.4rem' }}>Selecciona un ejercicio para añadirlo al plan de este paciente.</p>
-                            <button 
-                                onClick={() => setShowLibraryModal(false)}
-                                style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', background: 'rgba(0,0,0,0.05)', border: 'none', width: '32px', height: '32px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#5A6B6D', fontSize: '1rem', fontWeight: 'bold' }}
-                                onMouseOver={e => e.currentTarget.style.background = 'rgba(0,0,0,0.1)'}
-                                onMouseOut={e => e.currentTarget.style.background = 'rgba(0,0,0,0.05)'}
-                            >
-                                ✕
-                            </button>
+                <div className="modal-overlay">
+                    <article 
+                        className="modal-container modal-container--medium"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <header className="modal-header">
+                            <hgroup>
+                                <h2 className="modal-title">Biblioteca de Ejercicios</h2>
+                                <p className="modal-subtitle">Selecciona un ejercicio para añadirlo al plan del paciente.</p>
+                            </hgroup>
+                            <button type="button" className="btn-close-circle" onClick={() => setShowLibraryModal(false)}>✕</button>
                         </header>
                         
-                        <div style={{ padding: '2rem 2.5rem', overflowY: 'auto', flex: 1 }}>
-                            {library.length > 0 ? (
-                                <div style={{ display: 'grid', gap: '1rem' }}>
+                        <div className="modal-content">
+                            {(library && Array.isArray(library) && library.length > 0) ? (
+                                <div className="library-grid">
                                     {library.map(ex => (
-                                        <article 
-                                            key={ex._id} 
+                                        <div key={ex._id} className="library-item" 
                                             onClick={() => importFromLibrary(ex)} 
-                                            style={{ padding: '1.2rem', border: '1.5px solid #F0F4F4', borderRadius: '18px', cursor: 'pointer', transition: 'all 0.2s', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
-                                            onMouseOver={e => { e.currentTarget.style.borderColor = '#55A98A'; e.currentTarget.style.background = '#F8FFFE'; }}
-                                            onMouseOut={e => { e.currentTarget.style.borderColor = '#F0F4F4'; e.currentTarget.style.background = 'transparent'; }}
                                         >
-                                            <div>
-                                                <h4 style={{ margin: 0, color: '#1A2E35', fontSize: '1.05rem', fontWeight: '700' }}>{ex.nombre}</h4>
-                                                <span style={{ fontSize: '0.75rem', color: '#55A98A', fontWeight: '800', textTransform: 'uppercase' }}>{ex.categoria}</span>
+                                            <hgroup>
+                                                <h4 className="library-item__name">{ex.nombre}</h4>
+                                                <span className="library-item__tag">{ex.categoria}</span>
+                                            </hgroup>
+                                            <div className="library-item__meta">
+                                                <span className="library-item__value">{ex.seriesDefecto || '—'}</span>
+                                                <span className="library-item__label">Series Sugeridas</span>
                                             </div>
-                                            <div style={{ textAlign: 'right' }}>
-                                                <div style={{ fontSize: '0.85rem', color: '#1A2E35', fontWeight: '600' }}>{ex.seriesDefecto || '—'}</div>
-                                                <div style={{ fontSize: '0.7rem', color: '#A0AEC0' }}>Series Sugeridas</div>
-                                            </div>
-                                        </article>
+                                        </div>
                                     ))}
                                 </div>
                             ) : (
-                                <div style={{ textAlign: 'center', padding: '3rem 1rem' }}>
-                                    <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📚</div>
-                                    <p style={{ color: '#5A6B6D', margin: 0 }}>No tienes ejercicios en la biblioteca.</p>
+                                <div className="modal-empty-state">
+                                    <span className="modal-empty-state__icon">📚</span>
+                                    <p>No tienes ejercicios en la biblioteca.</p>
                                     <button className="btn-ghost" onClick={() => navigate('/dashboard/physio/exercises')}>Ir a Biblioteca</button>
                                 </div>
                             )}
                         </div>
-                    </div>
+                    </article>
                 </div>,
                 document.body
             )}

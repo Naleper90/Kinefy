@@ -16,6 +16,33 @@ const PatientDashboardHome = () => {
     const [submitted, setSubmitted]   = useState(false);
     const [painHistory, setPainHistory] = useState([]);
     const [previewEx, setPreviewEx] = useState(null);
+    const [showApptModal, setShowApptModal] = useState(false);
+    const [apptForm, setApptForm] = useState({
+        fecha: new Date().toISOString().split('T')[0],
+        hora: '10:00',
+        tipo: 'Sesión de Seguimiento'
+    });
+
+    const handleRequestAppointment = async (e) => {
+        e.preventDefault();
+        try {
+            await api.post('/appointments', apptForm);
+            setShowApptModal(false);
+            // Recargar datos para ver la cita pendiente
+            const resApp = await api.get('/appointments');
+            const now = new Date();
+            const future = resApp.data
+                .filter(a => new Date(a.fecha) >= now)
+                .sort((a, b) => new Date(a.fecha) - new Date(b.fecha))[0];
+            setNextAppointment(future);
+        } catch (err) {
+            if (err.response?.data?.code === 'APPOINTMENT_CONFLICT') {
+                alert("Este horario ya está ocupado. Por favor, elige otro momento.");
+            } else {
+                alert("Error al solicitar la cita. Revisa tu conexión.");
+            }
+        }
+    };
 
     const isVideo = (url) => {
         if (!url) return false;
@@ -183,7 +210,13 @@ const PatientDashboardHome = () => {
                         ) : (
                             <div style={{ textAlign: 'center', padding: '1rem' }}>
                                 <p style={{ color: '#A0AEC0', fontSize: '0.9rem' }}>No tienes citas programadas próximamente.</p>
-                                <button className="btn-primary" style={{ marginTop: '1rem', width: 'auto', padding: '0.6rem 1.2rem' }}>Solicitar Cita</button>
+                                <button 
+                                    className="btn-primary" 
+                                    style={{ marginTop: '1rem', width: 'auto', padding: '0.6rem 1.2rem' }}
+                                    onClick={() => setShowApptModal(true)}
+                                >
+                                    Solicitar Cita
+                                </button>
                             </div>
                         )}
                     </article>
@@ -342,6 +375,65 @@ const PatientDashboardHome = () => {
                             ) : (
                                 <img src={previewEx.mediaUrl} alt={previewEx.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                             )}
+                        </div>
+                    </div>
+                </div>,
+                document.body
+            )}
+
+            {showApptModal && createPortal(
+                <div className="modal-overlay" onClick={() => setShowApptModal(false)}>
+                    <div className="modal-container--premium" style={{ maxWidth: '450px' }} onClick={e => e.stopPropagation()}>
+                        <header className="modal-header--clinical">
+                            <h2 className="modal-header__title">Solicitar Nueva Cita</h2>
+                            <p className="modal-header__subtitle">Propón un horario y tu fisio lo confirmará.</p>
+                            <button className="modal-close" onClick={() => setShowApptModal(false)}>✕</button>
+                        </header>
+                        
+                        <div className="modal-body--clinical">
+                            <form onSubmit={handleRequestAppointment} className="clinical-form">
+                                <div className="clinical-input-group">
+                                    <label className="meta-label meta-label--brand">Fecha Preferente</label>
+                                    <input 
+                                        type="date" 
+                                        className="input-clinical" 
+                                        required 
+                                        value={apptForm.fecha} 
+                                        onChange={e => setApptForm({...apptForm, fecha: e.target.value})} 
+                                    />
+                                </div>
+                                <div className="clinical-input-group">
+                                    <label className="meta-label meta-label--brand">Hora</label>
+                                    <input 
+                                        type="time" 
+                                        className="input-clinical" 
+                                        required 
+                                        value={apptForm.hora} 
+                                        onChange={e => setApptForm({...apptForm, hora: e.target.value})} 
+                                    />
+                                </div>
+                                <div className="clinical-input-group">
+                                    <label className="meta-label meta-label--brand">Motivo / Notas</label>
+                                    <input 
+                                        type="text" 
+                                        className="input-clinical" 
+                                        placeholder="Ej: Revisión de rodilla" 
+                                        value={apptForm.tipo} 
+                                        onChange={e => setApptForm({...apptForm, tipo: e.target.value})} 
+                                    />
+                                </div>
+                                
+                                <div className="clinical-card--dashed" style={{ marginTop: '1rem', padding: '1rem' }}>
+                                    <p style={{ fontSize: '0.8rem', color: '#5A6B6D', margin: 0 }}>
+                                        * Tu solicitud quedará en estado <strong>Pendiente</strong> hasta que el fisioterapeuta la valide en su agenda.
+                                    </p>
+                                </div>
+
+                                <footer className="modal-footer--clinical-inside">
+                                    <button type="button" className="btn-ghost" onClick={() => setShowApptModal(false)}>Cancelar</button>
+                                    <button type="submit" className="btn-primary--soft">Enviar Solicitud</button>
+                                </footer>
+                            </form>
                         </div>
                     </div>
                 </div>,

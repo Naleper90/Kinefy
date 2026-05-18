@@ -80,8 +80,17 @@ const getPatients = async (req, res) => {
             });
         }
 
-        const patients = await Patient.find({ fisioterapeuta: req.user.id }).sort({ createdAt: -1 });
-        res.json(patients);
+        const patients = await Patient.find({ fisioterapeuta: req.user.id })
+            .populate('usuario', 'email')
+            .sort({ createdAt: -1 });
+        
+        // Mapeamos para que el email esté al mismo nivel y el frontend no tenga que hacer malabares
+        const patientsWithEmail = patients.map(p => ({
+            ...p.toObject(),
+            email: p.usuario?.email || ''
+        }));
+
+        res.json(patientsWithEmail);
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Error del servidor', code: 'SERVER_ERROR' });

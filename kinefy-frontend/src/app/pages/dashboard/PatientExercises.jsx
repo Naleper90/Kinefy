@@ -51,32 +51,22 @@ const PatientExercises = () => {
     );
 
     return (
-        <main className="patient-exercises animate-in" style={{ height: 'calc(100vh - 120px)', display: 'flex', gap: '2rem' }}>
+        <main className="patient-exercises animate-in">
             {/* LISTA DE EJERCICIOS (IZQUIERDA) */}
-            <aside style={{ width: '380px', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                <header style={{ marginBottom: '1rem' }}>
-                    <h1 style={{ fontSize: '1.8rem', color: '#1A2E35', fontWeight: '800', margin: 0 }}>Mi Plan</h1>
-                    <p style={{ color: '#5A6B6D', fontSize: '0.9rem', marginTop: '0.4rem' }}>{exercises.filter(e => e.completado).length}/{exercises.length} completados hoy</p>
+            <aside className="patient-exercises__sidebar">
+                <header>
+                    <h1 className="home-header__title">Mi Plan</h1>
+                    <p className="home-header__subtitle">{exercises.filter(e => e.completado).length}/{exercises.length} completados hoy</p>
                 </header>
 
-                <div style={{ flex: 1, overflowY: 'auto', paddingRight: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                <div className="patient-exercises__list">
                     {exercises.map(ex => (
                         <article 
                             key={ex._id}
                             onClick={() => setSelectedExercise(ex)}
-                            style={{ 
-                                padding: '1.2rem', 
-                                background: selectedExercise?._id === ex._id ? '#FFFFFF' : 'rgba(255,255,255,0.4)',
-                                borderRadius: '20px',
-                                border: '1.5px solid',
-                                borderColor: selectedExercise?._id === ex._id ? '#55A98A' : 'transparent',
-                                cursor: 'pointer',
-                                transition: 'all 0.2s',
-                                position: 'relative',
-                                boxShadow: selectedExercise?._id === ex._id ? '0 10px 25px rgba(85, 169, 138, 0.15)' : 'none'
-                            }}
+                            className={`patient-exercises__card ${selectedExercise?._id === ex._id ? 'patient-exercises__card--active' : ''}`}
                         >
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <div className="flex-between align-center">
                                 <div style={{ flex: 1 }}>
                                     <h4 style={{ margin: 0, color: '#1A2E35', fontSize: '1rem', fontWeight: '700' }}>{ex.nombre}</h4>
                                     <span style={{ fontSize: '0.8rem', color: '#5A6B6D' }}>{ex.series}</span>
@@ -96,20 +86,20 @@ const PatientExercises = () => {
                         </article>
                     ))}
                     {exercises.length === 0 && (
-                        <p style={{ textAlign: 'center', color: '#A0AEC0', padding: '2rem' }}>No tienes ejercicios asignados.</p>
+                        <p className="empty-state">No tienes ejercicios asignados.</p>
                     )}
                 </div>
             </aside>
 
             {/* DETALLE DEL EJERCICIO (DERECHA) */}
-            <section style={{ flex: 1, background: '#FFFFFF', borderRadius: '32px', padding: '2.5rem', display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: '0 20px 60px rgba(0,0,0,0.05)' }}>
+            <section className="patient-exercises__content">
                 {selectedExercise ? (
                     <>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem' }}>
+                        <div className="patient-exercises__header-flex flex-between align-start mb-4">
                             <div>
-                                <span style={{ background: '#E8F5F1', color: '#55A98A', padding: '6px 12px', borderRadius: '8px', fontSize: '0.75rem', fontWeight: '800', textTransform: 'uppercase' }}>Instrucciones de tu Fisio</span>
-                                <h2 style={{ fontSize: '2.4rem', color: '#1A2E35', fontWeight: '800', margin: '0.8rem 0 0.4rem' }}>{selectedExercise.nombre}</h2>
-                                <p style={{ fontSize: '1.2rem', color: '#5A6B6D', fontWeight: '600' }}>Objetivo: {selectedExercise.series}</p>
+                                <span className="status-badge status-badge--done">Instrucciones de tu Fisio</span>
+                                <h2 className="card-title-big mt-3 mb-1">{selectedExercise.nombre}</h2>
+                                <p className="card-subtitle">Objetivo: {selectedExercise.series}</p>
                             </div>
                             <button 
                                 onClick={() => toggleExercise(selectedExercise._id)}
@@ -120,9 +110,9 @@ const PatientExercises = () => {
                             </button>
                         </div>
 
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '2.5rem', flex: 1, overflow: 'hidden' }}>
+                        <div className="patient-exercises__grid">
                             <div style={{ overflowY: 'auto', paddingRight: '1rem' }}>
-                                <h4 className="meta-label" style={{ marginBottom: '1.2rem' }}>Cómo realizar el ejercicio</h4>
+                                <h4 className="meta-label mb-3">Cómo realizar el ejercicio</h4>
                                 <div style={{ fontSize: '1.05rem', lineHeight: '1.8', color: '#1A2E35', whiteSpace: 'pre-wrap' }}>
                                     {selectedExercise.descripcion || "Tu fisioterapeuta no ha añadido instrucciones específicas para este ejercicio, pero recuerda seguir las indicaciones dadas en consulta."}
                                 </div>
@@ -133,7 +123,7 @@ const PatientExercises = () => {
                                 </div>
                             </div>
 
-                            <div style={{ background: '#F0F4F4', borderRadius: '24px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+                            <div className="patient-exercises__media">
                                 {selectedExercise.mediaUrl ? (
                                     selectedExercise.mediaUrl.includes('youtube.com') || selectedExercise.mediaUrl.includes('vimeo.com') ? (
                                         <iframe 
@@ -155,7 +145,7 @@ const PatientExercises = () => {
                                         <img src={selectedExercise.mediaUrl} alt={selectedExercise.nombre} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                     )
                                 ) : (
-                                    <div style={{ textAlign: 'center', padding: '2rem' }}>
+                                    <div className="empty-state--centered">
                                         <div style={{ fontSize: '4rem', marginBottom: '1.5rem' }}>🧘‍♂️</div>
                                         <p style={{ color: '#A0AEC0', maxWidth: '200px' }}>Sin contenido multimedia asignado</p>
                                     </div>
@@ -164,10 +154,10 @@ const PatientExercises = () => {
                         </div>
                     </>
                 ) : (
-                    <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
+                    <div className="empty-state--centered" style={{ flex: 1 }}>
                         <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>👋</div>
-                        <h3 style={{ color: '#1A2E35' }}>Selecciona un ejercicio</h3>
-                        <p style={{ color: '#5A6B6D' }}>Pulsa en la lista de la izquierda para ver los detalles.</p>
+                        <h3 className="card-title-big">Selecciona un ejercicio</h3>
+                        <p className="card-subtitle">Pulsa en la lista para ver los detalles.</p>
                     </div>
                 )}
             </section>

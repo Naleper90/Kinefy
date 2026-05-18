@@ -1,107 +1,30 @@
-# Despliegue de la aplicación web
+# 8. Despliegue de la Aplicación y CI/CD
 
-Este apartado detalla la arquitectura y el proceso de despliegue de Kinefy, cumpliendo con los requisitos de gestión de artefactos y verificación de red.
+> [!IMPORTANT]
+> **Nota para el Tribunal Evaluador (Módulo Despliegue):**
+> La documentación técnica específica exigida para la rúbrica del módulo de Despliegue de Aplicaciones Web (Justificación de herramientas, Criterio 7 sobre artefactos y ficheros, y Criterio 8 sobre verificación de red) ha sido extraída a un documento anexo para facilitar su corrección. 
+> **Por favor, diríjase a: [08-despliegue-eval.md](08-despliegue-eval.md)**
 
-## 1. Gestión de Artefactos de Despliegue (Criterio 7 - RA4)
+---
 
-La aplicación utiliza **Docker** y **Docker Compose** para garantizar un entorno reproducible y aislado. Los artefactos principales son:
+## 8.1. Estrategia de Control de Versiones
 
-### 1.1. Dockerfiles
-Se han implementado Dockerfiles específicos para el frontend y el backend:
+El proyecto Kinefy ha utilizado **Git** como sistema de control de versiones, alojando el código fuente en la plataforma GitHub. 
 
-**Backend (`kinefy-backend/Dockerfile`):**
-```dockerfile
-FROM node:18-alpine
-WORKDIR /app
-COPY package*.json ./
-RUN npm install
-COPY . .
-EXPOSE 5000
-CMD ["npm", "start"]
-```
+Para garantizar un historial limpio y coherente (Criterio C5), se ha adoptado una estrategia basada en Ramas de Funcionalidad (*Feature Branches*). La rama `main` se ha protegido para asegurar que siempre contiene una versión funcional del producto, mientras que el desarrollo activo se ha realizado en ramas separadas (ej. `feature/blob-buttons`, `fix/responsive-nav`) que posteriormente se integraban mediante Pull Requests.
 
-**Frontend (`kinefy-frontend/Dockerfile`):**
-Utiliza un sistema de construcción multietapa para optimizar el peso de la imagen y servir los estáticos mediante Nginx.
-```dockerfile
-FROM node:18-alpine as build-stage
-WORKDIR /app
-COPY package*.json ./
-RUN npm install
-COPY . .
-RUN npm run build
+---
 
-FROM nginx:stable-alpine as production-stage
-COPY --from=build-stage /app/dist /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
-```
+## 8.2. Flujo de Integración y Despliegue Continuo (CI/CD)
 
-### 1.2. Orquestación con Docker Compose
-El archivo `docker-compose.yml` centraliza la gestión de los tres servicios necesarios: Base de datos (MongoDB), API (Backend) y Web (Frontend).
+### Entorno de Desarrollo Local (Docker)
+Como se detalla en el documento de Instalación, la fase de *Delivery* local se fundamenta en la contenedorización completa mediante Docker Compose. Esto ha permitido uniformizar el entorno de desarrollo, eliminando el clásico problema de "en mi máquina sí funciona".
 
-```yaml
-services:
-  mongodb:
-    image: mongo:latest
-    container_name: kinefy-db
-    ports: ["27017:27017"]
-    volumes: ["mongo-data:/data/db"]
-    networks: ["kinefy-network"]
+### Despliegue en Producción (Render)
+Para el paso a producción (Live Environment), se tomó la decisión arquitectónica de utilizar **Render** (Plataforma como Servicio - PaaS) en lugar de un VPS manual con contenedores Docker, por las siguientes razones:
 
-  backend:
-    build: ./kinefy-backend
-    container_name: kinefy-api
-    ports: ["5000:5000"]
-    environment:
-      - MONGO_URI=mongodb://mongodb:27017/kinefy
-    depends_on: ["mongodb"]
-    networks: ["kinefy-network"]
+1.  **Reducción de la carga operativa:** Render permite conectar directamente el repositorio de GitHub y realizar un despliegue automático con cada *push* a la rama `main`, ofreciendo una tubería CI/CD *Out-of-the-box* sin necesidad de escribir flujos complejos de GitHub Actions.
+2.  **Gestión de Certificados:** Render proporciona URLs seguras (HTTPS) de forma automática para el Frontend y el Backend, delegando la gestión de certificados TLS/SSL a la plataforma.
+3.  **Frontend y Backend Desacoplados:** Se crearon dos Web Services distintos dentro de la plataforma (uno para Node/Express y otro como Static Site para Vite/React), permitiendo escalar ambos servicios de forma independiente en un futuro.
 
-  frontend:
-    build: ./kinefy-frontend
-    container_name: kinefy-web
-    ports: ["80:80"]
-    depends_on: ["backend"]
-    networks: ["kinefy-network"]
-```
-
-## 2. Verificación de Red y Proxy Inverso (Criterio 8 - RA5 & Criterio 3)
-
-### 2.1. Configuración del Servidor Web como Front (Proxy Inverso)
-Se ha configurado **Nginx** no solo para servir los archivos estáticos, sino para actuar como proxy inverso, redirigiendo las peticiones `/api` al contenedor del backend. Esto centraliza la seguridad y evita problemas de CORS.
-
-**Fragmento de `nginx.conf`:**
-```nginx
-location /api {
-    proxy_pass http://backend:5000/api;
-    proxy_set_header Host $host;
-}
-```
-
-### 2.2. Verificación de Conectividad
-Para validar que el despliegue funciona correctamente, se utilizan los siguientes comandos:
-
-1. **Estado de los contenedores:**
-   `docker compose ps`
-   *Salida esperada:* Todos los servicios en estado `Up`.
-
-2. **Prueba de red desde el host:**
-   `curl -I http://localhost/api`
-   *Verificación:* Si devuelve un código `200 OK` o `301`, la red entre Nginx y el Backend es operativa.
-
-3. **Comunicación interna:**
-   El backend se conecta a MongoDB mediante el nombre de servicio `mongodb` definido en la red `kinefy-network`, lo cual demuestra el uso correcto de la resolución de nombres interna de Docker.
-
-## 3. Implementación de Funcionalidades Críticas (Email)
-
-Se ha integrado el envío de correos electrónicos mediante **Nodemailer** para la notificación de nuevos pacientes. La configuración se gestiona mediante variables de entorno en el archivo `.env`.
-
-**Evidencia de implementación:**
-```javascript
-// kinefy-backend/src/utils/mailer.js
-const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST,
-  auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS }
-});
-```
+La base de datos de producción no se aloja en Render por motivos de persistencia y escalabilidad, sino que se delega al servicio gestionado **MongoDB Atlas**, el cual recibe las conexiones a través de un URI seguro configurado mediante variables de entorno secretas en el panel de Render.

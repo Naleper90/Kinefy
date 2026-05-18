@@ -66,9 +66,8 @@ const DashboardHome = () => {
                 }
             }
         } catch (err) {
-            // Silenciar error en UI
+            // Manejo de error silencioso para no interrumpir el flujo del profesional
         } finally {
-
             setLoading(false);
         }
     };
@@ -120,158 +119,153 @@ const DashboardHome = () => {
                     {statusMsg}
                 </article>
             )}
-            <header className="home-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem' }}>
-                <div>
+            <header className="home-header">
+                <hgroup className="home-header__info">
                     <h1 className="home-header__title">Buenos días, {user.name.split(' ')[0]}.</h1>
                     <p className="home-header__subtitle">Tienes {patients.length} pacientes activos hoy.</p>
-                </div>
-                <button className="btn-primary" onClick={() => navigate('/dashboard/physio/patients/new')} style={{ width: 'auto', padding: '0 1.5rem', borderRadius: '12px' }}>
+                </hgroup>
+                <button className="btn-callout" onClick={() => navigate('/dashboard/physio/patients/new')}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                     Nuevo Paciente
                 </button>
             </header>
 
-            <section className="dashboard-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
+            <section className="dashboard-grid dashboard-grid--home">
                 <section className="grid-col">
 
                     <h2 className="grid-col__title">Estado de la Sesión</h2>
-                    <article className="dashboard-card dashboard-card--appointment" style={{ height: '100%', display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden' }}>
+                    <article className="dashboard-card dashboard-card--appointment">
                         {nextAppointment ? (
                             <>
                                 {nextAppointment.estado === 'en-curso' && (
-                                    <div style={{ position: 'absolute', top: '1rem', right: '1rem', display: 'flex', alignItems: 'center', gap: '0.4rem', background: '#EBF4FF', color: '#3182CE', padding: '0.4rem 0.8rem', borderRadius: '100px', fontSize: '0.65rem', fontWeight: '800' }}>
-                                        <span className="pulse-dot" style={{ width: '6px', height: '6px', background: '#3182CE', borderRadius: '50%' }}></span>
+                                    <span className="status-badge status-badge--active" style={{ position: 'absolute', top: '1.2rem', right: '1.2rem' }}>
+                                        <span className="pulse-dot"></span>
                                         EN CURSO
-                                    </div>
+                                    </span>
                                 )}
                                 
-                                <span style={{ fontSize: '0.75rem', fontWeight: '700', color: '#55A98A', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '0.5rem', display: 'block' }}>
+                                <span className="meta-label" style={{ color: 'var(--color-brand)', fontWeight: '700', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
                                     {formatDateHeader(nextAppointment.fecha)}
                                 </span>
                                 <h3 className="card-title-big">{nextAppointment.paciente?.nombre}</h3>
-                                <span className="card-label" style={{ color: nextAppointment.estado === 'completada' ? '#55A98A' : '#5A6B6D' }}>
+                                <span className="appointment-card__status-msg" style={{ color: nextAppointment.estado === 'completada' ? 'var(--color-brand)' : 'var(--color-text-soft)' }}>
                                     {nextAppointment.estado === 'completada' ? '✓ Sesión finalizada con éxito' : 
                                      toLocalDateString(nextAppointment.fecha) === toLocalDateString(new Date()) ? 'Tratamiento para hoy' : 'Próxima sesión programada'}
                                 </span>
 
-                                <div style={{ marginTop: '1.5rem', flex: 1 }}>
+                                <section style={{ marginTop: '1.5rem', flex: 1 }}>
                                     <span className="meta-label">Motivo de consulta</span>
-                                    <div className="appointment-reason" style={{ marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
-                                        <div style={{ background: nextAppointment.estado === 'en-curso' ? '#EBF4FF' : nextAppointment.estado === 'completada' ? '#E8F5F1' : '#F9FBFB', padding: '0.6rem', borderRadius: '10px' }}>
-                                            <KneeIcon size={20} color={nextAppointment.estado === 'en-curso' ? '#3182CE' : nextAppointment.estado === 'completada' ? '#55A98A' : '#A0AEC0'} />
-                                        </div>
-                                        <span style={{ fontWeight: '600', color: '#1A2E35' }}>{nextAppointment.tipo}</span>
+                                    <div className="appointment-card__reason-wrapper">
+                                        <figure className="appointment-card__icon-box" style={{ background: nextAppointment.estado === 'en-curso' ? '#EBF4FF' : nextAppointment.estado === 'completada' ? 'var(--color-mint-pale)' : '#F9FBFB' }}>
+                                            <KneeIcon size={20} color={nextAppointment.estado === 'en-curso' ? '#3182CE' : nextAppointment.estado === 'completada' ? 'var(--color-brand)' : '#A0AEC0'} />
+                                        </figure>
+                                        <span style={{ fontWeight: '600', color: 'var(--color-text-dark)' }}>{nextAppointment.tipo}</span>
                                     </div>
 
-                                    <div style={{ marginTop: '1.5rem' }}>
+                                    <section style={{ marginTop: '1.5rem' }}>
                                         <span className="meta-label">Hora y Estado</span>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginTop: '0.3rem' }}>
-                                            <time style={{ fontSize: '1.8rem', fontWeight: '800', color: '#1A2E35' }}>{nextAppointment.hora}</time>
-                                            <span style={{ 
-                                                padding: '0.2rem 0.6rem', borderRadius: '6px', fontSize: '0.6rem', fontWeight: '800',
-                                                background: nextAppointment.estado === 'pendiente' ? '#FDF2F2' : 
-                                                            nextAppointment.estado === 'confirmada' ? '#E0F2FE' :
-                                                            nextAppointment.estado === 'en-curso' ? '#EBF4FF' : '#E8F5F1',
-                                                color: nextAppointment.estado === 'pendiente' ? '#E57373' : 
-                                                       nextAppointment.estado === 'confirmada' ? '#0369A1' :
-                                                       nextAppointment.estado === 'en-curso' ? '#3182CE' : '#55A98A',
-                                                textTransform: 'uppercase'
-                                            }}>
+                                        <div className="appointment-card__time-row">
+                                            <time className="appointment-card__time">{nextAppointment.hora}</time>
+                                            <span className={`status-badge ${
+                                                nextAppointment.estado === 'pendiente' ? 'status-badge--pending' : 
+                                                nextAppointment.estado === 'confirmada' ? 'status-badge--confirm' :
+                                                nextAppointment.estado === 'en-curso' ? 'status-badge--active' : 'status-badge--done'
+                                            }`}>
                                                 {nextAppointment.estado === 'confirmada' ? 'CONFIRMADA ✓' : nextAppointment.estado}
                                             </span>
                                         </div>
-                                    </div>
-                                </div>
+                                    </section>
+                                </section>
 
-                                <footer style={{ marginTop: '2rem', display: 'flex', gap: '1rem' }}>
-                                    <button className="btn-ghost" style={{ flex: 1, borderRadius: '12px' }} onClick={() => navigate(`/dashboard/physio/patients/${nextAppointment.paciente?._id}`)}>Ficha Clínica</button>
+                                <footer style={{ marginTop: '2.5rem', display: 'flex', gap: '1.2rem' }}>
+                                    <button className="btn-ghost" style={{ flex: 1, borderRadius: '14px' }} onClick={() => navigate(`/dashboard/physio/patients/${nextAppointment.paciente?._id}`)}>Ficha Clínica</button>
                                     
                                     {nextAppointment.estado === 'pendiente' && (
-                                        <button className="btn-primary" style={{ flex: 1.5, borderRadius: '12px', background: '#55A98A' }} onClick={() => handleUpdateAppointmentStatus('en-curso')}>Atender ahora</button>
+                                        <button className="btn-primary" style={{ flex: 1.5, borderRadius: '14px' }} onClick={() => handleUpdateAppointmentStatus('en-curso')}>Atender ahora</button>
                                     )}
                                     {nextAppointment.estado === 'en-curso' && (
-                                        <button className="btn-primary" style={{ flex: 1.5, borderRadius: '12px', background: '#3182CE', borderColor: '#3182CE', boxShadow: '0 8px 20px rgba(49, 130, 206, 0.25)' }} onClick={() => handleUpdateAppointmentStatus('completada')}>Finalizar Sesión</button>
+                                        <button className="btn-primary" style={{ flex: 1.5, borderRadius: '14px', background: '#3182CE', borderColor: '#3182CE', boxShadow: '0 10px 25px rgba(49, 130, 206, 0.3)' }} onClick={() => handleUpdateAppointmentStatus('completada')}>Finalizar Sesión</button>
                                     )}
                                     {nextAppointment.estado === 'completada' && (
-                                        <button className="btn-primary" style={{ flex: 1.5, borderRadius: '12px', background: '#F0F4F6', color: '#55A98A', borderColor: '#E8F5F1', cursor: 'default' }}>✓ Completada</button>
+                                        <button className="btn-primary" style={{ flex: 1.5, borderRadius: '14px', background: 'var(--color-mint-pale)', color: 'var(--color-brand)', borderColor: 'var(--color-mint-pale)', cursor: 'default' }}>✓ Completada</button>
                                     )}
                                 </footer>
                             </>
                         ) : (
-                            <div style={{ textAlign: 'center', padding: '4rem 0', opacity: 0.6 }}>
-                                <div style={{ background: '#F9FBFB', width: '60px', height: '60px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#55A98A" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                                </div>
-                                <h3 style={{ fontSize: '1.2rem', color: '#1A2E35' }}>No hay citas programadas para hoy</h3>
-                            </div>
+                            <section className="home-empty-state">
+                                <figure className="home-empty-state__icon">
+                                    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                                </figure>
+                                <h3 className="home-empty-state__text">No hay citas programadas para hoy</h3>
+                            </section>
                         )}
                     </article>
                 </section>
 
                 <section className="grid-col">
                     <h2 className="grid-col__title">Pacientes Recientes</h2>
-                    <article className="dashboard-card" style={{ height: '100%' }}>
-                        <div className="patient-list" style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+                    <article className="dashboard-card">
+                        <nav className="patient-list">
                             {patients.slice(0, 4).length > 0 ? (
                                 patients.slice(0, 4).map((p, i) => (
-                                    <article key={i} className="patient-item" style={{ display: 'flex', alignItems: 'center', gap: '1rem', borderBottom: i < 3 ? '1px solid #F0F4F4' : 'none', paddingBottom: i < 3 ? '1rem' : '0' }}>
-                                        <figure className="patient-avatar" style={{ position: 'relative', width: '42px', height: '42px', flexShrink: 0 }}>
+                                    <article key={i} className="patient-item">
+                                        <figure className="patient-avatar">
                                             <BlobIcon color={p.color} />
-                                            <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '700', fontSize: '0.85rem', color: '#55A98A' }}>{p.initials}</span>
+                                            <span className="patient-avatar__initials">{p.initials}</span>
                                         </figure>
-                                        <div style={{ flex: 1 }}>
-                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
-                                                <span style={{ fontWeight: '700', color: '#1A2E35', fontSize: '0.9rem' }}>{p.name}</span>
+                                        <hgroup className="patient-info">
+                                            <div className="patient-info__header">
+                                                <span className="patient-info__name">{p.name}</span>
                                                 <button 
-                                                    className="btn-link" 
+                                                    className="home-patient-item__btn btn-ghost" 
                                                     onClick={() => navigate(`/dashboard/physio/patients/${p.id}`)} 
-                                                    style={{ fontSize: '0.7rem', color: '#55A98A', fontWeight: '700', background: 'rgba(85, 169, 138, 0.08)', border: 'none', cursor: 'pointer', padding: '0.3rem 0.6rem', borderRadius: '8px' }}
                                                 >
-                                                    Gestionar Plan
+                                                    Gestionar
                                                 </button>
                                             </div>
-                                            <div style={{ height: '4px', background: '#F0F4F4', borderRadius: '10px', overflow: 'hidden' }}>
-                                                <div style={{ width: `${p.progress}%`, height: '100%', background: '#55A98A', transition: 'width 1s ease' }}></div>
+                                            <div className="progress-bar--mini">
+                                                <div className="progress-bar__fill" style={{ '--progress': `${p.progress}%` }}></div>
                                             </div>
-                                        </div>
+                                        </hgroup>
                                     </article>
                                 ))
                             ) : (
-                                <p style={{ textAlign: 'center', padding: '2rem', color: '#5A6B6D', opacity: 0.5 }}>No hay pacientes recientes.</p>
+                                <p style={{ textAlign: 'center', padding: '2rem', color: 'var(--color-text-soft)', opacity: 0.5 }}>No hay pacientes recientes.</p>
                             )}
-                        </div>
+                        </nav>
                     </article>
                 </section>
 
                 <section className="grid-col">
                     <h2 className="grid-col__title">Evolución Clínica</h2>
-                    <article className="dashboard-card" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                        <p style={{ color: '#5A6B6D', fontSize: '0.85rem', fontWeight: '500', marginBottom: '1.5rem' }}>Tendencia de recuperación acumulada</p>
+                    <article className="dashboard-card">
+                        <p className="card-label">Tendencia de recuperación acumulada</p>
                         
-                        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(180deg, #FFFFFF 0%, #F9FBFB 100%)', borderRadius: '16px', padding: '1rem', border: '1px solid #F0F4F4', marginBottom: '1.5rem' }}>
+                        <div className="evolution-chart-container">
                             <svg width="100%" height={svgH} viewBox={`0 0 ${svgW} ${svgH}`} preserveAspectRatio="xMidYMid meet">
                                 <path 
+                                    className="evolution-line"
                                     d={pathData} 
                                     fill="none" 
-                                    stroke="#55A98A" 
+                                    stroke="var(--color-brand)" 
                                     strokeWidth="4" 
                                     strokeLinecap="round" 
                                     strokeLinejoin="round"
-                                    style={{ filter: 'drop-shadow(0 4px 6px rgba(85, 169, 138, 0.2))' }}
                                 />
-                                <circle cx={svgW} cy={svgH - (points[points.length-1] * 0.7)} r="5" fill="#1A2E35" />
+                                <circle cx={svgW} cy={svgH - (points[points.length-1] * 0.7)} r="5" fill="var(--color-text-dark)" />
                             </svg>
                         </div>
 
-                        <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                        <ul className="activity-list">
                             {[
                                 { label: 'Pacientes en sistema', value: patients.length },
                                 { label: 'Cumplimiento medio', value: `${averageCompliance}%` },
                                 { label: 'Próximo hito', value: nextAppointment ? (nextAppointment.estado === 'en-curso' ? 'En tratamiento' : 'Sesión programada') : 'Pendiente' },
                                 { label: 'Estado del sistema', value: 'Operativo', status: true }
                             ].map((item, i) => (
-                                <li key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.6rem 0', borderBottom: i < 3 ? '1px solid #F9FBFB' : 'none' }}>
-                                    <span style={{ fontSize: '0.8rem', color: '#5A6B6D', fontWeight: '500' }}>{item.label}</span>
-                                    <span style={{ fontSize: '0.85rem', color: item.status ? '#55A98A' : '#1A2E35', fontWeight: '700' }}>{item.value}</span>
+                                <li key={i} className="activity-list__item">
+                                    <span className="activity-list__label">{item.label}</span>
+                                    <span className="activity-list__value" style={{ color: item.status ? '#55A98A' : '#1A2E35' }}>{item.value}</span>
                                 </li>
                             ))}
                         </ul>

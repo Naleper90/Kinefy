@@ -34,12 +34,6 @@ const Sidebar = ({ navItems = [] }) => {
                 ))}
             </nav>
 
-            <footer className="sidebar__footer">
-                <button className="sidebar__logout" onClick={handleLogout} aria-label="Cerrar sesión">
-                    <LogoutIcon className="sidebar__icon" /> 
-                    <span className="sidebar__label">Cerrar Sesión</span>
-                </button>
-            </footer>
         </aside>
     );
 };

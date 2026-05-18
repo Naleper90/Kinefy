@@ -1,21 +1,57 @@
-# Guía de Estilos y Diseño
+# 4. Guía de Estilos y Prototipado
 
-El sistema visual de Kinefy, denominado **"Organic Minimalism"**, busca un equilibrio entre la profesionalidad clínica y la calma necesaria para un paciente en rehabilitación. El objetivo principal es reducir la carga cognitiva mediante una interfaz despejada y tonos suaves.
+El diseño de Kinefy no es un mero adorno estético; es una decisión funcional crítica. Al tratar con usuarios (pacientes) que se encuentran en un proceso de recuperación física y, muy probablemente, experimentando dolor o estrés, la interfaz de usuario debe transmitir calma, accesibilidad y claridad.
 
-## Arquitectura CSS: Metodología BEM
+Por este motivo, se descartó el uso de librerías genéricas de componentes (como Material UI, Bootstrap o Tailwind en su configuración por defecto) para apostar por un diseño a medida bajo la filosofía del **"Organic Minimalism"**.
 
-He optado por una arquitectura de CSS puro bajo metodología BEM (Block Element Modifier). Al evitar frameworks como Tailwind o Bootstrap, mantengo un control total sobre el renderizado y aseguro que el código sea ligero y escalable. Cada componente es independiente, lo que facilita el mantenimiento y la consistencia visual sin dependencias externas.
+---
 
-## Identidad Cromática
+## 4.1. Concepto: Organic Minimalism
 
-La paleta se divide en tonos funcionales y decorativos:
-- **Verde Menta (`#98D2C1`)**: Es el color principal de marca y se reserva para acciones primarias y branding.
-- **Azul Cielo (`#B4E1FF`)**: Utilizado en elementos decorativos para aportar profundidad orgánica.
-- **Azul Petróleo (`#1A2E35`)**: Color para tipografía y elementos de alto contraste, sustituyendo al negro puro para suavizar la lectura.
-- **Hueso (`#FDFEFE`)**: Fondo neutro de alta gama que actúa como lienzo.
+El minimalismo orgánico busca romper con las interfaces rígidas, cuadriculadas e "industriales" típicas del software médico (SaaS B2B). En su lugar, utiliza elementos visuales que imitan la naturaleza para reducir la carga cognitiva.
 
-## Tipografía y Accesibilidad
+### 4.1.1. Los "Blobs" y Bordes Asimétricos
+El elemento identitario más fuerte de Kinefy son sus botones y contenedores interactivos. En lugar de utilizar un `border-radius` perfecto (ej. rectángulos redondeados clásicos), se ha implementado un sistema de **botones-mancha (blobs)**.
 
-Se combinan dos familias tipográficas: **Fraunces** para titulares (aportando un carácter editorial) e **Inter** para la interfaz (priorizando la legibilidad en datos técnicos). 
+*   **Implementación técnica:** Se logra mediante el uso de valores múltiples y complejos en la propiedad `border-radius` de CSS puro (ejemplo: `border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%`).
+*   **Interacción:** Al realizar la acción de `:hover` (pasar el ratón), el *blob* muta orgánicamente hacia otra forma asimétrica, dando la sensación de que la interfaz "está viva" y respira.
 
-Respecto a la accesibilidad (WCAG AA), he verificado que los ratios de contraste superen siempre el 4.5:1. Además, el uso de etiquetas semánticas de HTML5 asegura que la plataforma sea interpretable por tecnologías asistidas sin necesidad de soluciones "parche".
+### 4.1.2. Paleta de Colores
+La paleta se aleja del blanco hospitalario o del azul corporativo agresivo. Se han seleccionado colores bajo la métrica HSL para garantizar el confort visual:
+*   **Color Brand (Menta/Verde Kinefy):** `#55A98A` - Transmite salud, sanación y crecimiento. Se usa para las acciones principales.
+*   **Fondo (Cream/Off-white):** `#F9FBFB` - Un blanco roto cálido que reduce la fatiga visual en comparación con el blanco puro `#FFFFFF`.
+*   **Texto Principal:** `#1A2E35` - Un tono gris carbón azulado, mucho más suave para la lectura que el negro puro `#000000`.
+*   **Acentos (Danger/Error):** Se evitan rojos chillones, optando por tonos salmón (`#E57373`) para reducir la sensación de "castigo" o alerta crítica en el paciente.
+
+### 4.1.3. Tipografía
+Se ha implementado una jerarquía tipográfica moderna utilizando tipografías sin serifa (sans-serif) para mejorar la legibilidad en pantallas móviles:
+*   Para los encabezados (H1, H2, H3), se ha priorizado un peso (*font-weight*) alto para dar contundencia y anclaje visual.
+*   Para el cuerpo de texto, se ha aumentado el interlineado (`line-height: 1.6`) para facilitar la lectura a personas con problemas de visión o presbicia.
+
+---
+
+## 4.2. Arquitectura CSS (Metodología BEM)
+
+Todo el estilizado de la aplicación se ha construido mediante **CSS Puro (Vanilla CSS)**. Para mantener la escalabilidad y evitar la colisión de estilos (el gran problema del CSS sin encapsular), se ha adoptado de forma estricta la nomenclatura **BEM (Block, Element, Modifier)**.
+
+*   **Block:** Representa el componente principal e independiente (ej. `.dashboard-card`).
+*   **Element:** Una parte del bloque que no tiene sentido por sí sola (ej. `.dashboard-card__header`).
+*   **Modifier:** Una bandera que cambia la apariencia o el estado del bloque o elemento (ej. `.dashboard-card--dark`).
+
+Esta decisión arquitectónica permite que el proyecto no dependa de abstracciones de terceros, garantizando que el desarrollador tiene el control absoluto sobre cada píxel de la pantalla. Además, el CSS puro garantiza tiempos de carga (*First Contentful Paint*) extremadamente bajos.
+
+---
+
+## 4.3. Accesibilidad (A11Y) y Diseño Mobile-First
+
+### 4.3.1. Enfoque Mobile-First
+Kinefy asume que el 90% de la interacción del *Paciente* será a través de un teléfono móvil mientras está en la colchoneta de ejercicios. 
+*   **Diseño:** Todas las vistas (como la lista de ejercicios o el selector de dolor) se diseñaron primero para resoluciones de 320px-400px.
+*   **Zonas táctiles:** Los botones y áreas interactivas tienen un tamaño mínimo de 44x44 píxeles (estándar de Apple/Google) para facilitar el pulsado con el pulgar o con manos temblorosas.
+*   **Navegación Móvil:** Se ha sustituido la barra lateral (Sidebar) del escritorio por una barra de navegación inferior (Bottom Navigation Bar), accesible fácilmente con una sola mano.
+
+### 4.3.2. Criterios WCAG AA
+La guía de estilos asegura el cumplimiento de las normativas de accesibilidad:
+*   **Contraste:** Los colores de texto principales (gris oscuro) contra el fondo menta o crema superan el ratio de contraste 4.5:1 exigido para textos normales.
+*   **Estados de foco:** Todos los elementos interactivos mantienen un estado `:focus-visible` para permitir la navegación por teclado (vital en la vista del fisioterapeuta).
+*   **Ausencia de dependencias del color:** La información crítica (como el estado "Pendiente" o "Completado" de un ejercicio) no depende únicamente del color, sino que se acompaña de iconos y etiquetas textuales.

@@ -1,8 +1,8 @@
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 
-export const generatePatientReport = (patient, appointments = []) => {
-    const doc = jsPDF();
+export const generatePatientReport = (patient, appointments = [], evolution = []) => {
+    const doc = new jsPDF();
     const brandColor = [85, 169, 138]; // #55A98A
     const darkColor = [26, 46, 53];   // #1A2E35
 
@@ -77,8 +77,42 @@ export const generatePatientReport = (patient, appointments = []) => {
 
     nextY = nextY + (notesLines.length * 5) + 20;
 
-    // 4. Tabla de Seguimiento
-    if (appointments.length > 0) {
+    // 4. Evolución Diaria (NUEVA SECCIÓN)
+    if (evolution && evolution.length > 0) {
+        doc.setFontSize(14);
+        doc.setFont("helvetica", "bold");
+        doc.text('EVOLUCIÓN DIARIA DEL PACIENTE', 20, nextY);
+        doc.line(20, nextY + 3, 190, nextY + 3);
+
+        const evolutionData = [...evolution].sort((a,b) => new Date(b.fecha) - new Date(a.fecha)).map(entry => [
+            new Date(entry.fecha).toLocaleDateString('es-ES'),
+            `EVA ${entry.nivelDolor}/10`,
+            entry.observaciones || 'Sin observaciones.'
+        ]);
+
+        autoTable(doc, {
+            startY: nextY + 7,
+            margin: { left: 20, right: 20 },
+            head: [['FECHA', 'DOLOR', 'OBSERVACIONES DEL PACIENTE']],
+            body: evolutionData,
+            headStyles: { fillColor: brandColor, textColor: 255, fontStyle: 'bold', fontSize: 9 },
+            bodyStyles: { textColor: darkColor, fontSize: 8 },
+            columnStyles: {
+                0: { cellWidth: 30 },
+                1: { cellWidth: 25 },
+                2: { cellWidth: 'auto' }
+            },
+            alternateRowStyles: { fillColor: [245, 249, 248] },
+            theme: 'grid'
+        });
+
+        nextY = doc.lastAutoTable.finalY + 15;
+    }
+
+    // 5. Tabla de Seguimiento (Citas)
+    if (appointments && appointments.length > 0) {
+        if (nextY > 230) { doc.addPage(); nextY = 20; }
+        
         doc.setFontSize(14);
         doc.setFont("helvetica", "bold");
         doc.text('HISTORIAL DE SESIONES', 20, nextY);
@@ -91,14 +125,14 @@ export const generatePatientReport = (patient, appointments = []) => {
             appt.estado === 'completada' ? 'ASISTIDA' : 'PENDIENTE'
         ]);
 
-        doc.autoTable({
+        autoTable(doc, {
             startY: nextY + 7,
             margin: { left: 20, right: 20 },
             head: [['FECHA', 'HORA', 'TIPO DE SESIÓN', 'ESTADO']],
             body: tableData,
-            headStyles: { fillColor: brandColor, textColor: 255, fontStyle: 'bold', fontSize: 9 },
+            headStyles: { fillColor: [59, 122, 142], textColor: 255, fontStyle: 'bold', fontSize: 9 },
             bodyStyles: { textColor: darkColor, fontSize: 9 },
-            alternateRowStyles: { fillColor: [245, 249, 248] },
+            alternateRowStyles: { fillColor: [240, 244, 244] },
             theme: 'grid'
         });
     }
@@ -115,5 +149,6 @@ export const generatePatientReport = (patient, appointments = []) => {
         doc.text(`Página ${i} de ${pageCount}`, 190, 285, { align: 'right' });
     }
 
-    doc.save(`Informe_Clinico_Kinefy_${patient.nombre.replace(/\s+/g, '_')}.pdf`);
+    const fileName = `Informe_Clinico_Kinefy_${(patient.nombre || 'Paciente').replace(/\s+/g, '_')}.pdf`;
+    doc.save(fileName);
 };

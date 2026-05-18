@@ -7,6 +7,7 @@ import PatientDetail from './PatientDetail';
 import NewPatient from './NewPatient';
 import Appointments from './Appointments';
 import ExerciseLibrary from './ExerciseLibrary';
+import Reports from './Reports';
 import { HomeIcon, PatientsIcon, AppointmentsIcon, ExercisesIcon, ReportsIcon } from '../../components/dashboard/DashboardIcons';
 
 
@@ -35,6 +36,7 @@ const Dashboard = () => {
                 <Route path="/patients/:id" element={<PatientDetail />} />
                 <Route path="/appointments" element={<Appointments />} />
                 <Route path="/exercises" element={<ExerciseLibrary />} />
+                <Route path="/reports" element={<Reports />} />
                 {/* Fallback interno */}
 
                 <Route path="*" element={<DashboardHome />} />

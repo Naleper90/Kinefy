@@ -2,12 +2,21 @@ import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import api from '../../api/api';
-import { BlobIcon } from '../../components/dashboard/DashboardIcons';
+import { 
+    BlobIcon, 
+    PlusIcon, 
+    TrashIcon, 
+    ChevronIcon, 
+    WarningIcon, 
+    AppointmentsIcon,
+    SearchIcon 
+} from '../../components/dashboard/DashboardIcons';
 
 const Appointments = () => {
     const navigate = useNavigate();
     const scrollRef = useRef(null);
     const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState('');
     
     const toLocalDateString = (date) => {
         const d = new Date(date);
@@ -61,21 +70,33 @@ const Appointments = () => {
         }
         setMonthDays(days);
 
-        if (month === now.getMonth() && year === now.getFullYear()) {
-            setTimeout(() => {
-                if (scrollRef.current) {
+        // Auto-scroll centrado al día actual
+        setTimeout(() => {
+            if (scrollRef.current) {
+                if (month === now.getMonth() && year === now.getFullYear()) {
                     const todayIndex = days.findIndex(d => d.isToday);
                     if (todayIndex !== -1) {
-                        const scrollAmount = todayIndex * (75 + 16) - (scrollRef.current.clientWidth / 2) + (75 / 2);
+                        const dayWidth = 75; // min-width en CSS
+                        const gap = 16;      // gap en CSS (1rem)
+                        const containerWidth = scrollRef.current.clientWidth;
+                        const scrollAmount = (todayIndex * (dayWidth + gap)) - (containerWidth / 2) + (dayWidth / 2) + gap;
                         scrollRef.current.scrollTo({ left: scrollAmount, behavior: 'smooth' });
                     }
+                } else {
+                    scrollRef.current.scrollTo({ left: 0, behavior: 'smooth' });
                 }
-            }, 300);
-        } else {
-            if (scrollRef.current) scrollRef.current.scrollTo({ left: 0, behavior: 'smooth' });
-        }
+            }
+        }, 300);
     }, [currentDate]);
 
+    const scrollCalendar = (direction) => {
+        if (scrollRef.current) {
+            const scrollAmount = direction === 'left' ? -300 : 300;
+            scrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+        }
+    };
+
+    // Sincroniza la agenda con la base de datos
     const fetchAppointments = async () => {
         try {
             setLoading(true);
@@ -96,7 +117,7 @@ const Appointments = () => {
                 setAppointments(adapted);
             }
         } catch (err) {
-            // Manejo silencioso de errores en producción
+            console.error("Error sincronizando agenda");
         } finally {
             setLoading(false);
         }
@@ -106,7 +127,12 @@ const Appointments = () => {
         fetchAppointments();
     }, []);
 
-    const filteredAppointments = appointments.filter(appt => appt.date === selectedDate);
+    const normalizeText = (text) => 
+        text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
+    const filteredAppointments = searchTerm.trim() 
+        ? appointments.filter(appt => normalizeText(appt.patient).includes(normalizeText(searchTerm)))
+        : appointments.filter(appt => appt.date === selectedDate);
 
     const changeMonth = (offset) => {
         const newDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + offset, 1);
@@ -149,7 +175,7 @@ const Appointments = () => {
             setShowModal(false);
             fetchAppointments();
         } catch (err) {
-            // Error manejado
+            alert("Error al crear la cita");
         }
     };
 
@@ -159,7 +185,7 @@ const Appointments = () => {
             setAppointments(appointments.map(a => a.id === id ? { ...a, status: newStatus } : a));
             setActiveStatusMenu(null);
         } catch (err) {
-            // Error manejado
+            alert("Error al actualizar estado");
         }
     };
 
@@ -170,7 +196,7 @@ const Appointments = () => {
             setAppointments(appointments.filter(a => a.id !== showDeleteConfirm));
             setShowDeleteConfirm(null);
         } catch (err) {
-            // Error manejado
+            alert("Error al eliminar la cita");
         }
     };
 
@@ -195,199 +221,265 @@ const Appointments = () => {
     const currentMonthName = currentDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
 
     return (
-        <>
-            <section className="appointments-page animate-in" style={{ maxWidth: '1000px', margin: '0 auto', width: '100%' }}>
-                <header className="home-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                        <button onClick={() => changeMonth(-1)} className="btn-nav-month" style={{ padding: '0.6rem', borderRadius: '12px', background: '#F9FBFB', border: 'none', cursor: 'pointer', color: '#55A98A', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}>
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                        </button>
-
-                        <div style={{ textAlign: 'center', minWidth: '180px' }}>
-                            <h1 className="home-header__title" style={{ textTransform: 'capitalize', fontSize: '1.8rem', margin: 0, lineHeight: 1 }}>{currentMonthName}</h1>
-                            <p className="home-header__subtitle" style={{ marginTop: '0.3rem', fontSize: '0.8rem' }}>Planificación Clínica</p>
-                        </div>
-
-                        <button onClick={() => changeMonth(1)} className="btn-nav-month" style={{ padding: '0.6rem', borderRadius: '12px', background: '#F9FBFB', border: 'none', cursor: 'pointer', color: '#55A98A', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}>
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                        </button>
-                        
-                        <button 
-                            onClick={() => { 
-                                const n = new Date(); 
-                                setCurrentDate(new Date(n.getFullYear(), n.getMonth(), 1)); 
-                                setSelectedDate(toLocalDateString(n)); 
-                            }} 
-                            style={{ marginLeft: '0.5rem', padding: '0.4rem 0.8rem', borderRadius: '100px', background: 'rgba(85, 169, 138, 0.08)', border: 'none', color: '#55A98A', fontSize: '0.7rem', fontWeight: '800', cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.5px' }}
-                        >
-                            Hoy
-                        </button>
-                    </div>
-                    
-                    <button className="btn-primary" onClick={() => setShowModal(true)} style={{ width: 'auto', padding: '0 1.5rem', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                        Nueva Cita
+        <main className="agenda-container animate-in">
+            <header className="agenda-header">
+                <nav className="agenda-month-nav">
+                    <button onClick={() => changeMonth(-1)} className="btn-nav-month" title="Mes anterior">
+                        <ChevronIcon size={22} direction="left" />
                     </button>
-                </header>
 
-                <div style={{ position: 'relative', marginBottom: '2.5rem' }}>
-                    <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '60px', background: 'linear-gradient(to right, #F9FBFB 20%, transparent)', zIndex: 2, pointerEvents: 'none' }}></div>
-                    <div style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '60px', background: 'linear-gradient(to left, #F9FBFB 20%, transparent)', zIndex: 2, pointerEvents: 'none' }}></div>
+                    <hgroup className="agenda-month-nav__title">
+                        <h1>{currentMonthName}</h1>
+                        <p className="home-header__subtitle">Planificación Clínica</p>
+                    </hgroup>
 
-                    <div ref={scrollRef} style={{ background: '#FFFFFF', padding: '1.2rem 2.5rem', borderRadius: '20px', display: 'flex', gap: '1rem', overflowX: 'auto', border: '1px solid rgba(0,0,0,0.03)', msOverflowStyle: 'none', scrollbarWidth: 'none', scrollBehavior: 'smooth' }}>
+                    <button onClick={() => changeMonth(1)} className="btn-nav-month" title="Mes siguiente">
+                        <ChevronIcon size={22} direction="right" />
+                    </button>
+                    
+                    <button 
+                        className="btn-today"
+                        onClick={() => { 
+                            const n = new Date(); 
+                            setCurrentDate(new Date(n.getFullYear(), n.getMonth(), 1)); 
+                            setSelectedDate(toLocalDateString(n)); 
+                            setSearchTerm('');
+                        }} 
+                    >
+                        Hoy
+                    </button>
+                </nav>
+                
+                <div className="patients-search" style={{ maxWidth: '300px', margin: '0 1rem' }}>
+                    <span className="patients-search__icon"><SearchIcon strokeWidth={2.5} /></span>
+                    <input 
+                        type="text" 
+                        placeholder="Buscar por paciente..." 
+                        className="patients-search__input"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                </div>
+                
+                <button className="btn-callout" onClick={() => setShowModal(true)}>
+                    <PlusIcon />
+                    Nueva Cita
+                </button>
+            </header>
+
+            {!searchTerm && (
+                <section className="agenda-calendar">
+                    <button className="calendar-nav-btn calendar-nav-btn--left" onClick={() => scrollCalendar('left')}>
+                        <ChevronIcon size={20} direction="left" />
+                    </button>
+                    <button className="calendar-nav-btn calendar-nav-btn--right" onClick={() => scrollCalendar('right')}>
+                        <ChevronIcon size={20} direction="right" />
+                    </button>
+                    
+                    <div className="agenda-calendar__scroll" ref={scrollRef}>
                         {monthDays.map((day) => (
-                            <button key={day.fullDate} onClick={() => setSelectedDate(day.fullDate)} style={{ minWidth: '75px', padding: '1rem 0.5rem', borderRadius: '14px', border: 'none', background: selectedDate === day.fullDate ? '#55A98A' : '#F9FBFB', color: selectedDate === day.fullDate ? '#FFFFFF' : '#1A2E35', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem', cursor: 'pointer', transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)', flexShrink: 0, transform: selectedDate === day.fullDate ? 'scale(1.08)' : 'scale(1)', boxShadow: selectedDate === day.fullDate ? '0 12px 24px rgba(85, 169, 138, 0.25)' : 'none', position: 'relative' }}>
-                                <span style={{ fontSize: '0.65rem', fontWeight: '700', textTransform: 'uppercase', opacity: selectedDate === day.fullDate ? 0.9 : 0.5, letterSpacing: '0.5px' }}>{day.name}</span>
-                                <span style={{ fontSize: '1.2rem', fontWeight: '800' }}>{day.number}</span>
-                                {day.isToday && <div style={{ position: 'absolute', bottom: '6px', width: '4px', height: '4px', borderRadius: '50%', background: selectedDate === day.fullDate ? '#FFFFFF' : '#55A98A' }}></div>}
+                            <button 
+                                key={day.fullDate} 
+                                onClick={() => setSelectedDate(day.fullDate)} 
+                                className={`agenda-calendar__day ${selectedDate === day.fullDate ? 'agenda-calendar__day--selected' : ''}`}
+                            >
+                                <span className="agenda-calendar__day-name">{day.name}</span>
+                                <span className="agenda-calendar__day-number">{day.number}</span>
+                                {day.isToday && <div className="agenda-calendar__today-dot"></div>}
                             </button>
                         ))}
                     </div>
-                </div>
+                </section>
+            )}
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', position: 'relative', width: '100%' }}>
-                    <div style={{ position: 'absolute', left: '20px', top: 0, bottom: 0, width: '2px', background: 'rgba(85, 169, 138, 0.1)', zIndex: 0 }}></div>
-                    {loading ? (
-                        <div style={{ textAlign: 'center', padding: '5rem' }}>
-                            <div className="loader" style={{ margin: '0 auto 1rem' }}></div>
-                            <p style={{ color: '#5A6B6D' }}>Sincronizando agenda...</p>
+            <section className={`agenda-timeline ${searchTerm ? 'agenda-timeline--searching' : ''}`}>
+                {searchTerm && (
+                    <header className="search-results-header">
+                        <h2 className="search-results-title">
+                            Resultados para: <span>"{searchTerm}"</span>
+                        </h2>
+                        <button className="btn-link" onClick={() => setSearchTerm('')}>Limpiar búsqueda</button>
+                    </header>
+                )}
+
+                {loading ? (
+                    <div className="empty-state--centered">
+                        <div className="loader"></div>
+                        <p>Sincronizando agenda...</p>
+                    </div>
+                ) : filteredAppointments.length === 0 ? (
+                    <div className="empty-state-card--dashed">
+                        <AppointmentsIcon className="empty-state-icon--soft" />
+                        <p className="empty-state-title">
+                            {searchTerm 
+                                ? `No se han encontrado citas para "${searchTerm}"`
+                                : `No hay citas para el ${new Date(selectedDate + 'T00:00:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'long' })}`
+                            }
+                        </p>
+                        <p className="empty-state-subtitle">
+                            {searchTerm 
+                                ? 'Prueba con otro nombre o asegúrate de que el paciente esté registrado.'
+                                : 'Pulsa en "Nueva Cita" para empezar a organizar este día.'
+                            }
+                        </p>
+                    </div>
+                ) : filteredAppointments.map((appt) => (
+                    <article key={appt.id} className="appt-card">
+                        <time className="appt-card__time">
+                            {appt.time}
+                            {searchTerm && <span className="appt-card__date-hint">{new Date(appt.date + 'T00:00:00').toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' })}</span>}
+                        </time>
+                        
+                        <div className="appt-card__patient">
+                            <figure className="patient-avatar--mini">
+                                <BlobIcon color={getStatusStyle(appt.status).bg} />
+                                <span style={{ color: getStatusStyle(appt.status).color }}>{appt.patient[0]}</span>
+                            </figure>
+                            <hgroup className="appt-card__info" onClick={() => navigate(`/dashboard/physio/patients/${appt.patientId}`)} style={{ cursor: 'pointer' }}>
+                                <h4>{appt.patient}</h4>
+                                <span>{appt.type}</span>
+                            </hgroup>
                         </div>
-                    ) : filteredAppointments.length === 0 ? (
-                        <div style={{ textAlign: 'center', padding: '5rem', background: '#FFFFFF', borderRadius: '24px', border: '1px dashed rgba(85, 169, 138, 0.2)' }}>
-                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="rgba(85, 169, 138, 0.3)" strokeWidth="1.5" style={{ marginBottom: '1rem' }}><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                            <p style={{ color: '#5A6B6D', fontSize: '1.1rem', fontWeight: '500' }}>No hay citas para el {new Date(selectedDate + 'T00:00:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'long' })}</p>
-                            <p style={{ color: '#A0AEC0', fontSize: '0.9rem' }}>Pulsa en "Nueva Cita" para empezar a organizar este día.</p>
-                        </div>
-                    ) : filteredAppointments.map((appt) => (
-                        <article key={appt.id} style={{ background: '#FFFFFF', borderRadius: '18px', padding: '1.2rem', display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap', border: '1px solid rgba(0,0,0,0.03)', position: 'relative', zIndex: 1, transition: 'all 0.2s', width: '100%' }}>
-                            <div style={{ minWidth: '60px', textAlign: 'center' }}><time style={{ fontWeight: '800', color: '#1A2E35', fontSize: '1rem' }}>{appt.time}</time></div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: '1', minWidth: '150px' }}>
-                                <figure style={{ width: '40px', height: '40px', position: 'relative', flexShrink: 0 }}><BlobIcon color={getStatusStyle(appt.status).bg} /><span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '700', fontSize: '0.8rem', color: getStatusStyle(appt.status).color }}>{appt.patient[0]}</span></figure>
-                                <div onClick={() => navigate(`/dashboard/physio/patients/${appt.patientId}`)} style={{ cursor: 'pointer' }}><h4 style={{ margin: 0, fontSize: '1rem', fontWeight: '700', color: '#1A2E35' }}>{appt.patient}</h4><span style={{ fontSize: '0.8rem', color: '#5A6B6D', opacity: 0.7 }}>{appt.type}</span></div>
-                            </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', marginLeft: 'auto', position: 'relative' }}>
-                                <div style={{ position: 'relative' }}>
-                                    <button onClick={() => setActiveStatusMenu(activeStatusMenu === appt.id ? null : appt.id)} style={{ padding: '0.4rem 1rem', borderRadius: '100px', background: getStatusStyle(appt.status).bg, color: getStatusStyle(appt.status).color, fontSize: '0.65rem', fontWeight: '800', textTransform: 'uppercase', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                                        {getStatusStyle(appt.status).label}
-                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                                    </button>
-                                    {activeStatusMenu === appt.id && (
-                                        <div style={{ position: 'absolute', top: '100%', right: 0, marginTop: '8px', zIndex: 100, background: '#FFFFFF', borderRadius: '14px', padding: '0.5rem', boxShadow: '0 10px 25px rgba(0,0,0,0.1)', border: '1px solid #F0F4F4', minWidth: '140px' }}>
-                                            {['pendiente', 'confirmada', 'en-curso', 'completada', 'cancelada'].map(statusKey => (
-                                                <div key={statusKey} onClick={() => handleUpdateStatus(appt.id, statusKey)} style={{ padding: '0.6rem 0.8rem', borderRadius: '8px', cursor: 'pointer', fontSize: '0.7rem', fontWeight: '700', textTransform: 'uppercase', color: getStatusStyle(statusKey).color, background: 'transparent' }} onMouseOver={e => e.currentTarget.style.background = '#F9FBFB'} onMouseOut={e => e.currentTarget.style.background = 'transparent'}>
-                                                    {getStatusStyle(statusKey).label}
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                                <button className="btn-ghost" style={{ width: '36px', height: '36px', padding: 0, borderRadius: '10px', background: '#FDF2F2', color: '#E57373', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => setShowDeleteConfirm(appt.id)}>
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+
+                        <div className="appt-card__actions">
+                            <div className="relative">
+                                <button 
+                                    className={`status-pill ${activeStatusMenu === appt.id ? 'status-pill--open' : ''}`}
+                                    style={{ background: getStatusStyle(appt.status).bg, color: getStatusStyle(appt.status).color }}
+                                    onClick={() => setActiveStatusMenu(activeStatusMenu === appt.id ? null : appt.id)}
+                                >
+                                    {getStatusStyle(appt.status).label}
+                                    <ChevronIcon size={12} />
                                 </button>
+                                
+                                {activeStatusMenu === appt.id && (
+                                    <div className="status-dropdown animate-in">
+                                        {['pendiente', 'confirmada', 'en-curso', 'completada', 'cancelada'].map(statusKey => (
+                                            <div 
+                                                key={statusKey} 
+                                                className="status-option"
+                                                style={{ color: getStatusStyle(statusKey).color }}
+                                                onClick={() => handleUpdateStatus(appt.id, statusKey)}
+                                            >
+                                                {getStatusStyle(statusKey).label}
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
-                        </article>
-                    ))}
-                </div>
+                            
+                            <button className="btn-icon--delete" onClick={() => setShowDeleteConfirm(appt.id)}>
+                                <TrashIcon />
+                            </button>
+                        </div>
+                    </article>
+                ))}
             </section>
 
-            {/* MODAL DE CONFIRMACIÓN DE ELIMINACIÓN */}
             {showDeleteConfirm && (
-                <div style={{ position: 'fixed', inset: 0, background: 'rgba(26, 46, 53, 0.4)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999999, padding: '1.5rem' }}>
-                    <div className="dashboard-card animate-in" style={{ maxWidth: '400px', width: '100%', padding: '2rem', textAlign: 'center', background: '#FFFFFF', borderRadius: '24px' }}>
-                        <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: '#FDF2F2', color: '#E57373', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
-                            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                <div className="modal-overlay">
+                    <div className="modal-container--premium" style={{ maxWidth: '400px', padding: '2.5rem', textAlign: 'center' }}>
+                        <div className="icon-wrapper--danger">
+                            <WarningIcon />
                         </div>
-                        <h3 style={{ fontSize: '1.4rem', color: '#1A2E35', marginBottom: '0.8rem' }}>¿Eliminar esta cita?</h3>
-                        <p style={{ color: '#5A6B6D', fontSize: '0.95rem', lineHeight: '1.5', marginBottom: '2rem' }}>Esta acción no se puede deshacer. El paciente no verá esta sesión en su historial.</p>
-                        <div style={{ display: 'flex', gap: '1rem' }}>
-                            <button className="btn-ghost" onClick={() => setShowDeleteConfirm(null)} style={{ flex: 1, height: '48px', borderRadius: '12px' }}>Cancelar</button>
-                            <button className="btn-primary" onClick={handleDelete} style={{ flex: 1, height: '48px', borderRadius: '12px', background: '#E57373', borderColor: '#E57373', boxShadow: '0 8px 20px rgba(229, 115, 115, 0.25)' }}>Eliminar</button>
+                        <h3 className="modal-title--danger">¿Eliminar esta cita?</h3>
+                        <p className="modal-text--soft">Esta acción no se puede deshacer. El paciente no verá esta sesión en su historial.</p>
+                        <div className="clinical-form-row">
+                            <button className="btn-ghost" onClick={() => setShowDeleteConfirm(null)}>Cancelar</button>
+                            <button className="btn-primary--danger" onClick={handleDelete}>Eliminar</button>
                         </div>
                     </div>
                 </div>
             )}
 
             {showModal && createPortal(
-                <div style={{ position: 'fixed', inset: 0, background: 'rgba(26, 46, 53, 0.4)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999999, padding: '1.5rem' }}>
-                    <div className="dashboard-card animate-in" style={{ maxWidth: '550px', width: '100%', padding: '0', borderRadius: '28px', maxHeight: '92vh', overflow: 'hidden', display: 'flex', flexDirection: 'column', background: '#FFFFFF', border: 'none', boxShadow: '0 40px 100px rgba(0,0,0,0.25)' }}>
-                        <header style={{ padding: '2rem 2.5rem 1.5rem', background: '#F9FBFB', borderBottom: '1px solid #F0F4F4', position: 'relative' }}>
-                            <h2 style={{ margin: 0, color: '#1A2E35', fontSize: '1.8rem', fontWeight: '800' }}>Programar Sesión</h2>
-                            <p style={{ color: '#5A6B6D', fontSize: '0.85rem', marginTop: '0.4rem' }}>Configura el horario y la frecuencia del tratamiento.</p>
-                            <button 
-                                onClick={() => setShowModal(false)}
-                                style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', background: 'rgba(0,0,0,0.05)', border: 'none', width: '32px', height: '32px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#5A6B6D', fontSize: '1rem', fontWeight: 'bold' }}
-                                onMouseOver={e => e.currentTarget.style.background = 'rgba(0,0,0,0.1)'}
-                                onMouseOut={e => e.currentTarget.style.background = 'rgba(0,0,0,0.05)'}
-                            >
-                                ✕
-                            </button>
+                <div className="modal-overlay">
+                    <div className="modal-container--premium">
+                        <header className="modal-header--clinical">
+                            <h2 className="modal-header__title">Programar Sesión</h2>
+                            <p className="modal-header__subtitle">Configura el horario y la frecuencia del tratamiento.</p>
+                            <button className="modal-close" onClick={() => setShowModal(false)}>✕</button>
                         </header>
-                        <div style={{ padding: '2rem 2.5rem', overflowY: 'auto', flex: 1 }}>
+                        
+                        <div className="modal-body--clinical">
                             {allPatients.length === 0 ? (
-                                <div style={{ textAlign: 'center', padding: '2rem 0' }}>
-                                    <p style={{ color: '#5A6B6D', marginBottom: '2rem' }}>No tienes pacientes registrados.</p>
+                                <div className="empty-state--centered">
+                                    <p>No tienes pacientes registrados.</p>
                                     <button className="btn-primary" onClick={() => { setShowModal(false); navigate('/dashboard/physio/patients/new'); }}>Registrar paciente</button>
                                 </div>
                             ) : (
-                                <form onSubmit={handleCreateAppointment} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                                    <div className="form-group" style={{ position: 'relative' }}>
-                                        <label className="meta-label" style={{ fontWeight: '700', color: '#55A98A', marginBottom: '0.5rem' }}>Paciente Clínico</label>
-                                        <div onClick={() => setShowPatientList(!showPatientList)} style={{ padding: '0 1.2rem', height: '54px', borderRadius: '14px', border: '1.5px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', background: '#F9FBFB' }}>
-                                            <span style={{ color: newApptData.pacienteId ? '#1A2E35' : '#A0AEC0', fontWeight: '600' }}>{newApptData.pacienteId ? allPatients.find(p => p._id === newApptData.pacienteId)?.nombre : 'Seleccionar paciente...'}</span>
-                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#55A98A" strokeWidth="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                <form onSubmit={handleCreateAppointment} className="clinical-form">
+                                    <div className="clinical-input-group relative">
+                                        <label className="meta-label meta-label--brand">Paciente Clínico</label>
+                                        <div className="select-clinical__trigger" onClick={() => setShowPatientList(!showPatientList)}>
+                                            <span style={{ color: newApptData.pacienteId ? '#1A2E35' : '#A0AEC0' }}>
+                                                {newApptData.pacienteId ? allPatients.find(p => p._id === newApptData.pacienteId)?.nombre : 'Seleccionar paciente...'}
+                                            </span>
+                                            <ChevronIcon size={20} direction={showPatientList ? 'up' : 'down'} />
                                         </div>
                                         {showPatientList && (
-                                            <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 10, background: '#FFFFFF', borderRadius: '14px', marginTop: '8px', boxShadow: '0 15px 30px rgba(0,0,0,0.1)', border: '1px solid #E2E8F0', maxHeight: '200px', overflowY: 'auto', padding: '0.5rem' }}>
+                                            <div className="select-clinical__dropdown animate-in">
                                                 {allPatients.map(p => (
-                                                    <div key={p._id} onClick={() => { setNewApptData({...newApptData, pacienteId: p._id}); setShowPatientList(false); }} style={{ padding: '0.8rem 1rem', borderRadius: '10px', cursor: 'pointer', background: newApptData.pacienteId === p._id ? '#E8F5F1' : 'transparent', color: newApptData.pacienteId === p._id ? '#55A98A' : '#1A2E35', fontWeight: '600' }} onMouseOver={e => e.currentTarget.style.background = '#F9FBFB'} onMouseOut={e => e.currentTarget.style.background = newApptData.pacienteId === p._id ? '#E8F5F1' : 'transparent'}>{p.nombre}</div>
+                                                    <div 
+                                                        key={p._id} 
+                                                        className={`select-clinical__option ${newApptData.pacienteId === p._id ? 'select-clinical__option--selected' : ''}`}
+                                                        onClick={() => { setNewApptData({...newApptData, pacienteId: p._id}); setShowPatientList(false); }}
+                                                    >
+                                                        {p.nombre}
+                                                    </div>
                                                 ))}
                                             </div>
                                         )}
                                     </div>
-                                    <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '1.5rem' }}>
-                                        <div className="form-group">
-                                            <label className="meta-label" style={{ fontWeight: '700', color: '#55A98A', marginBottom: '0.5rem' }}>Fecha de Inicio</label>
-                                            <input type="date" className="auth__input" required value={newApptData.fecha} onChange={e => setNewApptData({...newApptData, fecha: e.target.value})} style={{ height: '54px', borderRadius: '14px', border: '1.5px solid #E2E8F0', padding: '0 1rem', width: '100%' }} />
+
+                                    <div className="clinical-form-row">
+                                        <div className="clinical-input-group">
+                                            <label className="meta-label meta-label--brand">Fecha de Inicio</label>
+                                            <input type="date" className="input-clinical" required value={newApptData.fecha} onChange={e => setNewApptData({...newApptData, fecha: e.target.value})} />
                                         </div>
-                                        <div className="form-group">
-                                            <label className="meta-label" style={{ fontWeight: '700', color: '#55A98A', marginBottom: '0.5rem' }}>Hora</label>
-                                            <input type="time" className="auth__input" required value={newApptData.hora} onChange={e => setNewApptData({...newApptData, hora: e.target.value})} style={{ height: '54px', borderRadius: '14px', border: '1.5px solid #E2E8F0', padding: '0 1rem', width: '100%' }} />
+                                        <div className="clinical-input-group">
+                                            <label className="meta-label meta-label--brand">Hora</label>
+                                            <input type="time" className="input-clinical" required value={newApptData.hora} onChange={e => setNewApptData({...newApptData, hora: e.target.value})} />
                                         </div>
                                     </div>
-                                    <div className="form-group">
-                                        <label className="meta-label" style={{ fontWeight: '700', color: '#55A98A', marginBottom: '0.5rem' }}>Motivo de Sesión</label>
-                                        <input type="text" className="auth__input" placeholder="Ej: Rehabilitación de hombro" value={newApptData.tipo} onChange={e => setNewApptData({...newApptData, tipo: e.target.value})} style={{ height: '54px', borderRadius: '14px', border: '1.5px solid #E2E8F0', padding: '0 1rem', width: '100%' }} />
+
+                                    <div className="clinical-input-group">
+                                        <label className="meta-label meta-label--brand">Motivo de Sesión</label>
+                                        <input type="text" className="input-clinical" placeholder="Ej: Rehabilitación de hombro" value={newApptData.tipo} onChange={e => setNewApptData({...newApptData, tipo: e.target.value})} />
                                     </div>
-                                    <div style={{ padding: '1.5rem', background: '#F9FBFB', borderRadius: '20px', border: '1px dashed #E2E8F0' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: isRecurring ? '1.5rem' : '0' }}>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
-                                                <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: isRecurring ? '#55A98A' : '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFF' }}>
+
+                                    <div className="clinical-card--dashed">
+                                        <div className="flex-between">
+                                            <div className="flex-center gap-2">
+                                                <div className={`icon-indicator ${isRecurring ? 'active' : ''}`}>
                                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 2v6h-6"></path><path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path><path d="M3 22v-6h6"></path><path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path></svg>
                                                 </div>
-                                                <span style={{ fontWeight: '700', color: '#1A2E35' }}>Planificación Automática</span>
+                                                <strong className="text-dark">Planificación Automática</strong>
                                             </div>
-                                            <input type="checkbox" checked={isRecurring} onChange={e => setIsRecurring(e.target.checked)} style={{ width: '20px', height: '20px', cursor: 'pointer', accentColor: '#55A98A' }} />
+                                            <input type="checkbox" checked={isRecurring} onChange={e => setIsRecurring(e.target.checked)} className="checkbox-brand" />
                                         </div>
+
                                         {isRecurring && (
-                                            <div className="animate-in" style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
-                                                <div>
-                                                    <label className="meta-label" style={{ fontSize: '0.7rem', marginBottom: '0.6rem', display: 'block' }}>Días de tratamiento semanal</label>
-                                                    <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                                        {DAYS_OF_WEEK.map(day => (
-                                                            <button key={day.value} type="button" onClick={() => toggleRecurringDay(day.value)} style={{ width: '36px', height: '36px', borderRadius: '10px', border: 'none', background: recurringDays.includes(day.value) ? '#55A98A' : '#FFFFFF', color: recurringDays.includes(day.value) ? '#FFFFFF' : '#1A2E35', fontWeight: '700', cursor: 'pointer', transition: 'all 0.2s', boxShadow: '0 2px 5px rgba(0,0,0,0.05)' }}>{day.label}</button>
-                                                        ))}
-                                                    </div>
+                                            <div className="recurring-options animate-in">
+                                                <label className="meta-label--mini">Días de tratamiento semanal</label>
+                                                <div className="day-picker">
+                                                    {DAYS_OF_WEEK.map(day => (
+                                                        <button key={day.value} type="button" onClick={() => toggleRecurringDay(day.value)} className={`day-btn ${recurringDays.includes(day.value) ? 'active' : ''}`}>{day.label}</button>
+                                                    ))}
                                                 </div>
-                                                <div className="form-group">
-                                                    <label className="meta-label" style={{ fontSize: '0.7rem' }}>Finalizar ciclo el día</label>
-                                                    <input type="date" className="auth__input" value={recurringEndDate} onChange={e => setRecurringEndDate(e.target.value)} style={{ height: '48px', background: '#FFFFFF', borderRadius: '12px', border: '1.5px solid #E2E8F0', padding: '0 1rem', width: '100%' }} />
+                                                <div className="clinical-input-group mt-3">
+                                                    <label className="meta-label--mini">Finalizar ciclo el día</label>
+                                                    <input type="date" className="input-clinical" value={recurringEndDate} onChange={e => setRecurringEndDate(e.target.value)} />
                                                 </div>
                                             </div>
                                         )}
                                     </div>
-                                    <footer style={{ marginTop: '0.5rem', display: 'flex', gap: '1.2rem' }}>
-                                        <button type="button" className="btn-ghost" onClick={() => setShowModal(false)} style={{ flex: 1, height: '54px', borderRadius: '14px', fontWeight: '700' }}>Cancelar</button>
-                                        <button type="submit" className="btn-primary" disabled={!newApptData.pacienteId || (isRecurring && (recurringDays.length === 0 || !recurringEndDate))} style={{ flex: 2, height: '54px', borderRadius: '14px', fontWeight: '700', boxShadow: '0 10px 25px rgba(85, 169, 138, 0.3)' }}>{isRecurring ? `Agendar Sesiones` : 'Confirmar Cita'}</button>
+
+                                    <footer className="modal-footer--clinical-inside">
+                                        <button type="button" className="btn-ghost" onClick={() => setShowModal(false)}>Cancelar</button>
+                                        <button type="submit" className="btn-primary--soft" disabled={!newApptData.pacienteId || (isRecurring && (recurringDays.length === 0 || !recurringEndDate))}>
+                                            {isRecurring ? `Agendar Sesiones` : 'Confirmar Cita'}
+                                        </button>
                                     </footer>
                                 </form>
                             )}
@@ -396,8 +488,7 @@ const Appointments = () => {
                 </div>,
                 document.body
             )}
-
-        </>
+        </main>
     );
 };
 
