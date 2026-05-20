@@ -333,7 +333,20 @@ const Appointments = () => {
                                     <span className="agenda-calendar__day-number">{day.number}</span>
                                     
                                     {/* Indicadores de citas en agenda */}
-                                    <div style={{ display: 'flex', gap: '4px', position: 'absolute', bottom: '8px' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', position: 'absolute', bottom: '8px' }}>
+                                        {day.isToday && (
+                                            <span 
+                                                title="Hoy" 
+                                                style={{ 
+                                                    width: '6px', 
+                                                    height: '6px', 
+                                                    borderRadius: '50%', 
+                                                    background: selectedDate === day.fullDate ? '#FFFFFF' : 'var(--color-brand)', 
+                                                    display: 'inline-block',
+                                                    boxShadow: selectedDate === day.fullDate ? 'none' : '0 0 4px rgba(85,169,138,0.4)'
+                                                }}
+                                            />
+                                        )}
                                         {hasPending && (
                                             <span 
                                                 title="Solicitud pendiente" 
@@ -361,7 +374,6 @@ const Appointments = () => {
                                             />
                                         )}
                                     </div>
-                                    {day.isToday && <div className="agenda-calendar__today-dot"></div>}
                                 </button>
                             );
                         })}
