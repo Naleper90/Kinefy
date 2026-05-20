@@ -236,8 +236,8 @@ const DashboardHome = () => {
                         <nav className="patient-list" style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', maxHeight: '320px', paddingRight: '6px' }}>
                             {todayAppointments.length > 0 ? (
                                 todayAppointments.map((appt, i) => (
-                                    <article key={i} className="patient-item" style={{ borderBottom: '1px solid #F0F4F2', paddingBottom: '0.8rem', marginBottom: '0.8rem' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', width: '100%', gap: '12px' }}>
+                                    <article key={i} className="patient-item" style={{ borderBottom: '1px solid #F0F4F2', paddingBottom: '0.8rem', marginBottom: '0.8rem', overflow: 'hidden', width: '100%' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', width: '100%', gap: '12px', flexWrap: 'wrap' }}>
                                             <time style={{ 
                                                 fontSize: '1.1rem', 
                                                 fontWeight: '700', 
@@ -249,12 +249,12 @@ const DashboardHome = () => {
                                                 textAlign: 'center'
                                             }}>{appt.hora}</time>
                                             
-                                            <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                                                <span style={{ fontWeight: '600', color: 'var(--color-text-dark)', fontSize: '0.95rem' }}>{appt.paciente?.nombre}</span>
-                                                <span style={{ fontSize: '0.8rem', color: 'var(--color-text-soft)' }}>{appt.tipo}</span>
+                                            <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
+                                                <span style={{ fontWeight: '600', color: 'var(--color-text-dark)', fontSize: '0.95rem', whiteSpace: 'normal', wordBreak: 'break-word' }}>{appt.paciente?.nombre}</span>
+                                                <span style={{ fontSize: '0.8rem', color: 'var(--color-text-soft)', whiteSpace: 'normal', wordBreak: 'break-word' }}>{appt.tipo}</span>
                                             </div>
-
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+ 
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                                                 <span className={`status-badge ${
                                                     appt.estado === 'pendiente' ? 'status-badge--pending' : 
                                                     appt.estado === 'confirmada' ? 'status-badge--confirm' :
