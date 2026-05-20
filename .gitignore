@@ -22,3 +22,15 @@ Thumbs.db
 
 # Presentación y scripts
 guion-video.md
+todo-list-privado.md
+
+# Tribunal references
+referencias_tribunal/
+
+# Temporary scratch directories
+**/scratch/
+
+# Backend uploads
+kinefy-backend/uploads/*
+!kinefy-backend/uploads/.gitkeep
+

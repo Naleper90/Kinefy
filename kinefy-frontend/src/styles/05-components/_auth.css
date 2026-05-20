@@ -1,8 +1,8 @@
 :root {
-  --color-brand: #98D2C1;
-  --color-brand-hover: #87C1B0;
+  --color-brand: #81BAA5;
+  --color-brand-hover: #6BA38E;
   --color-bg-paper: #FDFEFE;
-  --color-bg-alt: #F3F9F7;
+  --color-bg-alt: #F3F8F6;
   --color-text-dark: #1A2E35;
   --color-text-soft: #5A6B6D;
   --color-text-link: #3B7A8E;
@@ -184,20 +184,21 @@ button.auth__button {
   color: var(--color-text-dark);
   border: none;
   padding: 1.2rem;
-  border-radius: 50px;
+  border-radius: 22px 38px 25px 42px / 35px 28px 45px 32px;
   font-weight: 700;
   font-size: 1.1rem;
   cursor: pointer;
   margin-top: 1.5rem;
-  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   letter-spacing: -0.01em;
-  box-shadow: 0 8px 25px rgba(152, 210, 193, 0.2);
+  box-shadow: 0 8px 25px rgba(85, 169, 138, 0.2);
 }
 
 button.auth__button:hover {
   background: var(--color-brand-hover);
-  transform: translateY(-2px);
-  box-shadow: 0 10px 30px rgba(152, 210, 193, 0.2);
+  transform: translateY(-3px) scale(1.02) rotate(0.5deg);
+  border-radius: 38px 22px 42px 25px / 28px 35px 32px 45px;
+  box-shadow: 0 10px 30px rgba(85, 169, 138, 0.25);
 }
 
 footer.auth__footer {
@@ -235,10 +236,68 @@ nav.auth__nav a:hover {
     grid-template-columns: 1fr;
     overflow-y: auto;
   }
+
   .auth-page__identity {
     display: none;
   }
+
   .auth-page__form-container {
     padding: 4rem 2rem;
+  }
+}
+
+/* --- Legal Nav --- */
+
+.auth__legal-nav {
+  color: #A0AEC0;
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.auth__legal-link {
+  color: #A0AEC0;
+}
+
+.auth__legal-link:hover {
+  color: #55A98A;
+}
+
+.auth__legal-divider {
+  color: #E2E8F0;
+}
+
+
+/* --- Auth Feedback --- */
+
+.auth__error-msg {
+  color: #ff4d4d;
+  display: block;
+}
+
+.auth__success-article {
+  padding: 1rem;
+}
+
+.auth__success-title {
+  color: #55A98A;
+}
+
+.auth__success-text {
+  color: #666;
+}
+@media (max-width: 480px) {
+  h1 {
+    font-size: 2.2rem;
+  }
+  
+  .auth-page__form-container {
+    padding: 2rem 1.5rem;
+  }
+  
+  button.auth__button {
+    padding: 1rem;
+    font-size: 1rem;
   }
 }

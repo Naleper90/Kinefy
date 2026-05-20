@@ -1,5 +1,6 @@
-import React from 'react';
+import { Link } from 'react-router-dom';
 import { KinefyLogo, BlobIcon } from './AuthIcons';
+
 
 const AuthLayout = ({ children, title, subtitle, footerActions }) => {
     return (
@@ -35,7 +36,13 @@ const AuthLayout = ({ children, title, subtitle, footerActions }) => {
                                 {footerActions}
                             </nav>
                         )}
+                        <div style={{ marginTop: '1.5rem', fontSize: '0.75rem', color: '#A0AEC0', textAlign: 'center' }}>
+                            <Link to="/legal" style={{ color: '#A0AEC0', textDecoration: 'underline', margin: '0 0.5rem' }}>Aviso Legal</Link>
+                            |
+                            <Link to="/privacy" style={{ color: '#A0AEC0', textDecoration: 'underline', margin: '0 0.5rem' }}>Privacidad</Link>
+                        </div>
                     </footer>
+
                 </article>
             </main>
         </section>
