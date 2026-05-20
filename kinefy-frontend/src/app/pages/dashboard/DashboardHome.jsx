@@ -236,25 +236,26 @@ const DashboardHome = () => {
                         <nav className="patient-list" style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', maxHeight: '320px', paddingRight: '6px' }}>
                             {todayAppointments.length > 0 ? (
                                 todayAppointments.map((appt, i) => (
-                                    <article key={i} className="patient-item" style={{ borderBottom: '1px solid #F0F4F2', paddingBottom: '0.8rem', marginBottom: '0.8rem', overflow: 'hidden', width: '100%' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', width: '100%', gap: '12px', flexWrap: 'wrap' }}>
+                                    <article key={i} className="patient-item" style={{ borderBottom: '1px solid #F0F4F2', paddingBottom: '0.8rem', marginBottom: '0.8rem', width: '100%', boxSizing: 'border-box', overflow: 'hidden' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', width: '100%', gap: '12px' }}>
                                             <time style={{ 
                                                 fontSize: '1.1rem', 
                                                 fontWeight: '700', 
                                                 color: 'var(--color-brand)', 
-                                                minWidth: '55px',
+                                                width: '60px',
+                                                flexShrink: 0,
                                                 background: '#E8F5F1',
-                                                padding: '4px 8px',
+                                                padding: '4px 0',
                                                 borderRadius: '6px',
                                                 textAlign: 'center'
                                             }}>{appt.hora}</time>
                                             
-                                            <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
-                                                <span style={{ fontWeight: '600', color: 'var(--color-text-dark)', fontSize: '0.95rem', whiteSpace: 'normal', wordBreak: 'break-word' }}>{appt.paciente?.nombre}</span>
-                                                <span style={{ fontSize: '0.8rem', color: 'var(--color-text-soft)', whiteSpace: 'normal', wordBreak: 'break-word' }}>{appt.tipo}</span>
+                                            <div style={{ flex: 1, minWidth: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                                                <span style={{ fontWeight: '600', color: 'var(--color-text-dark)', fontSize: '0.95rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{appt.paciente?.nombre}</span>
+                                                <span style={{ fontSize: '0.8rem', color: 'var(--color-text-soft)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{appt.tipo}</span>
                                             </div>
  
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                                            <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
                                                 <span className={`status-badge ${
                                                     appt.estado === 'pendiente' ? 'status-badge--pending' : 
                                                     appt.estado === 'confirmada' ? 'status-badge--confirm' :
