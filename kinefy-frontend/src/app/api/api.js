@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: '/api', // En producción, Nginx actúa como proxy hacia el backend
+    baseURL: import.meta.env.VITE_API_URL || 'https://kinefy-production.up.railway.app/api',
 
     headers: {
         'Content-Type': 'application/json'
