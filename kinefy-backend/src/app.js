@@ -13,14 +13,17 @@ if (!fs.existsSync(uploadsDir)) {
 
 // Middleware
 const allowedOrigins = process.env.FRONTEND_URL 
-    ? process.env.FRONTEND_URL.split(',') 
+    ? process.env.FRONTEND_URL.split(',').map(o => o.trim().replace(/\/$/, '')) 
     : ['http://localhost:3000', 'http://localhost:5173', 'http://localhost:5174'];
 
 app.use(cors({
     origin: (origin, callback) => {
-        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+        if (!origin) return callback(null, true);
+        const originClean = origin.trim().replace(/\/$/, '');
+        if (allowedOrigins.indexOf(originClean) !== -1) {
             callback(null, true);
         } else {
+            console.warn(`[CORS Blocked] Origen no permitido: "${origin}". Permitidos: ${allowedOrigins.join(', ')}`);
             callback(new Error('Acceso CORS no permitido por la política de seguridad'));
         }
     },
