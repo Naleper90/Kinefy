@@ -243,13 +243,52 @@ const PatientDocs = () => {
                         <div className="modal-body--clinical">
                             <form onSubmit={handleUploadSubmit} className="clinical-form">
                                 <div className="clinical-input-group" style={{ marginBottom: '1.2rem' }}>
-                                    <label className="meta-label meta-label--brand">Seleccionar Archivo</label>
+                                    <label className="meta-label meta-label--brand" style={{ marginBottom: '0.6rem', display: 'block' }}>Seleccionar Archivo</label>
+                                    <label 
+                                        htmlFor="file-upload-input" 
+                                        style={{
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            padding: '2rem 1.5rem',
+                                            border: '2px dashed #C2DFD4',
+                                            borderRadius: '20px',
+                                            background: '#F4FAF8',
+                                            cursor: 'pointer',
+                                            transition: 'all 0.3s ease',
+                                            textAlign: 'center',
+                                            color: '#55A98A'
+                                        }}
+                                        className="file-upload-dropzone"
+                                    >
+                                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginBottom: '0.8rem' }}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                                        {uploadForm.file ? (
+                                            <div style={{ width: '100%' }}>
+                                                <p style={{ margin: '0 0 0.4rem', fontWeight: '700', fontSize: '0.9rem', color: '#1A2E35', wordBreak: 'break-all' }}>
+                                                    {uploadForm.file.name}
+                                                </p>
+                                                <span style={{ fontSize: '0.75rem', color: '#55A98A', fontWeight: '600' }}>
+                                                    {(uploadForm.file.size / 1024 / 1024).toFixed(2)} MB - Haz clic para cambiar
+                                                </span>
+                                            </div>
+                                        ) : (
+                                            <div>
+                                                <p style={{ margin: '0 0 0.3rem', fontWeight: '700', fontSize: '0.9rem', color: '#1A2E35' }}>
+                                                    Elige un archivo o arrástralo aquí
+                                                </p>
+                                                <span style={{ fontSize: '0.75rem', color: '#7A8C8E', fontWeight: '500' }}>
+                                                    PDF, PNG, JPG hasta 10MB
+                                                </span>
+                                            </div>
+                                        )}
+                                    </label>
                                     <input 
+                                        id="file-upload-input"
                                         type="file" 
-                                        className="input-clinical" 
                                         required 
                                         onChange={handleFileChange}
-                                        style={{ border: 'none', background: '#F9FBFB', padding: '0.5rem 0' }}
+                                        style={{ display: 'none' }}
                                     />
                                 </div>
                                 <div className="clinical-input-group" style={{ marginBottom: '1.2rem' }}>

@@ -29,6 +29,11 @@ router.put('/:id', authMiddleware, patientController.updatePatient);
 // @access  Privado
 router.delete('/:id', authMiddleware, patientController.deletePatient);
 
+// @route   POST /api/patients/:id/reset-password
+// @desc    Generar contraseña temporal para el paciente
+// @access  Privado (Solo Fisioterapeutas)
+router.post('/:id/reset-password', authMiddleware, patientController.resetPatientPassword);
+
 // @route   POST /api/patients/:id/exercises
 // @desc    Asignar ejercicios a un paciente
 // @access  Privado (Fisios)

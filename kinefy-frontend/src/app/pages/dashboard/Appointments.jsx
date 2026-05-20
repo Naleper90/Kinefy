@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import api from '../../api/api';
 import { 
     BlobIcon, 
@@ -11,12 +11,31 @@ import {
     AppointmentsIcon,
     SearchIcon 
 } from '../../components/dashboard/DashboardIcons';
+import { CustomCalendar, CustomTimePicker } from '../../components/dashboard/DatePickerPremium';
+
+const getNextDays = (count = 14) => {
+    const days = [];
+    const today = new Date();
+    for (let i = 0; i < count; i++) {
+        const d = new Date(today);
+        d.setDate(today.getDate() + i);
+        days.push(d);
+    }
+    return days;
+};
 
 const Appointments = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const scrollRef = useRef(null);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
+    const [statusMsg, setStatusMsg] = useState(null);
+
+    const showNotification = (msg) => {
+        setStatusMsg(msg);
+        setTimeout(() => setStatusMsg(null), 3000);
+    };
     
     const toLocalDateString = (date) => {
         const d = new Date(date);
@@ -40,6 +59,8 @@ const Appointments = () => {
         hora: '10:00',
         tipo: 'Seguimiento'
     });
+    const [customDateMode, setCustomDateMode] = useState(false);
+    const [customTimeMode, setCustomTimeMode] = useState(false);
 
     const [isRecurring, setIsRecurring] = useState(false);
     const [recurringDays, setRecurringDays] = useState([]);
@@ -127,6 +148,15 @@ const Appointments = () => {
         fetchAppointments();
     }, []);
 
+    useEffect(() => {
+        if (location.state && location.state.selectedDate) {
+            const dateStr = location.state.selectedDate;
+            setSelectedDate(dateStr);
+            const dateObj = new Date(dateStr + 'T00:00:00');
+            setCurrentDate(new Date(dateObj.getFullYear(), dateObj.getMonth(), 1));
+        }
+    }, [location.state]);
+
     const normalizeText = (text) => 
         text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
@@ -164,6 +194,7 @@ const Appointments = () => {
                 }));
 
                 await api.post('/appointments/bulk', { appointments });
+                showNotification("Citas programadas correctamente");
             } else {
                 await api.post('/appointments', {
                     paciente: newApptData.pacienteId,
@@ -171,11 +202,12 @@ const Appointments = () => {
                     hora: newApptData.hora,
                     tipo: newApptData.tipo
                 });
+                showNotification("Cita creada correctamente");
             }
             setShowModal(false);
             fetchAppointments();
         } catch (err) {
-            alert("Error al crear la cita");
+            showNotification("Error al crear la cita");
         }
     };
 
@@ -184,8 +216,9 @@ const Appointments = () => {
             await api.patch(`/appointments/${id}/status`, { estado: newStatus });
             setAppointments(appointments.map(a => a.id === id ? { ...a, status: newStatus } : a));
             setActiveStatusMenu(null);
+            showNotification("Estado de cita actualizado");
         } catch (err) {
-            alert("Error al actualizar estado");
+            showNotification("Error al actualizar estado");
         }
     };
 
@@ -195,8 +228,9 @@ const Appointments = () => {
             await api.delete(`/appointments/${showDeleteConfirm}`);
             setAppointments(appointments.filter(a => a.id !== showDeleteConfirm));
             setShowDeleteConfirm(null);
+            showNotification("Cita eliminada correctamente");
         } catch (err) {
-            alert("Error al eliminar la cita");
+            showNotification("Error al eliminar la cita");
         }
     };
 
@@ -222,6 +256,12 @@ const Appointments = () => {
 
     return (
         <main className="agenda-container animate-in">
+            {statusMsg && (
+                <article className="toast-notification">
+                    <span className="toast-notification__dot">●</span>
+                    {statusMsg}
+                </article>
+            )}
             <header className="agenda-header">
                 <nav className="agenda-month-nav">
                     <button onClick={() => changeMonth(-1)} className="btn-nav-month" title="Mes anterior">
@@ -277,17 +317,54 @@ const Appointments = () => {
                     </button>
                     
                     <div className="agenda-calendar__scroll" ref={scrollRef}>
-                        {monthDays.map((day) => (
-                            <button 
-                                key={day.fullDate} 
-                                onClick={() => setSelectedDate(day.fullDate)} 
-                                className={`agenda-calendar__day ${selectedDate === day.fullDate ? 'agenda-calendar__day--selected' : ''}`}
-                            >
-                                <span className="agenda-calendar__day-name">{day.name}</span>
-                                <span className="agenda-calendar__day-number">{day.number}</span>
-                                {day.isToday && <div className="agenda-calendar__today-dot"></div>}
-                            </button>
-                        ))}
+                        {monthDays.map((day) => {
+                            const dayAppts = appointments.filter(appt => appt.date === day.fullDate);
+                            const hasPending = dayAppts.some(appt => appt.status === 'pendiente');
+                            const hasActive = dayAppts.some(appt => appt.status === 'confirmada' || appt.status === 'en-curso');
+                            
+                            return (
+                                <button 
+                                    key={day.fullDate} 
+                                    onClick={() => setSelectedDate(day.fullDate)} 
+                                    className={`agenda-calendar__day ${selectedDate === day.fullDate ? 'agenda-calendar__day--selected' : ''}`}
+                                    style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '80px', paddingBottom: '0.8rem' }}
+                                >
+                                    <span className="agenda-calendar__day-name">{day.name}</span>
+                                    <span className="agenda-calendar__day-number">{day.number}</span>
+                                    
+                                    {/* Indicadores de citas en agenda */}
+                                    <div style={{ display: 'flex', gap: '4px', position: 'absolute', bottom: '8px' }}>
+                                        {hasPending && (
+                                            <span 
+                                                title="Solicitud pendiente" 
+                                                style={{ 
+                                                    width: '6px', 
+                                                    height: '6px', 
+                                                    borderRadius: '50%', 
+                                                    background: '#E57373', 
+                                                    display: 'inline-block',
+                                                    boxShadow: '0 0 4px rgba(229,115,115,0.6)'
+                                                }}
+                                            />
+                                        )}
+                                        {hasActive && (
+                                            <span 
+                                                title="Citas programadas" 
+                                                style={{ 
+                                                    width: '6px', 
+                                                    height: '6px', 
+                                                    borderRadius: '50%', 
+                                                    background: selectedDate === day.fullDate ? '#FFFFFF' : '#55A98A', 
+                                                    display: 'inline-block',
+                                                    boxShadow: selectedDate === day.fullDate ? 'none' : '0 0 4px rgba(85,169,138,0.6)'
+                                                }}
+                                            />
+                                        )}
+                                    </div>
+                                    {day.isToday && <div className="agenda-calendar__today-dot"></div>}
+                                </button>
+                            );
+                        })}
                     </div>
                 </section>
             )}
@@ -432,15 +509,114 @@ const Appointments = () => {
                                         )}
                                     </div>
 
-                                    <div className="clinical-form-row">
-                                        <div className="clinical-input-group">
-                                            <label className="meta-label meta-label--brand">Fecha de Inicio</label>
-                                            <input type="date" className="input-clinical" required value={newApptData.fecha} onChange={e => setNewApptData({...newApptData, fecha: e.target.value})} />
+                                    <div className="clinical-input-group" style={{ marginBottom: '1.5rem' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.6rem' }}>
+                                            <label className="meta-label meta-label--brand" style={{ margin: 0 }}>Fecha de Inicio</label>
+                                            <button 
+                                                type="button" 
+                                                className="link-btn" 
+                                                onClick={() => setCustomDateMode(!customDateMode)}
+                                                style={{ background: 'none', border: 'none', color: 'var(--color-brand)', fontWeight: '700', fontSize: '0.75rem', cursor: 'pointer', textDecoration: 'underline', padding: 0 }}
+                                            >
+                                                {customDateMode ? "Ver calendario rápido" : "Elegir otra fecha"}
+                                            </button>
                                         </div>
-                                        <div className="clinical-input-group">
-                                            <label className="meta-label meta-label--brand">Hora</label>
-                                            <input type="time" className="input-clinical" required value={newApptData.hora} onChange={e => setNewApptData({...newApptData, hora: e.target.value})} />
+                                        
+                                        {customDateMode ? (
+                                            <CustomCalendar 
+                                                selectedDate={newApptData.fecha} 
+                                                onSelectDate={date => setNewApptData({...newApptData, fecha: date})} 
+                                            />
+                                        ) : (
+                                            <div style={{ display: 'flex', gap: '0.6rem', overflowX: 'auto', padding: '0.4rem 0.2rem', scrollbarWidth: 'none', msOverflowStyle: 'none' }} className="no-scrollbar">
+                                                {getNextDays().map((d, index) => {
+                                                    const isoStr = d.toISOString().split('T')[0];
+                                                    const isSelected = newApptData.fecha === isoStr;
+                                                    return (
+                                                        <button
+                                                            key={index}
+                                                            type="button"
+                                                            onClick={() => setNewApptData(prev => ({ ...prev, fecha: isoStr }))}
+                                                            style={{
+                                                                flex: '0 0 68px',
+                                                                height: '84px',
+                                                                borderRadius: '16px',
+                                                                background: isSelected ? 'var(--color-brand)' : '#F4FAF8',
+                                                                color: isSelected ? '#FFFFFF' : '#1A2E35',
+                                                                border: isSelected ? 'none' : '1px solid #C2DFD4',
+                                                                display: 'flex',
+                                                                flexDirection: 'column',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center',
+                                                                cursor: 'pointer',
+                                                                transition: 'all 0.2s ease',
+                                                                padding: '0.4rem 0.2rem'
+                                                            }}
+                                                        >
+                                                            <span style={{ fontSize: '0.65rem', fontWeight: '700', textTransform: 'uppercase', color: isSelected ? '#E2F1EC' : '#7A8C8E' }}>
+                                                                {d.toLocaleDateString('es-ES', { weekday: 'short' })}
+                                                            </span>
+                                                            <span style={{ fontSize: '1.3rem', fontWeight: '800', marginTop: '0.1rem', lineHeight: '1.2' }}>
+                                                                {d.getDate()}
+                                                            </span>
+                                                            <span style={{ fontSize: '0.6rem', fontWeight: '600', color: isSelected ? '#E2F1EC' : '#7A8C8E', marginTop: '0.1rem' }}>
+                                                                {d.toLocaleDateString('es-ES', { month: 'short' })}
+                                                            </span>
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="clinical-input-group" style={{ marginBottom: '1.5rem' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.6rem' }}>
+                                            <label className="meta-label meta-label--brand" style={{ margin: 0 }}>Hora</label>
+                                            <button 
+                                                type="button" 
+                                                className="link-btn" 
+                                                onClick={() => setCustomTimeMode(!customTimeMode)}
+                                                style={{ background: 'none', border: 'none', color: 'var(--color-brand)', fontWeight: '700', fontSize: '0.75rem', cursor: 'pointer', textDecoration: 'underline', padding: 0 }}
+                                            >
+                                                {customTimeMode ? "Ver turnos rápidos" : "Elegir otra hora"}
+                                            </button>
                                         </div>
+
+                                        {customTimeMode ? (
+                                            <CustomTimePicker 
+                                                selectedTime={newApptData.hora} 
+                                                onSelectTime={time => setNewApptData({...newApptData, hora: time})} 
+                                            />
+                                        ) : (
+                                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '0.5rem' }}>
+                                                {[
+                                                    '09:00', '10:00', '11:00', '12:00', '13:00',
+                                                    '16:00', '17:00', '18:00', '19:00', '20:00'
+                                                ].map((time, idx) => {
+                                                    const isSelected = newApptData.hora === time;
+                                                    return (
+                                                        <button
+                                                            key={idx}
+                                                            type="button"
+                                                            onClick={() => setNewApptData(prev => ({ ...prev, hora: time }))}
+                                                            style={{
+                                                                padding: '0.6rem 0.2rem',
+                                                                borderRadius: '12px',
+                                                                background: isSelected ? 'var(--color-brand)' : '#FFFFFF',
+                                                                color: isSelected ? '#FFFFFF' : '#1A2E35',
+                                                                border: isSelected ? 'none' : '1.5px solid #E2E8F0',
+                                                                fontWeight: '700',
+                                                                fontSize: '0.8rem',
+                                                                cursor: 'pointer',
+                                                                transition: 'all 0.2s ease',
+                                                                textAlign: 'center'
+                                                            }}
+                                                        >
+                                                            {time}
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
+                                        )}
                                     </div>
 
                                     <div className="clinical-input-group">
@@ -468,8 +644,11 @@ const Appointments = () => {
                                                     ))}
                                                 </div>
                                                 <div className="clinical-input-group mt-3">
-                                                    <label className="meta-label--mini">Finalizar ciclo el día</label>
-                                                    <input type="date" className="input-clinical" value={recurringEndDate} onChange={e => setRecurringEndDate(e.target.value)} />
+                                                    <label className="meta-label--mini" style={{ marginBottom: '0.5rem', display: 'block' }}>Finalizar ciclo el día</label>
+                                                    <CustomCalendar 
+                                                        selectedDate={recurringEndDate} 
+                                                        onSelectDate={date => setRecurringEndDate(date)} 
+                                                    />
                                                 </div>
                                             </div>
                                         )}

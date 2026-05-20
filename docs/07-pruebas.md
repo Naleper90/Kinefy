@@ -6,6 +6,8 @@ Asegurar la estabilidad del sistema es fundamental en aplicaciones del sector sa
 
 ## 7.1. Pruebas Funcionales de API (Backend)
 
+### 7.1.1. Pruebas Manuales (Postman y cURL)
+
 Para verificar el correcto diseño de la API RESTful (Criterio C4), se han ejecutado baterías de pruebas unitarias sobre los endpoints críticos usando herramientas como Postman y comandos cURL. 
 
 **Prueba de Autenticación y Autorización:**
@@ -17,6 +19,33 @@ Validación de que un token caducado o mal formado devuelve el código HTTP corr
 **Prueba de Inserción de Datos (EVA):**
 Comprobación de que el modelo de Mongoose rechaza datos no válidos (por ejemplo, registrar un dolor EVA de 15 en una escala que solo admite de 1 a 10).
 *   *Salida obtenida:* `400 Bad Request` con mensaje descriptivo del fallo de validación de Mongoose.
+
+### 7.1.2. Pruebas Automatizadas de Integración (Jest & Supertest)
+
+Para asegurar la robustez de la seguridad (Criterio 4 de DWES y calidad del software), se ha implementado una suite de pruebas automatizadas utilizando **Jest** como framework de pruebas y **Supertest** para realizar peticiones HTTP virtuales sin necesidad de arrancar el servidor en red o requerir una base de datos conectada.
+
+*   **Fichero de prueba:** [kinefy-backend/src/tests/auth.test.js](file:///c:/Users/esana/Desktop/Kinefy/kinefy-backend/src/tests/auth.test.js)
+*   **Comando de ejecución:**
+    ```bash
+    npm run test
+    ```
+*   **Pruebas unitarias incluidas:**
+    1.  `should refuse access to /api/patients when no token is provided`: Realiza un `GET` a `/api/patients` sin cabeceras y comprueba que devuelve `401` y el código `AUTH_MISSING_TOKEN`.
+    2.  `should refuse access to /api/patients when an invalid token is provided`: Realiza un `GET` con una cabecera `Authorization` con formato incorrecto y comprueba que devuelve `401` y el código `AUTH_INVALID_TOKEN`.
+
+*   **Salida obtenida (Evidencia):**
+    ```text
+    PASS src/tests/auth.test.js
+      Auth Middleware Integration Tests
+        √ should refuse access to /api/patients when no token is provided (124 ms)
+        √ should refuse access to /api/patients when an invalid token is provided (26 ms)
+
+    Test Suites: 1 passed, 1 total
+    Tests:       2 passed, 2 total
+    Snapshots:   0 total
+    Time:        2.233 s
+    Ran all test suites.
+    ```
 
 ---
 

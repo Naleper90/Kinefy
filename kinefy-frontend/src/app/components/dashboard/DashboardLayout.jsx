@@ -48,7 +48,91 @@ const DashboardLayout = ({
         }
     };
 
+    const handleNotificationClick = (n) => {
+        setShowNotifications(false);
+        const localUser = JSON.parse(localStorage.getItem('kinefy_user')) || {};
+        const role = localUser.role || localUser.rol;
+        
+        let targetDate = null;
+        if (n.metadata && n.metadata.fecha) {
+            targetDate = typeof n.metadata.fecha === 'string' ? n.metadata.fecha.split('T')[0] : new Date(n.metadata.fecha).toISOString().split('T')[0];
+        }
+        
+        const appointmentId = n.metadata?.appointmentId || null;
+        if (role === 'paciente') {
+            navigate('/dashboard/patient/appointments', { state: { selectedDate: targetDate, appointmentId } });
+        } else {
+            navigate('/dashboard/physio/appointments', { state: { selectedDate: targetDate, appointmentId } });
+        }
+    };
+
     const unreadCount = notifications.filter(n => !n.leida).length;
+
+    const renderNotificationsDropdown = () => (
+        <div className="notifications-dropdown animate-in" style={{ zIndex: 10000 }}>
+            <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                <h4 style={{ margin: 0, color: '#1A2E35' }}>Notificaciones</h4>
+                <button 
+                    onClick={(e) => { e.stopPropagation(); setShowNotifications(false); }}
+                    style={{ background: 'none', border: 'none', fontSize: '1.2rem', color: '#5A6B6D', cursor: 'pointer', padding: '5px' }}
+                >
+                    ✕
+                </button>
+            </header>
+            {notifications.length === 0 ? (
+                <p style={{ fontSize: '0.85rem', color: '#5A6B6D', textAlign: 'center' }}>No tienes notificaciones</p>
+            ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                    {notifications.map(n => (
+                        <div 
+                            key={n._id} 
+                            onClick={() => handleNotificationClick(n)}
+                            onMouseEnter={e => e.currentTarget.style.background = '#E8F5F1'}
+                            onMouseLeave={e => e.currentTarget.style.background = n.leida ? 'transparent' : '#F0FAF6'}
+                            style={{ 
+                                padding: '0.75rem', borderRadius: '12px', 
+                                background: n.leida ? 'transparent' : '#F0FAF6',
+                                border: '1px solid #F0F4F4',
+                                cursor: 'pointer',
+                                transition: 'background 0.2s ease'
+                            }}
+                        >
+                            <p style={{ margin: '0 0 4px 0', fontSize: '0.85rem', fontWeight: '700', color: '#1A2E35' }}>{n.titulo}</p>
+                            <p style={{ margin: 0, fontSize: '0.75rem', color: '#5A6B6D' }}>{n.mensaje}</p>
+                            <span style={{ fontSize: '0.65rem', color: '#A0AEC0', marginTop: '4px', display: 'block' }}>
+                                {new Date(n.createdAt).toLocaleString()}
+                            </span>
+                        </div>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+
+    const renderUserMenuDropdown = () => (
+        <div className="notifications-dropdown animate-in" style={{ zIndex: 10000, width: '240px' }}>
+            <div className="dropdown-header">
+                <p className="dropdown-user-name">{user.name}</p>
+                <p className="dropdown-user-role">{user.role || 'Profesional'}</p>
+            </div>
+            <div style={{ padding: '0.4rem 0' }}>
+                <button 
+                    className="user-menu-item"
+                    onClick={() => setShowUserMenu(false)}
+                >
+                    <SettingsIcon size={18} />
+                    <span>Configuración</span>
+                </button>
+                <button 
+                    className="user-menu-item user-menu-item--danger"
+                    onClick={handleLogout}
+                >
+                    <LogoutIcon size={18} />
+                    <span>Cerrar Sesión</span>
+                </button>
+            </div>
+        </div>
+    );
 
     return (
         <section className="layout">
@@ -62,6 +146,7 @@ const DashboardLayout = ({
                             aria-label="Notificaciones"
                             onClick={() => {
                                 setShowNotifications(!showNotifications);
+                                setShowUserMenu(false);
                                 if (!showNotifications) markAsRead();
                             }}
                         >
@@ -78,33 +163,38 @@ const DashboardLayout = ({
                                 </span>
                             )}
                         </button>
+                        {showNotifications && renderNotificationsDropdown()}
                     </div>
 
-                    <article 
-                        className="topbar__user" 
-                        style={{ width: '36px', height: '36px', cursor: 'pointer' }}
-                        onClick={() => {
-                            setShowUserMenu(!showUserMenu);
-                            setShowNotifications(false);
-                        }}
-                    >
-                        {user.avatar ? (
-                            <img src={user.avatar} alt={user.name} style={{ width: '36px', height: '36px', borderRadius: '50%', objectFit: 'cover' }} />
-                        ) : (
-                            <figure className="topbar__avatar-sketchy" style={{ width: '36px', height: '36px' }}>
-                                <BlobIcon className="topbar__avatar-blob" color={user.color || '#E8F5F1'} />
-                                <span className="topbar__avatar-initials" style={{ fontSize: '0.8rem' }}>
-                                    {user.initials || user.name.charAt(0)}
-                                </span>
-                            </figure>
-                        )}
-                    </article>
+                    <div style={{ position: 'relative' }}>
+                        <article 
+                            className="topbar__user" 
+                            style={{ width: '36px', height: '36px', cursor: 'pointer' }}
+                            onClick={() => {
+                                setShowUserMenu(!showUserMenu);
+                                setShowNotifications(false);
+                            }}
+                        >
+                            {user.avatar ? (
+                                <img src={user.avatar} alt={user.name} style={{ width: '36px', height: '36px', borderRadius: '50%', objectFit: 'cover' }} />
+                            ) : (
+                                <figure className="topbar__avatar-sketchy" style={{ width: '36px', height: '36px' }}>
+                                    <BlobIcon className="topbar__avatar-blob" color={user.color || '#E8F5F1'} />
+                                    <span className="topbar__avatar-initials" style={{ fontSize: '0.8rem' }}>
+                                        {user.initials || user.name.charAt(0)}
+                                    </span>
+                                </figure>
+                            )}
+                        </article>
+                        {showUserMenu && renderUserMenuDropdown()}
+                    </div>
                 </div>
             </header>
 
             <Sidebar navItems={navItems} />
 
             <main className="layout__wrapper">
+                <aside className="layout__decoration" aria-hidden="true" />
                 <header className="topbar">
                     <form className="topbar__search" role="search">
                         <SearchIcon className="topbar__search-icon" aria-hidden="true" />
@@ -140,27 +230,31 @@ const DashboardLayout = ({
                                     </span>
                                 )}
                             </button>
+                            {showNotifications && renderNotificationsDropdown()}
                         </div>
 
-                        <article 
-                            className="topbar__user" 
-                            style={{ cursor: 'pointer' }}
-                            onClick={() => {
-                                setShowUserMenu(!showUserMenu);
-                                setShowNotifications(false);
-                            }}
-                        >
-                            {user.avatar ? (
-                                <img src={user.avatar} alt={user.name} className="topbar__avatar-img" />
-                            ) : (
-                                <figure className="topbar__avatar-sketchy">
-                                    <BlobIcon className="topbar__avatar-blob" color={user.color || '#E8F5F1'} />
-                                    <span className="topbar__avatar-initials">
-                                        {user.initials || user.name.charAt(0)}
-                                    </span>
-                                </figure>
-                            )}
-                        </article>
+                        <div style={{ position: 'relative' }}>
+                            <article 
+                                className="topbar__user" 
+                                style={{ cursor: 'pointer' }}
+                                onClick={() => {
+                                    setShowUserMenu(!showUserMenu);
+                                    setShowNotifications(false);
+                                }}
+                            >
+                                {user.avatar ? (
+                                    <img src={user.avatar} alt={user.name} className="topbar__avatar-img" />
+                                ) : (
+                                    <figure className="topbar__avatar-sketchy">
+                                        <BlobIcon className="topbar__avatar-blob" color={user.color || '#E8F5F1'} />
+                                        <span className="topbar__avatar-initials">
+                                            {user.initials || user.name.charAt(0)}
+                                        </span>
+                                    </figure>
+                                )}
+                            </article>
+                            {showUserMenu && renderUserMenuDropdown()}
+                        </div>
                     </nav>
                 </header>
 
@@ -174,71 +268,7 @@ const DashboardLayout = ({
                     />
                 )}
 
-                {showNotifications && (
-                    <div className="notifications-dropdown animate-in" style={{ zIndex: 10000 }}>
-                        <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                            <h4 style={{ margin: 0, color: '#1A2E35' }}>Notificaciones</h4>
-                            <button 
-                                onClick={() => setShowNotifications(false)}
-                                style={{ background: 'none', border: 'none', fontSize: '1.2rem', color: '#5A6B6D', cursor: 'pointer', padding: '5px' }}
-                            >
-                                ✕
-                            </button>
-                        </header>
-                        {notifications.length === 0 ? (
-                            <p style={{ fontSize: '0.85rem', color: '#5A6B6D', textAlign: 'center' }}>No tienes notificaciones</p>
-                        ) : (
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                                {notifications.map(n => (
-                                    <div key={n._id} style={{ 
-                                        padding: '0.75rem', borderRadius: '12px', 
-                                        background: n.leida ? 'transparent' : '#F0FAF6',
-                                        border: '1px solid #F0F4F4'
-                                    }}>
-                                        <p style={{ margin: '0 0 4px 0', fontSize: '0.85rem', fontWeight: '700', color: '#1A2E35' }}>{n.titulo}</p>
-                                        <p style={{ margin: 0, fontSize: '0.75rem', color: '#5A6B6D' }}>{n.mensaje}</p>
-                                        <span style={{ fontSize: '0.65rem', color: '#A0AEC0', marginTop: '4px', display: 'block' }}>
-                                            {new Date(n.createdAt).toLocaleString()}
-                                        </span>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-                )}
-
-                {showUserMenu && (
-                    <div className="notifications-dropdown animate-in" style={{ zIndex: 10000, width: '240px' }}>
-                        <div className="dropdown-header">
-                            <p className="dropdown-user-name">{user.name}</p>
-                            <p className="dropdown-user-role">{user.role || 'Profesional'}</p>
-                        </div>
-                        <div style={{ padding: '0.4rem 0' }}>
-                            <button 
-                                className="user-menu-item"
-                                onClick={() => setShowUserMenu(false)}
-                            >
-                                <SettingsIcon size={18} />
-                                <span>Configuración</span>
-                            </button>
-                            <button 
-                                className="user-menu-item user-menu-item--danger"
-                                onClick={handleLogout}
-                            >
-                                <LogoutIcon size={18} />
-                                <span>Cerrar Sesión</span>
-                            </button>
-                        </div>
-                    </div>
-                )}
-
                 <article className="layout__content">
-                    {/* Background decoration elements */}
-                    <aside className="layout__decoration" aria-hidden="true">
-                        <span className="layout__blob layout__blob--mint"></span>
-                        <span className="layout__blob layout__blob--blue"></span>
-                        <span className="layout__blob layout__blob--sky"></span>
-                    </aside>
                     {children}
                 </article>
 

@@ -13,6 +13,12 @@ const ExerciseLibrary = () => {
     const [currentExercise, setCurrentExercise] = useState({
         nombre: '', descripcion: '', categoria: 'Fuerza', mediaUrl: '', seriesDefecto: ''
     });
+    const [statusMsg, setStatusMsg] = useState(null);
+
+    const showNotification = (msg) => {
+        setStatusMsg(msg);
+        setTimeout(() => setStatusMsg(null), 3000);
+    };
 
     useEffect(() => {
         const fetchExercises = async () => {
@@ -47,14 +53,16 @@ const ExerciseLibrary = () => {
         try {
             if (isEditing) {
                 await api.put(`/exercises/${currentExercise._id}`, currentExercise);
+                showNotification("Ejercicio actualizado con éxito");
             } else {
                 await api.post('/exercises', currentExercise);
+                showNotification("Ejercicio creado con éxito");
             }
             setShowModal(false);
             const res = await api.get('/exercises');
             setExercises(res.data);
         } catch (err) {
-            alert("Error al guardar el ejercicio");
+            showNotification("Error al guardar el ejercicio");
         }
     };
 
@@ -63,13 +71,20 @@ const ExerciseLibrary = () => {
         try {
             await api.delete(`/exercises/${id}`);
             setExercises(exercises.filter(ex => ex._id !== id));
+            showNotification("Ejercicio eliminado con éxito");
         } catch (err) {
-            alert("Error al eliminar");
+            showNotification("Error al eliminar");
         }
     };
 
     return (
         <main className="patients-page animate-in">
+            {statusMsg && (
+                <article className="toast-notification">
+                    <span className="toast-notification__dot">●</span>
+                    {statusMsg}
+                </article>
+            )}
             <header className="patients-header">
                 <hgroup>
                     <h1 className="home-header__title">Biblioteca de Ejercicios</h1>

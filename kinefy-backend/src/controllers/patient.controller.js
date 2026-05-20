@@ -5,15 +5,17 @@ const sendEmail = require('../utils/mailer');
 
 const createPatient = async (req, res) => {
     try {
-        const { nombre, email, password, telefono, diagnostico, notas, fechaNacimiento, profesion, actividadFisica } = req.body;
+        const { nombre, email, telefono, diagnostico, notas, fechaNacimiento, profesion, actividadFisica } = req.body;
 
         if (req.user.role !== 'fisioterapeuta') {
             return res.status(403).json({ error: 'Acceso denegado' });
         }
 
-        // 1. Validaciones básicas
-        if (!password || password.length < 6) {
-            return res.status(400).json({ error: 'La contraseña debe tener al menos 6 caracteres' });
+        // Generar contraseña temporal
+        const chars = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+        let generatedPassword = '';
+        for (let i = 0; i < 8; i++) {
+            generatedPassword += chars.charAt(Math.floor(Math.random() * chars.length));
         }
 
         let user = await User.findOne({ email });
@@ -24,7 +26,7 @@ const createPatient = async (req, res) => {
         user = new User({
             name: nombre,
             email,
-            password,
+            password: generatedPassword,
             role: 'paciente'
         });
         await user.save();
@@ -47,22 +49,25 @@ const createPatient = async (req, res) => {
             email: patient.email,
             subject: 'Bienvenido/a a Kinefy - Tu plan de rehabilitación',
             html: `
-                <div style="font-family: sans-serif; color: #1A2E35;">
-                    <h1 style="color: #55A98A;">¡Hola, ${nombre}!</h1>
+                <div style="font-family: sans-serif; color: #1A2E35; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #E8F5F1; border-radius: 10px;">
+                    <h1 style="color: #55A98A; font-size: 24px;">¡Hola, ${nombre}!</h1>
                     <p>Tu fisioterapeuta ha creado tu ficha clínica en <strong>Kinefy</strong>.</p>
                     <p>A partir de ahora podrás acceder para ver tus ejercicios y registrar tu evolución.</p>
-                    <hr style="border: 0; border-top: 1px solid #eee;" />
+                    <hr style="border: 0; border-top: 1px solid #E8F5F1; margin: 20px 0;" />
                     <p><strong>Tus datos de acceso:</strong></p>
                     <ul>
                         <li><strong>Email:</strong> ${email}</li>
-                        <li><strong>Contraseña:</strong> (La proporcionada por tu fisio)</li>
+                        <li><strong>Contraseña temporal:</strong> <span style="font-size: 1.2rem; font-family: monospace; background-color: #F4FAF8; padding: 2px 6px; border-radius: 4px; color: #55A98A; font-weight: bold;">${generatedPassword}</span></li>
                     </ul>
-                    <p>Puedes acceder aquí: <a href="http://localhost" style="color: #55A98A;">Acceder a Kinefy</a></p>
+                    <p>Te recomendamos cambiar la contraseña una vez que accedas.</p>
+                    <p>Puedes acceder aquí: <a href="http://localhost" style="color: #55A98A; font-weight: bold;">Acceder a Kinefy</a></p>
                 </div>
             `
         }).catch(err => console.error('Error background mail:', err));
 
-        res.status(201).json(patient);
+        const patientData = patient.toObject();
+        patientData.tempPassword = generatedPassword;
+        res.status(201).json(patientData);
 
 
     } catch (err) {
@@ -83,8 +88,7 @@ const getPatients = async (req, res) => {
         const patients = await Patient.find({ fisioterapeuta: req.user.id })
             .populate('usuario', 'email')
             .sort({ createdAt: -1 });
-        
-        // Mapeamos para que el email esté al mismo nivel y el frontend no tenga que hacer malabares
+
         const patientsWithEmail = patients.map(p => ({
             ...p.toObject(),
             email: p.usuario?.email || ''
@@ -103,7 +107,7 @@ const updatePatient = async (req, res) => {
             return res.status(403).json({ error: 'Acceso denegado', code: 'FORBIDDEN_ACCESS' });
         }
 
-        let patient = await Patient.findById(req.params.id);
+        let patient = await Patient.findById(req.params.id).populate('usuario', 'email name');
 
         if (!patient) {
             return res.status(404).json({ error: 'Paciente no encontrado', code: 'NOT_FOUND' });
@@ -114,37 +118,72 @@ const updatePatient = async (req, res) => {
         }
 
         const allowedUpdates = [
-            'nombre', 'telefono', 'diagnostico', 'notas', 
+            'nombre', 'telefono', 'diagnostico', 'notas',
             'fechaNacimiento', 'profesion', 'actividadFisica', 'ejercicios'
         ];
-        
+
         const updates = {};
         allowedUpdates.forEach(field => {
             if (req.body[field] !== undefined) updates[field] = req.body[field];
         });
 
         patient = await Patient.findByIdAndUpdate(
-            req.params.id, 
-            { $set: updates }, 
+            req.params.id,
+            { $set: updates },
             { new: true, runValidators: true }
         );
-        
+
+        // Si el fisio ha enviado una nueva contraseña, la actualizamos y notificamos al paciente
+        const { newPassword } = req.body;
+        if (newPassword && newPassword.trim().length >= 6) {
+            const user = await User.findById(patient.usuario?._id || patient.usuario);
+            if (user) {
+                user.password = newPassword;
+                await user.save();
+
+                const userEmail = user.email;
+                if (userEmail) {
+                    sendEmail({
+                        email: userEmail,
+                        subject: 'Tu contraseña en Kinefy ha sido actualizada',
+                        html: `
+                            <div style="font-family: sans-serif; color: #1A2E35; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #E8F5F1; border-radius: 10px;">
+                                <h1 style="color: #55A98A; font-size: 24px;">Hola, ${patient.nombre}</h1>
+                                <p>Tu fisioterapeuta ha actualizado tu contraseña de acceso a <strong>Kinefy</strong>.</p>
+                                <p>Tu nueva contraseña de acceso es:</p>
+                                <div style="background-color: #F4FAF8; border: 2px dashed #55A98A; padding: 15px; border-radius: 8px; text-align: center; margin: 20px 0;">
+                                    <span style="font-size: 1.4rem; font-family: monospace; font-weight: bold; letter-spacing: 2px; color: #1A2E35;">${newPassword}</span>
+                                </div>
+                                <p>Si no reconoces este cambio, contacta con tu fisioterapeuta lo antes posible.</p>
+                                <hr style="border: 0; border-top: 1px solid #E8F5F1; margin: 20px 0;" />
+                                <p>Accede a la plataforma aquí: <a href="http://localhost" style="color: #55A98A; font-weight: bold;">Iniciar Sesión en Kinefy</a></p>
+                            </div>
+                        `
+                    }).then(() => {
+                        console.log(`[EMAIL] ✅ Notificación de cambio de contraseña enviada a ${userEmail}`);
+                    }).catch(err => {
+                        console.error('[EMAIL] ❌ Error al enviar notificación:', err.message);
+                    });
+                }
+            }
+        }
+
         res.json(patient);
     } catch (err) {
         console.error("DEBUG - Error en updatePatient:", err);
 
         if (err.name === 'ValidationError') {
-            return res.status(400).json({ 
-                error: 'Error de validación en los datos', 
+            return res.status(400).json({
+                error: 'Error de validación en los datos',
                 details: err.message,
-                code: 'VALIDATION_ERROR' 
+                code: 'VALIDATION_ERROR'
             });
         }
 
         if (err.name === 'CastError') {
             return res.status(400).json({ error: 'ID inválido o formato de datos incorrecto', code: 'BAD_REQUEST' });
         }
-        
+
         res.status(500).json({ error: 'Error interno del servidor al actualizar', details: err.message, code: 'SERVER_ERROR' });
     }
 };
@@ -200,7 +239,7 @@ const assignExercises = async (req, res) => {
 
         patient.ejercicios = ejercicios;
         await patient.save();
-        
+
         res.json(patient);
     } catch (err) {
         console.error(err);
@@ -262,7 +301,7 @@ const addDocument = async (req, res) => {
 
         patient.informes.push({ nombre, url, fecha: Date.now() });
         await patient.save();
-        
+
         res.json(patient.informes);
     } catch (err) {
         console.error(err);
@@ -290,11 +329,81 @@ const deleteDocument = async (req, res) => {
 
         patient.informes = patient.informes.filter(doc => doc._id.toString() !== req.params.documentId);
         await patient.save();
-        
+
         res.json(patient.informes);
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Error al eliminar documento' });
+    }
+};
+
+const resetPatientPassword = async (req, res) => {
+    try {
+        if (req.user.role !== 'fisioterapeuta') {
+            return res.status(403).json({ error: 'Acceso denegado', code: 'FORBIDDEN_ACCESS' });
+        }
+
+        const patient = await Patient.findById(req.params.id);
+        if (!patient) {
+            return res.status(404).json({ error: 'Paciente no encontrado', code: 'NOT_FOUND' });
+        }
+
+        if (patient.fisioterapeuta.toString() !== req.user.id) {
+            return res.status(403).json({ error: 'Acceso denegado', code: 'FORBIDDEN_ACCESS' });
+        }
+
+        if (!patient.usuario) {
+            return res.status(400).json({ error: 'El paciente no tiene un usuario asociado' });
+        }
+
+        // Generar contraseña temporal de 8 caracteres
+        const chars = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Excluyendo caracteres ambiguos
+        let tempPassword = '';
+        for (let i = 0; i < 8; i++) {
+            tempPassword += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+
+        const user = await User.findById(patient.usuario);
+        if (!user) {
+            return res.status(404).json({ error: 'Usuario asociado no encontrado' });
+        }
+
+        user.password = tempPassword;
+        await user.save();
+
+        // Enviar correo de notificación
+        console.log(`[MAILTRAP] Intentando enviar correo a: ${user.email} | HOST: ${process.env.EMAIL_HOST} | USER: ${process.env.EMAIL_USER}`);
+        try {
+            await sendEmail({
+                email: user.email,
+                subject: 'Nueva contraseña temporal en Kinefy',
+                html: `
+                    <div style="font-family: sans-serif; color: #1A2E35; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #E8F5F1; border-radius: 10px;">
+                        <h1 style="color: #55A98A; font-size: 24px;">Hola, ${patient.nombre}</h1>
+                        <p>Tu fisioterapeuta ha restablecido tu contraseña de acceso a <strong>Kinefy</strong>.</p>
+                        <p>Por seguridad, se ha generado una contraseña temporal para que puedas volver a entrar:</p>
+                        <div style="background-color: #F4FAF8; border: 1px dashed #55A98A; padding: 15px; border-radius: 8px; text-align: center; margin: 20px 0;">
+                            <span style="font-size: 20px; font-family: monospace; font-weight: bold; letter-spacing: 2px; color: #1A2E35;">${tempPassword}</span>
+                        </div>
+                        <p>Te recomendamos cambiar tu contraseña una vez que hayas iniciado sesión.</p>
+                        <hr style="border: 0; border-top: 1px solid #E8F5F1; margin: 20px 0;" />
+                        <p>Puedes acceder a la plataforma desde el siguiente enlace: <a href="http://localhost" style="color: #55A98A; font-weight: bold;">Iniciar Sesión en Kinefy</a></p>
+                    </div>
+                `
+            });
+            console.log(`[MAILTRAP] ✅ Correo enviado con éxito a: ${user.email}`);
+        } catch (mailErr) {
+            console.error('[MAILTRAP] ❌ Error al enviar correo:', mailErr.message);
+        }
+
+        res.json({
+            msg: 'Contraseña restablecida correctamente y enviada al paciente por correo',
+            tempPassword
+        });
+
+    } catch (err) {
+        console.error("DEBUG - Error en resetPatientPassword:", err);
+        res.status(500).json({ error: 'Error interno del servidor al restablecer contraseña', details: err.message, code: 'SERVER_ERROR' });
     }
 };
 
@@ -307,5 +416,6 @@ module.exports = {
     getMyPatientData,
     updateExerciseStatus,
     addDocument,
-    deleteDocument
+    deleteDocument,
+    resetPatientPassword
 };

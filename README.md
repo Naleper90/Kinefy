@@ -9,14 +9,14 @@ El proyecto se aleja de los frameworks de componentes tradicionales para prioriz
 - **Identidad Visual**: Paleta basada en tonos menta y azul con elementos orgánicos para reducir la carga cognitiva del paciente.
 - **Accesibilidad**: Cumplimiento de WCAG AA para asegurar la legibilidad y usabilidad.
 
-## Estado del Proyecto (Sprint 2)
+## Estado del Proyecto (Versión Final - Listo para Entrega)
 
-Actualmente se ha completado la base visual y la estructura de navegación:
-- **Arquitectura de componentes**: Sistema escalable siguiendo patrones de React.
-- **Sistema de diseño**: Variables CSS centralizadas y diseño completamente adaptativo.
-- **Interfaz del Paciente**: Registro de actividad, escalas de dolor (1-10) y panel de observaciones.
-- **Módulo de Acceso**: Flujo de autenticación con diseño minimalista.
-- **API (Desarrollo)**: Estructura base en Node.js/Express con persistencia en MongoDB.
+El proyecto se encuentra totalmente implementado y listo para producción:
+- **Orquestación Completa con Docker:** Despliegue en un solo comando mediante Nginx, Node.js y MongoDB en contenedores aislados.
+- **Módulo de Fisioterapeuta:** Gestión completa de pacientes, asignación de rutinas, biblioteca persistente de ejercicios y panel de analíticas/adherencia con gráficos evolutivos.
+- **Módulo del Paciente (Mobile-First):** Interfaz limpia y adaptativa para visualización de rutinas diarias, reproducción de vídeos descriptivos y registro del nivel de dolor en la escala EVA.
+- **Seguridad y Auditoría:** Autenticación robusta basada en JWT y un sistema de restablecimiento/generación segura de contraseñas temporales para pacientes (sin edición directa).
+- **Gestión Documental:** Capacidad de adjuntar y almacenar informes médicos e imágenes clínicas dentro de la ficha de cada paciente.
 
 ## Stack Tecnológico
 
@@ -42,6 +42,20 @@ El detalle técnico y académico se encuentra en la carpeta `docs/`:
 8.  [Despliegue](docs/08-despliegue.md)
 9.  [Guía de Uso](docs/09-manual-usuario.md)
 10. [Conclusiones finales](docs/10-conclusiones.md)
+---
+
+## Credenciales de Acceso Rápido (Pruebas)
+
+Para facilitar la evaluación del proyecto por el tribunal, se han pre-configurado dos cuentas de prueba en el entorno local:
+
+*   **Fisioterapeuta (Administrador):**
+    *   **Email:** `fisio@test.com`
+    *   **Contraseña:** `FisioDemo2026`
+*   **Paciente (Demo):**
+    *   **Email:** `paciente@test.com`
+    *   **Contraseña:** `PacienteDemo2026`
+
+> **Nota:** Para mayor detalle sobre el flujo de correos y variables, consulta la documentación en [docs/10-credenciales-prueba.md](file:///c:/Users/esana/Desktop/Kinefy/docs/10-credenciales-prueba.md).
 
 ---
 

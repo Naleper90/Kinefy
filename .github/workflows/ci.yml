@@ -2,7 +2,7 @@ name: Kinefy CI Workflow
 
 on:
   push:
-    branches: [ "main", "develop" ]
+    branches: [ "main", "develop", "feature/*" ]
   pull_request:
     branches: [ "main" ]
 
@@ -16,11 +16,11 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     # Backend Setup
     - name: Setup Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
         
@@ -40,6 +40,9 @@ jobs:
         cd kinefy-frontend
         npm run build
         
-    # Aquí irían los tests en el futuro (npm test)
-    - name: Run Tests (Placeholder)
-      run: echo "Tests pasados correctamente (Simulado para MVP)"
+    # Ejecución de Pruebas Unitarias e Integración
+    - name: Run Backend Tests
+      run: |
+        cd kinefy-backend
+        npm test
+

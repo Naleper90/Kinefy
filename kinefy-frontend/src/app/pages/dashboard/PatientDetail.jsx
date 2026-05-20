@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../api/api';
@@ -32,9 +32,10 @@ const PatientDetail = () => {
     const [isEditing, setIsEditing] = useState(false);
 
     const [editForm, setEditForm] = useState({ 
-        nombre: '', email: '', password: '', 
+        nombre: '', email: '', 
         telefono: '', profesion: '', actividadFisica: 'moderado',
-        diagnostico: '', notas: '', ejercicios: []
+        diagnostico: '', notas: '', ejercicios: [],
+        newPassword: ''
     });
     const [statusMsg, setStatusMsg] = useState(null);
     const [uploading, setUploading] = useState(false);
@@ -43,6 +44,8 @@ const PatientDetail = () => {
     const [isAddingDoc, setIsAddingDoc] = useState(false);
     const [library, setLibrary] = useState([]);
     const [showLibraryModal, setShowLibraryModal] = useState(false);
+    const [tempPassword, setTempPassword] = useState(null);
+    const [isResetting, setIsResetting] = useState(false);
 
 
     const activityOptions = [
@@ -65,13 +68,13 @@ const PatientDetail = () => {
             setEditForm({ 
                 nombre: found.nombre || '', 
                 email: found.email || '',
-                password: '',
                 telefono: found.telefono || '',
                 profesion: found.profesion || '',
                 actividadFisica: found.actividadFisica || 'moderado',
                 diagnostico: found.diagnostico || '',
                 notas: found.notas || '',
-                ejercicios: found.ejercicios || []
+                ejercicios: found.ejercicios || [],
+                newPassword: ''
             });
 
             const resEv = await api.get(`/patients/evolution/${id}`);
@@ -98,15 +101,37 @@ const PatientDetail = () => {
     const handleUpdate = async () => {
         try {
             const dataToSend = { ...editForm };
-            if (!dataToSend.password) delete dataToSend.password;
             dataToSend.ejercicios = dataToSend.ejercicios.filter(ex => ex.nombre && ex.nombre.trim() !== '');
+            // Si no se escribió contraseña nueva, la eliminamos para no mandar un campo vacío
+            if (!dataToSend.newPassword || dataToSend.newPassword.trim() === '') {
+                delete dataToSend.newPassword;
+            }
 
             await api.put(`/patients/${id}`, dataToSend);
             setPatient({ ...patient, ...dataToSend });
+            setEditForm(prev => ({ ...prev, newPassword: '' }));
             setIsEditing(false);
-            showNotification("Ficha clínica actualizada y sincronizada");
+            showNotification(dataToSend.newPassword ? 'Ficha actualizada y contraseña enviada al paciente por email' : 'Ficha clínica actualizada y sincronizada');
         } catch (err) {
-            showNotification("Error al guardar los cambios en el servidor");
+            showNotification('Error al guardar los cambios en el servidor');
+        }
+    };
+
+    // (eliminado: handleResetPassword auto-generación — ahora la contraseña se edita en el formulario)
+
+    const handleResetPassword = async () => {
+        setShowConfirmReset(false);
+        setIsResetting(true);
+        try {
+            const res = await api.post(`/patients/${id}/reset-password`);
+            tempPasswordRef.current = res.data.tempPassword;
+            setTempPassword(res.data.tempPassword);
+            setShowPasswordModal(true);
+        } catch (err) {
+            const errorMsg = err.response?.data?.error || 'Error al restablecer la contraseña';
+            showNotification(errorMsg);
+        } finally {
+            setIsResetting(false);
         }
     };
 
@@ -274,7 +299,7 @@ const PatientDetail = () => {
                             {isEditing ? (
                                 <input 
                                     className="dashboard__input dashboard__input--title"
-                                    value={editForm.nombre}
+                                    value={editForm.nombre || ''}
                                     onChange={e => setEditForm({...editForm, nombre: e.target.value})}
                                 />
                             ) : (
@@ -319,27 +344,39 @@ const PatientDetail = () => {
                             <dt className="meta-label">Email de Acceso</dt>
                             <dd>
                                 {isEditing ? (
-                                    <input className="dashboard__input" value={editForm.email} onChange={e => setEditForm({...editForm, email: e.target.value})} />
+                                    <input className="dashboard__input" value={editForm.email || ''} onChange={e => setEditForm({...editForm, email: e.target.value})} />
                                 ) : (
                                     <span className="clinical-value">{patient.email}</span>
                                 )}
                             </dd>
                         </div>
 
-                        {isEditing && (
-                            <div className="clinical-data-item">
-                                <dt className="meta-label">Nueva Contraseña (Opcional)</dt>
-                                <dd>
-                                    <input className="dashboard__input" type="password" placeholder="Mín. 6 caracteres" value={editForm.password} onChange={e => setEditForm({...editForm, password: e.target.value})} />
-                                </dd>
-                            </div>
-                        )}
+
+                        <div className="clinical-data-item">
+                            <dt className="meta-label">Contraseña de Acceso</dt>
+                            <dd>
+                                {isEditing ? (
+                                    <input
+                                        className="dashboard__input"
+                                        type="password"
+                                        placeholder="Escribe una nueva contraseña (opcional)"
+                                        value={editForm.newPassword || ''}
+                                        onChange={e => setEditForm({...editForm, newPassword: e.target.value})}
+                                        autoComplete="new-password"
+                                    />
+                                ) : (
+                                    <span className="clinical-value" style={{ color: '#7A8C8E', fontSize: '0.85rem' }}>
+                                        ••••••••  <em style={{ fontStyle: 'normal', color: '#B0BEC5' }}>(edita la ficha para cambiarla)</em>
+                                    </span>
+                                )}
+                            </dd>
+                        </div>
 
                         <div className="clinical-data-item">
                             <dt className="meta-label">Teléfono</dt>
                             <dd>
                                 {isEditing ? (
-                                    <input className="dashboard__input" value={editForm.telefono} onChange={e => setEditForm({...editForm, telefono: e.target.value})} />
+                                    <input className="dashboard__input" value={editForm.telefono || ''} onChange={e => setEditForm({...editForm, telefono: e.target.value})} />
                                 ) : (
                                     <span className="clinical-value">{patient.telefono || 'No registrado'}</span>
                                 )}
@@ -350,7 +387,7 @@ const PatientDetail = () => {
                             <dt className="meta-label">Profesión</dt>
                             <dd>
                                 {isEditing ? (
-                                    <input className="dashboard__input" value={editForm.profesion} onChange={e => setEditForm({...editForm, profesion: e.target.value})} />
+                                    <input className="dashboard__input" value={editForm.profesion || ''} onChange={e => setEditForm({...editForm, profesion: e.target.value})} />
                                 ) : (
                                     <span className="clinical-value">{patient.profesion || 'No registrada'}</span>
                                 )}
@@ -420,13 +457,13 @@ const PatientDetail = () => {
                                         <input 
                                             className="dashboard__input" 
                                             placeholder="Nombre ejercicio" 
-                                            value={ex.nombre} 
+                                            value={ex.nombre || ''} 
                                             onChange={e => updateExercise(i, 'nombre', e.target.value)} 
                                         />
                                         <input 
                                             className="dashboard__input" 
                                             placeholder="Series/Reps" 
-                                            value={ex.series} 
+                                            value={ex.series || ''} 
                                             onChange={e => updateExercise(i, 'series', e.target.value)} 
                                         />
                                         <button 
@@ -482,7 +519,7 @@ const PatientDetail = () => {
                             <textarea 
                                 className="dashboard__input dashboard__input--textarea" 
                                 placeholder="Escribe aquí el diagnóstico detallado..."
-                                value={editForm.diagnostico} 
+                                value={editForm.diagnostico || ''} 
                                 onChange={e => setEditForm({...editForm, diagnostico: e.target.value})} 
                             />
                         ) : (
@@ -512,23 +549,68 @@ const PatientDetail = () => {
                             <div className="clinical-upload-zone__fields">
                                 <div className="clinical-data-item">
                                     <label className="meta-label">Nombre del Documento</label>
-                                    <input className="dashboard__input" placeholder="Ej: Resonancia Rodilla" value={newDoc.nombre} onChange={e => setNewDoc({...newDoc, nombre: e.target.value})} />
+                                    <input className="dashboard__input" placeholder="Ej: Resonancia Rodilla" value={newDoc.nombre || ''} onChange={e => setNewDoc({...newDoc, nombre: e.target.value})} />
                                 </div>
-                                <div className="clinical-data-item">
-                                    <label className="meta-label">Archivo / Enlace</label>
-                                    <div className="flex-center gap-2">
-                                        <input 
-                                            className="dashboard__input" 
-                                            placeholder="URL o link del documento..."
-                                            value={newDoc.url}
-                                            onChange={e => setNewDoc({...newDoc, url: e.target.value})}
-                                        />
-                                        <label className="btn-upload-label" style={{ whiteSpace: 'nowrap' }}>
-                                            <UploadIcon size={14} />
-                                            <span>{uploading ? '...' : 'Subir PDF'}</span>
-                                            <input type="file" hidden onChange={handleDocUpload} accept=".pdf,.doc,.docx" />
-                                        </label>
-                                    </div>
+                                <div className="clinical-data-item" style={{ marginTop: '0.5rem' }}>
+                                    <label className="meta-label" style={{ marginBottom: '0.6rem', display: 'block' }}>Archivo / Documento</label>
+                                    <label 
+                                        htmlFor="doc-upload-input" 
+                                        style={{
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            padding: '2.5rem 1.5rem',
+                                            border: '2px dashed #C2DFD4',
+                                            borderRadius: '20px',
+                                            background: '#F4FAF8',
+                                            cursor: 'pointer',
+                                            transition: 'all 0.3s ease',
+                                            textAlign: 'center',
+                                            color: '#55A98A',
+                                            width: '100%',
+                                            boxSizing: 'border-box'
+                                        }}
+                                        className="file-upload-dropzone"
+                                    >
+                                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginBottom: '0.8rem' }}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                                        {uploading ? (
+                                            <div>
+                                                <p style={{ margin: '0 0 0.3rem', fontWeight: '700', fontSize: '0.95rem', color: '#1A2E35' }}>
+                                                    Subiendo archivo...
+                                                </p>
+                                                <span style={{ fontSize: '0.75rem', color: '#55A98A', fontWeight: '600' }}>
+                                                    Por favor, espera un momento
+                                                </span>
+                                            </div>
+                                        ) : newDoc.url ? (
+                                            <div style={{ width: '100%' }}>
+                                                <p style={{ margin: '0 0 0.4rem', fontWeight: '700', fontSize: '0.95rem', color: '#1A2E35', wordBreak: 'break-all' }}>
+                                                    {newDoc.url.split('/').pop().replace(/^\d+-/, '')}
+                                                </p>
+                                                <span style={{ fontSize: '0.75rem', color: '#55A98A', fontWeight: '600' }}>
+                                                    ¡Archivo listo! Haz clic aquí para cambiarlo
+                                                </span>
+                                            </div>
+                                        ) : (
+                                            <div>
+                                                <p style={{ margin: '0 0 0.3rem', fontWeight: '700', fontSize: '0.95rem', color: '#1A2E35' }}>
+                                                    Elige un archivo o arrástralo aquí
+                                                </p>
+                                                <span style={{ fontSize: '0.75rem', color: '#7A8C8E', fontWeight: '500' }}>
+                                                    PDF, DOC, DOCX hasta 10MB
+                                                </span>
+                                            </div>
+                                        )}
+                                    </label>
+                                    <input 
+                                        id="doc-upload-input"
+                                        type="file" 
+                                        required 
+                                        onChange={handleDocUpload}
+                                        style={{ display: 'none' }}
+                                        accept=".pdf,.doc,.docx"
+                                    />
                                 </div>
                             </div>
                             <nav className="clinical-upload-zone__actions">
@@ -686,4 +768,3 @@ const PatientDetail = () => {
 };
 
 export default PatientDetail;
-

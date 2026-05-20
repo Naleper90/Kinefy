@@ -36,40 +36,11 @@
   pointer-events: none;
   z-index: 0;
   overflow: hidden;
-}
-
-.layout__blob {
-  position: absolute;
-  border-radius: 50%;
-  pointer-events: none;
-}
-
-.layout__blob--mint {
-  width: 450px;
-  height: 400px;
-  background: radial-gradient(ellipse at 45% 40%, #73A592 0%, #A8D0C1 50%, transparent 72%);
-  top: -100px;
-  right: -60px;
-  opacity: 0.75;
-}
-
-.layout__blob--blue {
-  width: 700px;
-  height: 650px;
-  background: radial-gradient(ellipse at 50% 50%, rgba(148, 200, 232, 0.5) 0%, rgba(180, 219, 240, 0.2) 50%, transparent 85%);
-  bottom: -200px;
-  left: -200px;
-  opacity: 0.7;
-  filter: blur(60px);
-}
-
-.layout__blob--sky {
-  width: 300px;
-  height: 260px;
-  background: radial-gradient(ellipse at 50% 50%, #B0D8ED 0%, transparent 70%);
-  top: 40%;
-  right: 5%;
-  opacity: 0.5;
+  background-image: url('../../assets/kinefy_premium_background.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.82; /* Opacidad óptima para mantener la riqueza de colores de la generación IA */
 }
 
 /* Barra Lateral */
@@ -201,7 +172,9 @@
   justify-content: space-between;
   align-items: center;
   padding: 0.75rem 2rem;
-  background: transparent;
+  background-color: #ffffff;
+  position: relative;
+  z-index: 2;
   min-height: 64px;
   flex-shrink: 0;
 }
@@ -944,8 +917,10 @@ textarea.dashboard__input {
 .footer {
   display: flex;
   align-items: center;
-  padding: 0.75rem 2rem 1rem 2rem;
+  padding: 0.25rem 2rem 0.35rem 2rem;
   position: relative;
+  z-index: 2;
+  background-color: #ffffff;
   flex-shrink: 0;
 }
 
@@ -996,13 +971,18 @@ textarea.dashboard__input {
 }
 
 .btn-back {
-  background: none;
-  border: none;
-  color: var(--color-brand);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #EAF2F4;
+  border: 1px solid rgba(59, 122, 142, 0.15);
+  color: var(--color-text-link);
   cursor: pointer;
   font-weight: 600;
-  font-size: 0.9rem;
-  transition: transform 0.2s;
+  font-size: 0.95rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: 20px;
+  transition: all 0.2s ease;
 }
 
 .pain-dot--low.pain-dot--active {
@@ -1053,8 +1033,10 @@ textarea.dashboard__input {
 .footer {
   display: flex;
   align-items: center;
-  padding: 0.75rem 2rem 1rem 2rem;
+  padding: 0.25rem 2rem 0.35rem 2rem;
   position: relative;
+  z-index: 2;
+  background-color: #ffffff;
   flex-shrink: 0;
 }
 
@@ -1105,16 +1087,22 @@ textarea.dashboard__input {
 }
 
 .btn-back {
-  background: none;
-  border: none;
-  color: var(--color-brand);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #EAF2F4;
+  border: 1px solid rgba(59, 122, 142, 0.15);
+  color: var(--color-text-link);
   cursor: pointer;
   font-weight: 600;
-  font-size: 0.9rem;
-  transition: transform 0.2s;
+  font-size: 0.95rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: 20px;
+  transition: all 0.2s ease;
 }
 
 .btn-back:hover {
+  background: #D3E4E8;
   transform: translateX(-4px);
 }
 
@@ -4311,8 +4299,13 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto;
+  margin: 0;
   position: relative;
+}
+
+.patient-avatar--large {
+  width: 96px;
+  height: 96px;
 }
 
 .patient-avatar__initials {

@@ -3,7 +3,7 @@
 El presente manual describe de forma visual y secuencial el funcionamiento de la aplicación Kinefy desde la perspectiva de sus dos tipos de usuario: Fisioterapeuta y Paciente.
 
 > **Nota de redacción:** Para una correcta comprensión visual, cada paso va acompañado de una captura de la interfaz de la aplicación.
-> *[INSERTA AQUÍ CAPTURA GENERAL DEL LOGIN / PANTALLA DE INICIO (ej: `login.png`)]*
+![Pantalla de inicio de sesión de Kinefy](assets/login.png)
 
 ---
 
@@ -18,7 +18,7 @@ Al iniciar sesión, el profesional accede a su Dashboard, donde puede ver alerta
 3. Rellenar los datos básicos (Nombre, correo y diagnóstico inicial).
 4. El sistema generará automáticamente las credenciales de acceso para el paciente.
 
-> *[INSERTA AQUÍ CAPTURA DEL LISTADO DE PACIENTES O DEL FORMULARIO DE ALTA (ej: `fisio_lista_pacientes.png`)]*
+![Ficha del listado de pacientes en la interfaz de fisioterapeuta](assets/fisio_lista_pacientes.png)
 
 ### 2. Biblioteca de Ejercicios
 Para evitar asignar ejercicios de forma manual repetitiva, el profesional puede crear su propio repositorio:
@@ -26,7 +26,7 @@ Para evitar asignar ejercicios de forma manual repetitiva, el profesional puede 
 2. Pulsar **"Nuevo Ejercicio"**.
 3. Rellenar nombre, descripción textual (técnica correcta), URL del vídeo demostrativo y categoría (ej: "Estiramientos", "Fuerza").
 
-> *[INSERTA AQUÍ CAPTURA DE LA BIBLIOTECA (ej: `fisio_biblioteca.png`)]*
+![Biblioteca de ejercicios disponibles y categorizados](assets/fisio_biblioteca.png)
 
 ### 3. Asignación de Rutinas y Auditoría
 1. Desde la ficha detallada de un paciente, hacer clic en **"Asignar Ejercicio"**.
@@ -34,7 +34,13 @@ Para evitar asignar ejercicios de forma manual repetitiva, el profesional puede 
 3. Especificar Series, Repeticiones y duración.
 4. En la vista **"Informes/Auditoría"**, el profesional puede ver gráficos de la adherencia del paciente y su nivel de dolor medio diario.
 
-> *[INSERTA AQUÍ CAPTURA DE LOS INFORMES Y GRÁFICOS (ej: `fisio_informes.png`)]*
+![Ficha clínica de paciente y gráficos de evolución de dolor](assets/fisio_informes.png)
+
+### 4. Gestión de Accesos y Seguridad
+Para garantizar la protección de la información médica, el profesional no puede editar directamente ni conocer las contraseñas de los usuarios de forma permanente.
+*   **Creación del Paciente:** Al dar de alta un paciente, el sistema genera automáticamente una credencial temporal segura y la envía por email al paciente.
+*   **Restablecimiento:** Si el paciente olvida su contraseña, el fisioterapeuta puede presionar el botón **"Resetear Contraseña"** en el panel lateral del paciente.
+*   **Transmisión segura:** El sistema regenera una clave temporal y la envía por correo encriptada de forma directa. Adicionalmente, la muestra en pantalla una sola vez para comunicación verbal opcional.
 
 ---
 
@@ -47,7 +53,7 @@ Al hacer login desde el móvil, el paciente es dirigido instantáneamente a su r
 1. Visualizar las tarjetas interactivas (blobs) que representan los ejercicios pendientes.
 2. Pulsar sobre una tarjeta para ver el **vídeo/imagen** y la descripción detallada del movimiento.
 
-> *[INSERTA AQUÍ CAPTURA DEL MÓVIL MOSTRANDO LAS TARJETAS (ej: `paciente_home.png`)]*
+![Tarjetas de ejercicios de la rutina diaria en el móvil del paciente](assets/paciente_home.png)
 
 ### 2. Marcado y Cumplimiento
 Tras ejecutar el movimiento, el paciente pulsa el botón **"Completar"**. La tarjeta cambiará visualmente su estado (mediante color menta o icono de *check*) para indicar que ha finalizado con éxito.
@@ -58,4 +64,4 @@ Una vez completados todos los ejercicios, el sistema requiere que el paciente in
 2. El usuario selecciona la intensidad (donde 1 es "Sin dolor" y 10 es "Dolor insoportable").
 3. Al guardar, este dato se sincroniza en tiempo real con el panel del fisioterapeuta.
 
-> *[INSERTA AQUÍ CAPTURA DEL MÓVIL MOSTRANDO LA ESCALA DE DOLOR (ej: `paciente_eva.png`)]*
+![Registro de nivel de dolor mediante escala EVA interactiva](assets/paciente_eva.png)

@@ -7,6 +7,7 @@ const DashboardHome = () => {
     const navigate = useNavigate();
     const [patients, setPatients] = useState([]);
     const [nextAppointment, setNextAppointment] = useState(null);
+    const [todayAppointments, setTodayAppointments] = useState([]);
     const [lastHandledId, setLastHandledId] = useState(null);
     const [loading, setLoading] = useState(true);
     const [statusMsg, setStatusMsg] = useState(null);
@@ -46,6 +47,10 @@ const DashboardHome = () => {
                 const sortedAppts = appointmentsRes.data
                     .sort((a, b) => new Date(a.fecha + 'T' + a.hora) - new Date(b.fecha + 'T' + b.hora));
                 
+                // Citas del día de hoy (excluyendo canceladas)
+                const todays = sortedAppts.filter(a => toLocalDateString(a.fecha) === todayStr && a.estado !== 'cancelada');
+                setTodayAppointments(todays);
+
                 if (lastHandledId) {
                     const handled = sortedAppts.find(a => a._id === lastHandledId);
                     if (handled) {
@@ -98,19 +103,6 @@ const DashboardHome = () => {
         const date = new Date(dateStr);
         return date.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
     };
-
-    const averageCompliance = patients.length > 0 
-        ? Math.round(patients.reduce((acc, p) => acc + p.progress, 0) / patients.length) 
-        : 0;
-
-    const points = patients.length > 0 ? [0, 15, 40, averageCompliance] : [0, 0, 0, 0]; 
-    const svgW = 300, svgH = 80;
-    const pathData = points.map((p, i) => {
-        const x = i * (svgW / (points.length - 1));
-        const y = svgH - (p * 0.7);
-        return `${i === 0 ? 'M' : 'L'} ${x} ${y}`;
-    }).join(' ');
-
     return (
         <section className="home animate-in">
             {statusMsg && (
@@ -237,38 +229,71 @@ const DashboardHome = () => {
                 </section>
 
                 <section className="grid-col">
-                    <h2 className="grid-col__title">Evolución Clínica</h2>
-                    <article className="dashboard-card">
-                        <p className="card-label">Tendencia de recuperación acumulada</p>
+                    <h2 className="grid-col__title">Citas para Hoy</h2>
+                    <article className="dashboard-card" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                        <p className="card-label" style={{ marginBottom: '1.2rem' }}>Horario de sesiones programadas para hoy</p>
                         
-                        <div className="evolution-chart-container">
-                            <svg width="100%" height={svgH} viewBox={`0 0 ${svgW} ${svgH}`} preserveAspectRatio="xMidYMid meet">
-                                <path 
-                                    className="evolution-line"
-                                    d={pathData} 
-                                    fill="none" 
-                                    stroke="var(--color-brand)" 
-                                    strokeWidth="4" 
-                                    strokeLinecap="round" 
-                                    strokeLinejoin="round"
-                                />
-                                <circle cx={svgW} cy={svgH - (points[points.length-1] * 0.7)} r="5" fill="var(--color-text-dark)" />
-                            </svg>
-                        </div>
+                        <nav className="patient-list" style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', maxHeight: '320px', paddingRight: '6px' }}>
+                            {todayAppointments.length > 0 ? (
+                                todayAppointments.map((appt, i) => (
+                                    <article key={i} className="patient-item" style={{ borderBottom: '1px solid #F0F4F2', paddingBottom: '0.8rem', marginBottom: '0.8rem' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', width: '100%', gap: '12px' }}>
+                                            <time style={{ 
+                                                fontSize: '1.1rem', 
+                                                fontWeight: '700', 
+                                                color: 'var(--color-brand)', 
+                                                minWidth: '55px',
+                                                background: '#E8F5F1',
+                                                padding: '4px 8px',
+                                                borderRadius: '6px',
+                                                textAlign: 'center'
+                                            }}>{appt.hora}</time>
+                                            
+                                            <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                                                <span style={{ fontWeight: '600', color: 'var(--color-text-dark)', fontSize: '0.95rem' }}>{appt.paciente?.nombre}</span>
+                                                <span style={{ fontSize: '0.8rem', color: 'var(--color-text-soft)' }}>{appt.tipo}</span>
+                                            </div>
 
-                        <ul className="activity-list">
-                            {[
-                                { label: 'Pacientes en sistema', value: patients.length },
-                                { label: 'Cumplimiento medio', value: `${averageCompliance}%` },
-                                { label: 'Próximo hito', value: nextAppointment ? (nextAppointment.estado === 'en-curso' ? 'En tratamiento' : 'Sesión programada') : 'Pendiente' },
-                                { label: 'Estado del sistema', value: 'Operativo', status: true }
-                            ].map((item, i) => (
-                                <li key={i} className="activity-list__item">
-                                    <span className="activity-list__label">{item.label}</span>
-                                    <span className="activity-list__value" style={{ color: item.status ? '#55A98A' : '#1A2E35' }}>{item.value}</span>
-                                </li>
-                            ))}
-                        </ul>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                <span className={`status-badge ${
+                                                    appt.estado === 'pendiente' ? 'status-badge--pending' : 
+                                                    appt.estado === 'confirmada' ? 'status-badge--confirm' :
+                                                    appt.estado === 'en-curso' ? 'status-badge--active' : 'status-badge--done'
+                                                }`} style={{ fontSize: '0.75rem', padding: '2px 8px' }}>
+                                                    {appt.estado === 'confirmada' ? 'CONFIRMADA' : appt.estado.toUpperCase()}
+                                                </span>
+                                                
+                                                <button 
+                                                    className="home-patient-item__btn btn-ghost" 
+                                                    style={{ padding: '4px 8px', fontSize: '0.8rem' }}
+                                                    onClick={() => navigate(`/dashboard/physio/patients/${appt.paciente?._id}`)} 
+                                                >
+                                                    Ficha
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </article>
+                                ))
+                            ) : (
+                                <section style={{ textAlign: 'center', padding: '3.5rem 1rem', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+                                    <figure style={{ 
+                                        width: '48px', 
+                                        height: '48px', 
+                                        borderRadius: '50%', 
+                                        background: '#E8F5F1', 
+                                        display: 'flex', 
+                                        alignItems: 'center', 
+                                        justifyContent: 'center', 
+                                        marginBottom: '1rem',
+                                        color: 'var(--color-brand)'
+                                    }}>
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                                    </figure>
+                                    <h3 style={{ fontSize: '0.95rem', fontWeight: '600', color: 'var(--color-text-dark)', margin: '0 0 4px 0' }}>¡Todo al día!</h3>
+                                    <p style={{ fontSize: '0.8rem', color: 'var(--color-text-soft)', margin: 0 }}>No tienes citas programadas para hoy.</p>
+                                </section>
+                            )}
+                        </nav>
                     </article>
                 </section>
             </section>

@@ -3,6 +3,18 @@ import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { AppointmentsIcon, ExercisesIcon } from '../../components/dashboard/DashboardIcons';
 import api from '../../api/api';
+import { CustomCalendar, CustomTimePicker } from '../../components/dashboard/DatePickerPremium';
+
+const getNextDays = (count = 14) => {
+    const days = [];
+    const today = new Date();
+    for (let i = 0; i < count; i++) {
+        const d = new Date(today);
+        d.setDate(today.getDate() + i);
+        days.push(d);
+    }
+    return days;
+};
 
 const PatientDashboardHome = () => {
     const navigate = useNavigate();
@@ -24,12 +36,21 @@ const PatientDashboardHome = () => {
         hora: '10:00',
         tipo: 'Sesión de Seguimiento'
     });
+    const [customDateMode, setCustomDateMode] = useState(false);
+    const [customTimeMode, setCustomTimeMode] = useState(false);
+    const [statusMsg, setStatusMsg] = useState(null);
+
+    const showNotification = (msg) => {
+        setStatusMsg(msg);
+        setTimeout(() => setStatusMsg(null), 3000);
+    };
 
     const handleRequestAppointment = async (e) => {
         e.preventDefault();
         try {
             await api.post('/appointments', apptForm);
             setShowApptModal(false);
+            showNotification("Solicitud de cita enviada correctamente");
             // Recargar datos para ver la cita pendiente
             const resApp = await api.get('/appointments');
             const now = new Date();
@@ -39,9 +60,9 @@ const PatientDashboardHome = () => {
             setNextAppointment(future);
         } catch (err) {
             if (err.response?.data?.code === 'APPOINTMENT_CONFLICT') {
-                alert("Este horario ya está ocupado. Por favor, elige otro momento.");
+                showNotification("Este horario ya está ocupado. Por favor, elige otro momento.");
             } else {
-                alert("Error al solicitar la cita. Revisa tu conexión.");
+                showNotification("Error al solicitar la cita. Revisa tu conexión.");
             }
         }
     };
@@ -153,6 +174,13 @@ const PatientDashboardHome = () => {
 
     return (
         <section className="home animate-in">
+            {statusMsg && (
+                <article className="toast-notification">
+                    <span className="toast-notification__dot">●</span>
+                    {statusMsg}
+                </article>
+            )}
+
             <header className="home-header">
                 <h1 className="home-header__title">¡Hola, {user.name.split(' ')[0]}!</h1>
                 <p className="home-header__subtitle">
@@ -426,25 +454,114 @@ const PatientDashboardHome = () => {
                         
                         <div className="modal-body--clinical">
                             <form onSubmit={handleRequestAppointment} className="clinical-form">
-                                <div className="clinical-input-group">
-                                    <label className="meta-label meta-label--brand">Fecha Preferente</label>
-                                    <input 
-                                        type="date" 
-                                        className="input-clinical" 
-                                        required 
-                                        value={apptForm.fecha} 
-                                        onChange={e => setApptForm({...apptForm, fecha: e.target.value})} 
-                                    />
+                                <div className="clinical-input-group" style={{ marginBottom: '1.5rem' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.6rem' }}>
+                                        <label className="meta-label meta-label--brand" style={{ margin: 0 }}>Fecha Preferente</label>
+                                        <button 
+                                            type="button" 
+                                            className="link-btn" 
+                                            onClick={() => setCustomDateMode(!customDateMode)}
+                                            style={{ background: 'none', border: 'none', color: 'var(--color-brand)', fontWeight: '700', fontSize: '0.75rem', cursor: 'pointer', textDecoration: 'underline', padding: 0 }}
+                                        >
+                                            {customDateMode ? "Ver calendario rápido" : "Elegir otra fecha"}
+                                        </button>
+                                    </div>
+                                    
+                                    {customDateMode ? (
+                                        <CustomCalendar 
+                                            selectedDate={apptForm.fecha} 
+                                            onSelectDate={date => setApptForm({...apptForm, fecha: date})} 
+                                        />
+                                    ) : (
+                                        <div style={{ display: 'flex', gap: '0.6rem', overflowX: 'auto', padding: '0.4rem 0.2rem', scrollbarWidth: 'none', msOverflowStyle: 'none' }} className="no-scrollbar">
+                                            {getNextDays().map((d, index) => {
+                                                const isoStr = d.toISOString().split('T')[0];
+                                                const isSelected = apptForm.fecha === isoStr;
+                                                return (
+                                                    <button
+                                                        key={index}
+                                                        type="button"
+                                                        onClick={() => setApptForm(prev => ({ ...prev, fecha: isoStr }))}
+                                                        style={{
+                                                            flex: '0 0 68px',
+                                                            height: '84px',
+                                                            borderRadius: '16px',
+                                                            background: isSelected ? 'var(--color-brand)' : '#F4FAF8',
+                                                            color: isSelected ? '#FFFFFF' : '#1A2E35',
+                                                            border: isSelected ? 'none' : '1px solid #C2DFD4',
+                                                            display: 'flex',
+                                                            flexDirection: 'column',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            cursor: 'pointer',
+                                                            transition: 'all 0.2s ease',
+                                                            padding: '0.4rem 0.2rem'
+                                                        }}
+                                                    >
+                                                        <span style={{ fontSize: '0.65rem', fontWeight: '700', textTransform: 'uppercase', color: isSelected ? '#E2F1EC' : '#7A8C8E' }}>
+                                                            {d.toLocaleDateString('es-ES', { weekday: 'short' })}
+                                                        </span>
+                                                        <span style={{ fontSize: '1.3rem', fontWeight: '800', marginTop: '0.1rem', lineHeight: '1.2' }}>
+                                                            {d.getDate()}
+                                                        </span>
+                                                        <span style={{ fontSize: '0.6rem', fontWeight: '600', color: isSelected ? '#E2F1EC' : '#7A8C8E', marginTop: '0.1rem' }}>
+                                                            {d.toLocaleDateString('es-ES', { month: 'short' })}
+                                                        </span>
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    )}
                                 </div>
-                                <div className="clinical-input-group">
-                                    <label className="meta-label meta-label--brand">Hora</label>
-                                    <input 
-                                        type="time" 
-                                        className="input-clinical" 
-                                        required 
-                                        value={apptForm.hora} 
-                                        onChange={e => setApptForm({...apptForm, hora: e.target.value})} 
-                                    />
+                                <div className="clinical-input-group" style={{ marginBottom: '1.5rem' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.6rem' }}>
+                                        <label className="meta-label meta-label--brand" style={{ margin: 0 }}>Hora de la Cita</label>
+                                        <button 
+                                            type="button" 
+                                            className="link-btn" 
+                                            onClick={() => setCustomTimeMode(!customTimeMode)}
+                                            style={{ background: 'none', border: 'none', color: 'var(--color-brand)', fontWeight: '700', fontSize: '0.75rem', cursor: 'pointer', textDecoration: 'underline', padding: 0 }}
+                                        >
+                                            {customTimeMode ? "Ver turnos rápidos" : "Elegir otra hora"}
+                                        </button>
+                                    </div>
+
+                                    {customTimeMode ? (
+                                        <CustomTimePicker 
+                                            selectedTime={apptForm.hora} 
+                                            onSelectTime={time => setApptForm({...apptForm, hora: time})} 
+                                        />
+                                    ) : (
+                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '0.5rem' }}>
+                                            {[
+                                                '09:00', '10:00', '11:00', '12:00', '13:00',
+                                                '16:00', '17:00', '18:00', '19:00', '20:00'
+                                            ].map((time, idx) => {
+                                                const isSelected = apptForm.hora === time;
+                                                return (
+                                                    <button
+                                                        key={idx}
+                                                        type="button"
+                                                        onClick={() => setApptForm(prev => ({ ...prev, hora: time }))}
+                                                        style={{
+                                                            padding: '0.6rem 0.2rem',
+                                                            borderRadius: '12px',
+                                                            background: isSelected ? 'var(--color-brand)' : '#FFFFFF',
+                                                            color: isSelected ? '#FFFFFF' : '#1A2E35',
+                                                            border: isSelected ? 'none' : '1.5px solid #E2E8F0',
+                                                            fontWeight: '700',
+                                                            fontSize: '0.8rem',
+                                                            cursor: 'pointer',
+                                                            transition: 'all 0.2s ease',
+                                                            textAlign: 'center'
+                                                        }}
+                                                    >
+                                                        {time}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    )}
                                 </div>
                                 <div className="clinical-input-group">
                                     <label className="meta-label meta-label--brand">Motivo / Notas</label>

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { createPortal } from 'react-dom';
 import api from '../../api/api';
 import { PatientsIcon, ClinicalFolderIcon, UploadIcon, ChevronIcon, ArrowLeftIcon } from '../../components/dashboard/DashboardIcons';
 
@@ -7,12 +8,13 @@ const NewPatient = () => {
     const navigate = useNavigate();
     const [statusMsg, setStatusMsg] = useState(null);
     const [formData, setFormData] = useState({ 
-        nombre: '', email: '', password: '', 
+        nombre: '', email: '', 
         telefono: '', diagnostico: '', notas: '', 
         fechaNacimiento: '', profesion: '', actividadFisica: 'moderado' 
     });
     const [selectedFiles, setSelectedFiles] = useState([]);
     const [showActivityMenu, setShowActivityMenu] = useState(false);
+    const [tempPassword, setTempPassword] = useState(null);
 
     const activityOptions = [
         { value: 'sedentario', label: 'Sedentario (Oficina / Poco movimiento)' },
@@ -35,9 +37,14 @@ const NewPatient = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await api.post('/patients', formData);
-            showNotification(`¡Éxito! Ficha clínica creada correctamente.`);
-            setTimeout(() => navigate('/dashboard/physio/patients'), 1500);
+            const res = await api.post('/patients', formData);
+            if (res.data && res.data.tempPassword) {
+                setTempPassword(res.data.tempPassword);
+                showNotification(`¡Éxito! Ficha clínica creada.`);
+            } else {
+                showNotification(`¡Éxito! Ficha clínica creada correctamente.`);
+                setTimeout(() => navigate('/dashboard/physio/patients'), 1500);
+            }
         } catch (err) {
             const errorMsg = err.response?.data?.error || err.response?.data?.message || "Error al procesar el alta. Revisa los datos.";
             showNotification(errorMsg);
@@ -115,17 +122,6 @@ const NewPatient = () => {
                         </div>
 
                         <div className="patient-form__row">
-                            <div className="form-group">
-                                <label className="meta-label">Contraseña de Acceso <span className="text-danger">*</span></label>
-                                <input
-                                    className="input-clinical"
-                                    type="password"
-                                    placeholder="Mín. 6 caracteres"
-                                    value={formData.password}
-                                    onChange={e => setFormData({...formData, password: e.target.value})}
-                                    required
-                                />
-                            </div>
                             <div className="form-group">
                                 <label className="meta-label">Profesión</label>
                                 <input
@@ -233,6 +229,60 @@ const NewPatient = () => {
                     </button>
                 </footer>
             </form>
+
+            {/* MODAL DE CONTRASEÑA TEMPORAL */}
+            {tempPassword && createPortal(
+                <div className="modal-overlay animate-in">
+                    <article 
+                        className="modal-container modal-container--small"
+                        onClick={(e) => e.stopPropagation()}
+                        style={{ maxWidth: '400px' }}
+                    >
+                        <header className="modal-header">
+                            <hgroup>
+                                <h2 className="modal-title" style={{ color: '#55A98A' }}>Ficha Creada</h2>
+                                <p className="modal-subtitle">Se han generado las credenciales de acceso.</p>
+                            </hgroup>
+                        </header>
+                        
+                        <div className="modal-content" style={{ textAlign: 'center', padding: '1.5rem 0' }}>
+                            <p style={{ fontSize: '0.95rem', color: '#4A5568', marginBottom: '1.2rem', lineHeight: '1.5' }}>
+                                Se ha creado la ficha clínica del paciente y enviado una contraseña temporal por correo electrónico.
+                            </p>
+                            <p style={{ fontSize: '0.85rem', fontWeight: '700', color: '#7A8C8E', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '0.5rem' }}>
+                                Contraseña Temporal de Acceso:
+                            </p>
+                            <div style={{
+                                background: '#F4FAF8',
+                                border: '2px dashed #55A98A',
+                                padding: '1rem',
+                                borderRadius: '12px',
+                                fontSize: '1.6rem',
+                                fontFamily: 'monospace',
+                                fontWeight: 'bold',
+                                color: '#1A2E35',
+                                letterSpacing: '2px',
+                                userSelect: 'all',
+                                margin: '0.5rem 0 1.5rem'
+                            }}>
+                                {tempPassword}
+                            </div>
+                            <button 
+                                type="button" 
+                                className="btn-primary" 
+                                style={{ width: '100%', padding: '0.8rem', borderRadius: '10px' }} 
+                                onClick={() => {
+                                    setTempPassword(null);
+                                    navigate('/dashboard/physio/patients');
+                                }}
+                            >
+                                Entendido e Ir al Listado
+                            </button>
+                        </div>
+                    </article>
+                </div>,
+                document.body
+            )}
         </main>
     );
 };
