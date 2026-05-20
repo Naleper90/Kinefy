@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || '/api', // En producción (Vercel), se usa la URL de Railway. En local, actúa como proxy.
+    baseURL: import.meta.env.VITE_API_URL || 'https://kinefy-production.up.railway.app/api',
 
     headers: {
         'Content-Type': 'application/json'
