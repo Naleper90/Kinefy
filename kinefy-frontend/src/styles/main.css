@@ -8,4 +8,12 @@
 /* 05-components - Component specific styles (BEM) */
 @import "./05-components/_auth.css";
 @import "./05-components/_dashboard.css";
+@import "./05-components/_sidebar.css";
+@import "./05-components/_topbar.css";
+@import "./05-components/_cards.css";
+@import "./05-components/_calendar.css";
+@import "./05-components/_modals.css";
+@import "./05-components/_forms.css";
+@import "./05-components/_tables.css";
+@import "./05-components/_progress.css";
 @import "./05-components/_legal.css";

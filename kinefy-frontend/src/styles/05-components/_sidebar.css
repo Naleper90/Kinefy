@@ -1,0 +1,169 @@
+/* ==========================================================================
+   Kinefy Sidebar Component
+   ========================================================================== */
+
+/* Barra Lateral */
+.sidebar {
+  width: 240px;
+  background-color: #B8DECE;
+  display: flex;
+  flex-direction: column;
+  padding: 3rem 0;
+  position: relative;
+  z-index: 10000000;
+  flex-shrink: 0;
+}
+
+.sidebar__header {
+  padding: 0 2rem;
+  margin-bottom: 4rem;
+}
+
+.sidebar__brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sidebar__nav {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.sidebar__link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 1rem 1.5rem;
+  color: var(--color-text-dark);
+  text-decoration: none;
+  font-family: var(--font-display);
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.sidebar__icon {
+  width: 20px;
+  height: 20px;
+  opacity: 0.85;
+}
+
+.sidebar__link--active {
+  background-color: #FFFFFF;
+  color: var(--color-text-dark);
+  border-radius: 20px 0 0 20px;
+  margin-left: 1.2rem;
+  width: calc(100% - 1.2rem);
+  position: relative;
+  font-weight: 700;
+  z-index: 2;
+}
+
+.sidebar__link--active::before,
+.sidebar__link--active::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  width: 20px;
+  height: 20px;
+  background-color: transparent;
+  pointer-events: none;
+}
+
+.sidebar__link--active::before {
+  top: -20px;
+  background-color: transparent;
+  border-radius: 0 0 20px 0;
+  box-shadow: 10px 10px 0 10px #FFFFFF;
+  clip-path: inset(0 0 0 0);
+  z-index: 2;
+}
+
+.sidebar__link--active::after {
+  bottom: -20px;
+  background-color: transparent;
+  border-radius: 0 20px 0 0;
+  box-shadow: 10px -10px 0 10px #FFFFFF;
+  clip-path: inset(0 0 0 0);
+  z-index: 2;
+}
+
+.sidebar__footer {
+  padding: 1.5rem 1rem;
+  margin-top: auto;
+  border-top: 1px solid rgba(26, 46, 53, 0.08);
+}
+
+.sidebar__logout {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 14px;
+  padding: 1rem 1.5rem;
+  background: none;
+  border: none;
+  color: var(--color-text-dark);
+  font-family: var(--font-display);
+  font-weight: 500;
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.2s;
+  opacity: 0.7;
+}
+
+.sidebar__logout:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.sidebar__logout .sidebar__icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* ==========================================================================
+   SISTEMA RESPONSIVO INTEGRAL - KINEFY
+   ========================================================================== */
+/* ==========================================================================
+   VISTAS DE FISIOTERAPEUTA - MEJORAS RESPONSIVAS
+   ========================================================================== */
+.mobile-logout-btn {
+  display: none;
+}
+
+.patient-exercises__sidebar {
+  width: 380px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+
+  .sidebar {
+    display: none;
+  }
+
+  .mobile-header .sidebar__brand {
+    transform: scale(0.85);
+    margin: 0;
+    transform-origin: left;
+  }
+
+  .mobile-logout-btn {
+    display: flex;
+    color: #E57373;
+    margin-right: 0.5rem;
+  }
+
+  .patient-exercises__sidebar {
+    width: 100%;
+  }
+
+}
+

@@ -1,0 +1,1383 @@
+/* ==========================================================================
+   Kinefy Forms and Buttons Controls
+   ========================================================================== */
+
+.btn-ghost {
+  background: transparent;
+  border: none;
+  color: #3B7A8E;
+  padding: 0.75rem 0;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.btn-ghost:hover {
+  opacity: 0.7;
+}
+
+.btn-primary {
+  background: var(--color-brand);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+}
+
+.btn-primary:hover {
+  background: #87C1B0;
+}
+
+.btn-primary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Entradas y Textareas */
+.dashboard__input {
+  width: 100%;
+  height: 52px;
+  border-radius: 14px;
+  border: 1.5px solid #E2E8F0;
+  padding: 0 1.2rem;
+  background: #F9FBFB;
+  font-family: var(--font-main);
+  font-size: 0.95rem;
+  color: var(--color-text-dark);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dashboard__input::placeholder {
+  color: #A0AEC0;
+}
+
+.dashboard__input:focus {
+  outline: none;
+  border-color: var(--color-brand);
+  background: #FFFFFF;
+  box-shadow: 0 0 0 4px rgba(85, 169, 138, 0.1);
+  transform: translateY(-1px);
+}
+
+textarea.dashboard__input {
+  height: auto;
+  min-height: 100px;
+  padding: 1.2rem;
+  resize: none;
+  line-height: 1.6;
+}
+
+.pain-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.pain-scale {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.pain-dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid rgba(26, 46, 53, 0.15);
+  background: #f9f9f9;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.pain-dot--low {
+  border-color: var(--color-brand);
+}
+
+.pain-dot--mid {
+  border-color: #F0C060;
+}
+
+.pain-dot--high {
+  border-color: #E07070;
+}
+
+.pain-dot--active {
+  color: #fff;
+  transform: scale(1.15);
+  z-index: 5;
+}
+
+.pain-dot--low.pain-dot--active {
+  background: var(--color-brand);
+  border-color: var(--color-brand);
+}
+
+.pain-dot--mid.pain-dot--active {
+  background: #F0C060;
+  border-color: #F0C060;
+}
+
+.pain-dot--high.pain-dot--active {
+  background: #E07070;
+  border-color: #E07070;
+}
+
+.pain-input {
+  border: 2px solid rgba(26, 46, 53, 0.1);
+  border-radius: 12px;
+  padding: 0.6rem 0.9rem;
+  font-size: 0.85rem;
+  font-family: var(--font-main);
+  color: var(--color-text-dark);
+  resize: none;
+  outline: none;
+}
+
+.pain-input:focus {
+  border-color: var(--color-brand);
+}
+
+.pain-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.pain-success__icon {
+  font-size: 2rem;
+  color: var(--color-brand);
+}
+
+.btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #EAF2F4;
+  border: 1px solid rgba(59, 122, 142, 0.15);
+  color: var(--color-text-link);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: 20px;
+  transition: all 0.2s ease;
+}
+
+.pain-dot--low.pain-dot--active {
+  background: var(--color-brand);
+  border-color: var(--color-brand);
+}
+
+.pain-dot--mid.pain-dot--active {
+  background: #F0C060;
+  border-color: #F0C060;
+}
+
+.pain-dot--high.pain-dot--active {
+  background: #E07070;
+  border-color: #E07070;
+}
+
+.pain-input {
+  border: 2px solid rgba(26, 46, 53, 0.1);
+  border-radius: 12px;
+  padding: 0.6rem 0.9rem;
+  font-size: 0.85rem;
+  font-family: var(--font-main);
+  color: var(--color-text-dark);
+  resize: none;
+  outline: none;
+}
+
+.pain-input:focus {
+  border-color: var(--color-brand);
+}
+
+.pain-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.pain-success__icon {
+  font-size: 2rem;
+  color: var(--color-brand);
+}
+
+.btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #EAF2F4;
+  border: 1px solid rgba(59, 122, 142, 0.15);
+  color: var(--color-text-link);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: 20px;
+  transition: all 0.2s ease;
+}
+
+.btn-back:hover {
+  background: #D3E4E8;
+  transform: translateX(-4px);
+}
+
+.auth__input--title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  padding: 0.4rem 0.8rem;
+  max-width: 350px;
+}
+
+.auth__input--small {
+  font-size: 0.85rem;
+  padding: 0.3rem 0.6rem;
+  width: auto;
+  max-width: 200px;
+}
+
+/* Entradas Clinicas */
+.clinical-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  width: 100%;
+}
+
+input.auth__input {
+  background: #F9FBFB;
+  border: 1px solid rgba(26, 46, 53, 0.08);
+  border-radius: 14px;
+  padding: 1rem 1.2rem;
+  font-size: 0.95rem;
+  color: var(--color-text-dark);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.01);
+}
+
+input.auth__input--search {
+  padding-left: 3.8rem;
+}
+
+input.auth__input:focus {
+  background: #FFFFFF;
+  border-color: var(--color-brand);
+  box-shadow: 0 0 0 4px rgba(85, 169, 138, 0.1);
+  outline: none;
+}
+
+.auth__input::placeholder {
+  color: #A0AEC0;
+  opacity: 0.8;
+}
+
+textarea.auth__input {
+  line-height: 1.7;
+  min-height: 120px;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 0.4;
+  cursor: pointer;
+  filter: invert(45%) sepia(10%) saturate(1200%) hue-rotate(110deg) brightness(95%) contrast(80%);
+}
+
+.dropzone-- {
+  background: #F9FBFB;
+  border: 2px dashed rgba(85, 169, 138, 0.2);
+  border-radius: 20px;
+  padding: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.dropzone--:hover {
+  background: #F0FAF6;
+  border-color: var(--color-brand);
+  transform: translateY(-2px);
+}
+
+.reports__action-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 1.25rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  color: #FFFFFF;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  text-align: left;
+}
+
+.reports__action-btn:hover {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: var(--color-brand);
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3), 0 0 20px rgba(85, 169, 138, 0.1);
+}
+
+.reports__search-input {
+  width: 240px;
+  font-size: 0.85rem;
+  height: 40px;
+  padding: 0 1rem;
+  border-radius: 10px;
+  border: 1px solid #F0F4F4;
+  background: #F9FBFB;
+  transition: all 0.3s ease;
+}
+
+.reports__search-input:focus {
+  border-color: var(--color-brand);
+  background: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(85, 169, 138, 0.05);
+}
+
+.patients-search__input {
+  width: 100%;
+  height: 48px;
+  padding: 0 1rem 0 3rem;
+  border-radius: 14px;
+  background: #FFFFFF;
+  border: 1px solid rgba(85, 169, 138, 0.15);
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.patients-search__input:focus {
+  border-color: var(--color-brand);
+  box-shadow: 0 8px 20px rgba(85, 169, 138, 0.08);
+}
+
+.patient-action-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.patient-action-btn--delete {
+  background: #FDF2F2;
+  color: #E57373;
+}
+
+.patient-action-btn--delete:hover {
+  background: #FFEBEB;
+  transform: scale(1.1);
+}
+
+.patient-action-btn--view {
+  background: #F9FBFB;
+  color: var(--color-brand);
+  border: 1px solid rgba(85, 169, 138, 0.1);
+}
+
+.patient-action-btn--view:hover {
+  background: #F0FAF6;
+  border-color: var(--color-brand);
+}
+
+/* Patient Form */
+.patient-form {
+  padding: 3.5rem;
+}
+
+.patient-form__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5rem;
+}
+
+.patient-form__section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.8rem;
+}
+
+.patient-form__section-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+
+.patient-form__section-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.patient-form__section-icon--blue {
+  background: #E8F5F1;
+  color: var(--color-brand);
+}
+
+/* Formulario de Paciente */
+/* ==========================================================================
+   Formulario de Paciente
+   ========================================================================== */
+.patient-form__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.patient-form__row--asymmetric {
+  grid-template-columns: 1.5fr 1fr;
+}
+
+.patient-form__footer {
+  margin-top: 5rem;
+  display: flex;
+  justify-content: flex-end;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  padding-top: 3rem;
+}
+
+.patient-form__submit {
+  width: auto;
+  padding: 1.2rem 5rem;
+  font-size: 1.1rem;
+  border-radius: 100px;
+  box-shadow: 0 10px 30px rgba(85, 169, 138, 0.3);
+}
+
+.btn-pdf {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  background: #EBF4FF;
+  color: #3B7A8E;
+  font-weight: 700;
+  border: 1.5px solid rgba(59, 122, 142, 0.1);
+  padding: 0.7rem 1.4rem;
+  border-radius: 14px;
+  white-space: nowrap;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.btn-pdf:hover {
+  background: #3B7A8E;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 122, 142, 0.2);
+}
+
+.btn-pdf svg {
+  stroke: currentColor;
+  min-width: 20px;
+}
+
+.reports__action-btn {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 1rem 1.2rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 18px;
+  width: 100%;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+}
+
+.reports__action-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--color-brand);
+  box-shadow: 0 10px 25px rgba(85, 169, 138, 0.1);
+}
+
+/* Estilos para el Modal de Seleccin de Paciente */
+.modal-patient-btn {
+  display: block;
+  width: 100%;
+  padding: 1.2rem 1.5rem;
+  background: #F9FBFB;
+  border: 1px solid #F0F4F4;
+  border-radius: 14px;
+  margin-bottom: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.modal-patient-btn:hover {
+  border-color: var(--color-brand);
+  background: #FFFFFF;
+  transform: translateX(5px);
+  box-shadow: 0 4px 15px rgba(85, 169, 138, 0.08);
+}
+
+/* Registro de Paciente y Formulario ClÃ­nico */
+.patient-form {
+  padding: 3rem;
+}
+
+.patient-form__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+}
+
+.patient-form__section {
+  border: none;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+
+.patient-form__section-header {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  margin-bottom: 2.5rem;
+  padding: 0;
+  width: 100%;
+  border-bottom: 1px solid #F0F4F4;
+  padding-bottom: 1.2rem;
+}
+
+.patient-form__section-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #1A2E35;
+  font-weight: 700;
+}
+
+.patient-form__section-icon {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--color-brand);
+}
+
+.patient-form__section-icon--blue {
+  color: #3182CE;
+}
+
+.patient-form__section-icon--red {
+  color: var(--color-brand);
+  /* Verde Corporativo */
+}
+
+/* Selector ClÃ­nico Refinado */
+.clinical-select {
+  position: relative;
+  width: 100%;
+}
+
+.clinical-select__trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  background: #F9FBFB;
+  border: 1px solid #E2E8F0;
+  padding: 0 1.2rem;
+  height: 52px;
+  border-radius: 12px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.clinical-select__trigger:hover {
+  background: #FFFFFF;
+  border-color: var(--color-brand);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.clinical-select__value {
+  color: #1A2E35;
+  font-weight: 500;
+}
+
+.clinical-select__menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  background: #FFFFFF;
+  border-radius: 12px;
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  z-index: 100;
+  overflow: hidden;
+}
+
+.clinical-select__option {
+  padding: 1rem 1.2rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #5A6B6D;
+}
+
+.clinical-select__option:hover {
+  background: #F0FAF6;
+  color: var(--color-brand);
+}
+
+.clinical-select__option--selected {
+  background: #E8F5F1;
+  color: var(--color-brand);
+  font-weight: 600;
+}
+
+.patient-form__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.patient-form__row--asymmetric {
+  grid-template-columns: 1.5fr 1fr;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.patient-form__footer {
+  margin-top: 4rem;
+  padding-top: 2rem;
+  border-top: 1px solid #F0F4F4;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.patient-form__submit {
+  min-width: 300px;
+  height: 56px;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+/* Zona de Carga de Archivos (Dropzone) */
+.dropzone--premium {
+  background: #F9FBFB;
+  border: 2px dashed #E2E8F0;
+  border-radius: 18px;
+  padding: 3rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  color: #A0AEC0;
+}
+
+.dropzone--premium:hover {
+  border-color: var(--color-brand);
+  background: #FFFFFF;
+  color: var(--color-brand);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+}
+
+.dropzone__text {
+  font-weight: 700;
+  color: #5A6B6D;
+  margin: 0;
+}
+
+.dropzone__subtext {
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+/* ==========================================================================
+   Home Dashboard (Physio Home)
+   ========================================================================== */
+/* BotÃ³n de AcciÃ³n Principal (Call to Action) */
+.btn-callout {
+  width: auto;
+  padding: 0.8rem 2rem;
+  background: var(--color-text-dark);
+  color: white;
+  border: none;
+  border-radius: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 25px rgba(26, 46, 53, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-family: var(--font-main);
+  font-size: 0.95rem;
+  height: 52px;
+  /* Altura estandarizada para botones principales */
+}
+
+.btn-callout:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 35px rgba(26, 46, 53, 0.3);
+  background: #2A3E45;
+}
+
+.btn-callout svg {
+  flex-shrink: 0;
+}
+
+/* Form Elements */
+.input-clinical {
+  height: 54px;
+  border-radius: 14px;
+  border: 1.5px solid #E2E8F0;
+  background: #F9FBFB;
+  padding: 0 1.2rem;
+  width: 100%;
+  font-weight: 600;
+  color: #1A2E35;
+  transition: all 0.2s;
+}
+
+.input-clinical:focus {
+  border-color: var(--color-brand);
+  background: #FFFFFF;
+  box-shadow: 0 0 0 4px rgba(85, 169, 138, 0.1);
+}
+
+.textarea-clinical {
+  min-height: 120px;
+  border-radius: 14px;
+  border: 1.5px solid #E2E8F0;
+  background: #F9FBFB;
+  padding: 1rem 1.2rem;
+  width: 100%;
+  resize: none;
+  line-height: 1.6;
+  font-weight: 500;
+  color: #1A2E35;
+  transition: all 0.2s;
+}
+
+.textarea-clinical:focus {
+  border-color: var(--color-brand);
+  background: #FFFFFF;
+}
+
+/* Custom Select Clinical */
+.select-clinical__trigger {
+  padding: 0 1.2rem;
+  height: 54px;
+  border-radius: 14px;
+  border: 1.5px solid #E2E8F0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  background: #F9FBFB;
+  transition: all 0.2s;
+}
+
+.select-clinical__trigger:hover {
+  border-color: var(--color-brand);
+}
+
+.select-clinical__dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: #FFFFFF;
+  border-radius: 14px;
+  margin-top: 8px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+  border: 1px solid #E2E8F0;
+  padding: 0.5rem;
+}
+
+.select-clinical__option {
+  padding: 0.8rem 1rem;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  color: #1A2E35;
+  transition: all 0.2s;
+}
+
+.select-clinical__option:hover {
+  background: rgba(85, 169, 138, 0.05);
+}
+
+.select-clinical__option--selected {
+  background: rgba(85, 169, 138, 0.1);
+  color: var(--color-brand);
+}
+
+/* Buttons Soft */
+.btn-primary--soft {
+  min-width: 200px;
+  height: 54px;
+  border-radius: 14px;
+  background: rgba(85, 169, 138, 0.15);
+  color: var(--color-brand);
+  border: none;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.btn-primary--soft:hover {
+  background: rgba(85, 169, 138, 0.25);
+  transform: translateY(-2px);
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  color: var(--color-text-link);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.btn-link:hover {
+  background: rgba(85, 169, 138, 0.08);
+  text-decoration: underline;
+}
+
+/* Clases de Utilidad para Formularios ClÃ­nicos */
+.clinical-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.8rem;
+}
+
+.clinical-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.chevron {
+  transition: transform 0.3s ease;
+}
+
+.chevron.open {
+  transform: rotate(180deg);
+}
+
+.search-container {
+  position: relative;
+}
+
+.search-icon {
+  position: absolute;
+  left: 1.2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.4;
+  display: flex;
+  align-items: center;
+}
+
+.btn-icon--delete {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: 10px;
+  background: #FDF2F2;
+  color: #E57373;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.btn-icon--delete:hover {
+  background: #FFEBEB;
+  transform: scale(1.05);
+}
+
+.btn-primary--danger {
+  flex: 1;
+  height: 48px;
+  border-radius: 12px;
+  background: #E57373;
+  color: white;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(229, 115, 115, 0.25);
+  transition: all 0.2s;
+}
+
+.btn-primary--danger:hover {
+  filter: brightness(0.9);
+}
+
+.checkbox-brand {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: var(--color-brand);
+}
+
+.btn.btn-sm, .btn-primary.btn-sm {
+  padding: 0.5rem 1.2rem;
+  font-size: 0.85rem;
+  height: auto;
+  width: auto;
+  border-radius: 10px;
+}
+
+.btn-upload-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: #F0FAF6;
+  color: var(--color-brand);
+  padding: 0.6rem 1.2rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid rgba(85, 169, 138, 0.1);
+}
+
+.btn-upload-label:hover {
+  background: var(--color-brand);
+  color: white;
+}
+
+.clinical-diagnosis {
+  margin-top: 3rem;
+  border-top: 1px solid #F0F4F4;
+  padding-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.add-doc-form {
+  background: #F9FBFB;
+  border: 1px solid #E2E8F0;
+  border-radius: 20px;
+  padding: 2rem;
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.clinical-upload-zone__actions {
+  display: flex;
+  gap: 1.2rem;
+  margin-top: 1rem;
+}
+
+.btn-icon-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  transition: background 0.2s;
+  color: var(--color-text-soft);
+}
+
+.btn-icon-link:hover {
+  background: #F0FAF6;
+  color: var(--color-brand);
+}
+
+.btn-close-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: #F9FBFB;
+  color: var(--color-text-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-close-circle:hover {
+  background: #E2E8F0;
+  color: var(--color-text-dark);
+}
+
+.btn-delete-icon {
+  background: transparent;
+  border: none;
+  color: #E57373;
+  padding: 0.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.btn-delete-icon:hover {
+  background: #FDF2F2;
+  transform: scale(1.1);
+  color: #D32F2F;
+}
+
+.dashboard__input--title {
+  font-family: var(--font-display);
+  font-size: 2.8rem;
+  font-weight: 700;
+  height: auto;
+  padding: 0.5rem 1rem;
+  margin-left: -1rem;
+  background: transparent;
+  border-color: transparent;
+  color: var(--color-text-dark);
+}
+
+.dashboard__input--title:focus {
+  background: #F9FBFB;
+  border-color: var(--color-brand);
+}
+
+/* Fix para listado de pacientes responsive */
+/* Refactorización total de la tarjeta de paciente en móvil */
+/* Ajuste de etiqueta junto al nombre y acciones abajo a la derecha */
+/* Corrección de posición de etiqueta ACTIVO */
+/* Estilo Kinefy para botones de acción (Menos genérico, más artesanal) */
+.patient-action-btn {
+  background: transparent;
+  border: none;
+  padding: 8px;
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  overflow: visible;
+}
+
+.patient-action-btn::before {
+  content: "";
+ position: absolute;
+ inset: 0;
+ background: var(--bg-color, #F0FAF6);
+ border-radius: 42% 58% 70% 30% / 45% 45% 55% 55%; /* Forma irregular de mancha */
+ opacity: 0.5;
+ z-index: -1;
+ transition: all 0.4s ease;
+ transform: scale(0.9);
+}
+
+.patient-action-btn--delete::before {
+  --bg-color: #FDF2F2;
+}
+
+.patient-action-btn--view::before {
+  --bg-color: #F0FAF6;
+}
+
+.patient-action-btn:hover {
+  transform: translateY(-3px) rotate(3deg);
+}
+
+.patient-action-btn:hover::before {
+  opacity: 1;
+ transform: scale(1.1) rotate(-5deg);
+ border-radius: 58% 42% 30% 70% / 55% 55% 45% 45%; /* La mancha cambia al pasar el ratón */
+}
+
+.patient-action-btn svg {
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05));
+}
+
+/* Mejora de botones Kinefy (Más visibles y menos IA) */
+.patient-action-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.2s ease;
+}
+
+.patient-action-btn::after {
+  content: "";
+ position: absolute;
+ inset: 0;
+ background: var(--btn-bg, #F0FAF6);
+ border: 1.5px solid var(--btn-border, rgba(85, 169, 138, 0.2));
+ border-radius: 60% 40% 70% 30% / 50% 60% 40% 50%; /* Forma orgánica */
+ z-index: -1;
+ transition: all 0.3s ease;
+}
+
+.patient-action-btn--delete {
+  --btn-bg: #FFF5F5;
+ --btn-border: rgba(229, 115, 115, 0.3);
+ color: #E57373;
+}
+
+.patient-action-btn--view {
+  --btn-bg: #F0FAF6;
+ --btn-border: rgba(85, 169, 138, 0.3);
+ color: var(--color-brand);
+}
+
+.patient-action-btn:hover {
+  transform: scale(1.15) rotate(5deg);
+}
+
+.patient-action-btn:hover::after {
+  border-radius: 40% 60% 30% 70% / 60% 40% 60% 40%;
+ border-color: currentColor;
+ opacity: 1;
+}
+
+/* Intento Definitivo: Botones con Mancha Directa */
+.patient-action-btn {
+  background-color: var(--btn-bg, #F0FAF6);
+  border: 1.5px solid var(--btn-border, rgba(85, 169, 138, 0.3));
+  border-radius: 60% 40% 70% 30% / 50% 60% 40% 50%;
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  padding: 0;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+}
+
+.patient-action-btn--delete {
+  --btn-bg: #FFF5F5;
+  --btn-border: rgba(229, 115, 115, 0.4);
+  color: #E57373;
+}
+
+.patient-action-btn--view {
+  --btn-bg: #F0FAF6;
+  --btn-border: rgba(85, 169, 138, 0.4);
+  color: var(--color-brand);
+}
+
+.patient-action-btn:hover {
+  transform: scale(1.1) rotate(4deg);
+  border-radius: 40% 60% 30% 70% / 60% 40% 60% 40%;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.06);
+}
+
+/* Estética Global Kinefy (Organic Buttons) */
+.btn-primary, .btn-secondary, .btn-ghost, .btn-callout, .btn-callout-ghost, .btn-back, .exercise-action-btn {
+  border-radius: 22px 38px 25px 42px / 35px 28px 45px 32px;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border-width: 1.5px;
+  letter-spacing: -0.01em;
+  font-weight: 700;
+}
+
+.btn-primary:hover, .btn-secondary:hover, .btn-ghost:hover, .btn-callout:hover, .btn-back:hover {
+  transform: translateY(-3px) scale(1.02) rotate(0.5deg);
+  border-radius: 38px 22px 42px 25px / 28px 35px 32px 45px;
+  box-shadow: 0 10px 25px rgba(26, 46, 53, 0.08);
+}
+
+.btn-primary--soft:hover, .reports__action-btn:hover, .modal-patient-btn:hover {
+  transform: translateY(-3px) scale(1.02);
+  border-radius: 28px 18px 32px 20px / 22px 28px 25px 35px;
+  border-color: var(--color-brand);
+}
+
+@media (max-width: 768px) {
+
+  .clinical-upload-zone__fields {
+    grid-template-columns: 1fr;
+  }
+
+  .clinical-form-row {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .patient-exercises__header-flex .btn-primary,
+    .patient-exercises__header-flex .btn-ghost {
+    width: 100%;
+  }
+
+  .clinical-upload-zone__actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .clinical-upload-zone__actions button {
+    width: 100%;
+  }
+
+  .btn-back {
+    font-size: 1rem;
+    padding: 0.5rem 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .patient-action-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 14px;
+    margin: 0;
+  }
+
+}
+
+.patient-exercises__checkbox {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: #E2E8F0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFF;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.patient-exercises__checkbox:hover {
+  transform: scale(1.05);
+}
+
+.patient-exercises__checkbox--completed {
+  background: #55A98A;
+}
+
+.patient-exercises__checkbox-check {
+  font-size: 0.9rem;
+}
+
+.patient-exercises__action-btn {
+  width: auto;
+  padding: 0 2rem;
+  height: 54px;
+}
+
+.file-upload-dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1.5rem;
+  border: 2px dashed #C2DFD4;
+  border-radius: 20px;
+  background: #F4FAF8;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  color: #55A98A;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.file-upload-dropzone:hover {
+  background: #E8F5F1;
+  border-color: #55A98A;
+}
+
+.file-upload-dropzone__icon {
+  margin-bottom: 0.8rem;
+}
+
+.file-upload-dropzone__wrapper {
+  width: 100%;
+}
+
+.file-upload-dropzone__title {
+  margin: 0 0 0.3rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #1A2E35;
+}
+
+.file-upload-dropzone__filename {
+  margin: 0 0 0.4rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #1A2E35;
+  word-break: break-all;
+}
+
+.file-upload-dropzone__subtitle {
+  font-size: 0.75rem;
+  color: #7A8C8E;
+  font-weight: 500;
+}
+
+.file-upload-dropzone__subtitle--success {
+  color: #55A98A;
+  font-weight: 600;
+}
+
+.u-hidden {
+  display: none;
+}
+
+.btn-ghost--small {
+  padding: 4px 8px;
+  font-size: 0.8rem;
+}
+

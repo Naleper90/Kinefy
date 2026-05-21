@@ -1,0 +1,551 @@
+/* ==========================================================================
+   Kinefy Progress Bars and Visual Indicators
+   ========================================================================== */
+
+.progress-bar--mini {
+  height: 4px;
+  background: #F0F5F4;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-bar__fill {
+  height: 100%;
+  background: var(--color-brand);
+  border-radius: 10px;
+  width: var(--progress, 0%);
+}
+
+/* Visualizaci?n de Evoluci?n */
+.evolution-viz {
+  margin: 0.5rem 0 1.5rem 0;
+}
+
+.activity-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.activity-list__item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid rgba(26, 46, 53, 0.05);
+}
+
+.activity-list__item:last-child {
+  border-bottom: none;
+}
+
+.activity-list__label {
+  font-size: 0.95rem;
+  color: var(--color-text-soft);
+}
+
+.activity-list__value {
+  font-weight: 600;
+  color: var(--color-text-dark);
+}
+
+.exercise-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.exercise-progress__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.exercise-progress__label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--color-text-soft);
+}
+
+.exercise-progress__pct {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--color-brand);
+}
+
+.activity-list__value--active {
+  color: var(--color-brand);
+  font-weight: 700;
+  background: #E8F5F1;
+  padding: 0.2rem 0.8rem;
+  border-radius: 100px;
+  font-size: 0.75rem;
+}
+
+.evolution-chart {
+  margin-top: 1.5rem;
+}
+
+.evolution-chart__bars {
+  height: 160px;
+  display: flex;
+  align-items: flex-end;
+  gap: 1.2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(26, 46, 53, 0.05);
+}
+
+.evolution-chart__bar-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.evolution-chart__bar {
+  width: 100%;
+  background: var(--color-brand);
+  border-radius: 6px 6px 0 0;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.evolution-chart__label {
+  font-size: 0.75rem;
+  color: var(--color-text-soft);
+  font-weight: 600;
+}
+
+.evolution-chart__note {
+  margin-top: 1rem;
+  font-size: 0.8rem;
+  color: #999;
+  font-style: italic;
+}
+
+/* Barras Clinicas */
+.evolution-chart {
+  padding: 1rem 0;
+  width: 100%;
+}
+
+.evolution-chart__bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 1.5rem;
+  height: 180px;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(26, 46, 53, 0.05);
+  margin-bottom: 1rem;
+}
+
+.evolution-chart__bar-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+  height: 100%;
+  justify-content: flex-end;
+}
+
+.evolution-chart__bar {
+  width: 100%;
+  max-width: 45px;
+  background: linear-gradient(to top, var(--color-brand), #81BAA5);
+  border-radius: 8px 8px 4px 4px;
+  transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 4px 12px rgba(85, 169, 138, 0.15);
+  cursor: help;
+}
+
+.evolution-chart__bar:hover {
+  transform: scaleX(1.05);
+  filter: brightness(1.1);
+}
+
+.evolution-chart__label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--color-text-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 0.8;
+}
+
+.evolution-chart__note {
+  font-size: 0.8rem;
+  color: #A0AEC0;
+  font-style: italic;
+  margin-top: 1rem;
+}
+
+@keyframes growUp {
+  from {
+    height: 0;
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.evolution-chart__bar {
+  animation: growUp 0.8s ease-out forwards;
+}
+
+/* Estados y Animaciones */
+.pulse-dot {
+  width: 6px;
+  height: 6px;
+  background: currentColor;
+  border-radius: 50%;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.7;
+  }
+
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(0.95);
+    opacity: 0.7;
+  }
+}
+
+.status-badge {
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+  font-weight: 800;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.status-badge--pending {
+  background: #FDF2F2;
+  color: #E57373;
+}
+
+.status-badge--confirm {
+  background: #E0F2FE;
+  color: #0369A1;
+}
+
+.status-badge--active {
+  background: #EBF4FF;
+  color: #3182CE;
+}
+
+.status-badge--done {
+  background: #E8F5F1;
+  color: var(--color-brand);
+}
+
+.patient-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.patient-progress__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.patient-progress__label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--color-text-soft);
+  text-transform: uppercase;
+  opacity: 0.4;
+}
+
+.patient-progress__value {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--color-brand);
+}
+
+.patient-progress__track {
+  height: 6px;
+  background: #F0F5F4;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.patient-progress__bar {
+  height: 100%;
+  background: var(--color-brand);
+  border-radius: 10px;
+  transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Grfico de Evolucin */
+.evolution-chart-wrapper {
+  background: #F9FBFB;
+  border: 1px solid #F0F4F4;
+  border-radius: 24px;
+  padding: 2.5rem 1.5rem;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.evolution-chart-path {
+  stroke: var(--color-brand);
+  filter: drop-shadow(0 6px 12px rgba(85, 169, 138, 0.2));
+}
+
+.evolution-chart-dot {
+  fill: var(--color-text-dark);
+  stroke: #FFFFFF;
+  stroke-width: 2;
+}
+
+/* Grfico de Evolucin */
+.evolution-chart-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #F9FBFB;
+  border-radius: 24px;
+  padding: 1.5rem;
+  border: 1px solid #F0F4F4;
+  margin-bottom: 1.5rem;
+  min-height: 120px;
+}
+
+.evolution-line {
+  filter: drop-shadow(0 4px 6px rgba(85, 169, 138, 0.2));
+  stroke-dasharray: 500;
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 2s ease;
+}
+
+/* Badges de Estado Premium */
+.status-pill {
+  padding: 0.4rem 1rem;
+  border-radius: 100px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all 0.2s;
+}
+
+.status-pill:hover {
+  filter: brightness(0.95);
+}
+
+.status-pill svg {
+  transition: transform 0.3s;
+}
+
+.status-pill--open svg {
+  transform: rotate(180deg);
+}
+
+.status-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 8px;
+  z-index: 100;
+  background: #FFFFFF;
+  border-radius: 14px;
+  padding: 0.5rem;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+  border: 1px solid #F0F4F4;
+  min-width: 150px;
+}
+
+.status-option {
+  padding: 0.7rem 1rem;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  transition: all 0.2s;
+}
+
+.status-option:hover {
+  background: #F9FBFB;
+}
+
+.icon-indicator {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #E2E8F0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFF;
+  transition: all 0.3s;
+}
+
+.icon-indicator.active {
+  background: var(--color-brand);
+}
+
+/* Evoluci?n Feed */
+.evolution-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.evolution-feed__item {
+  padding: 1.5rem;
+  background: #F9FBFB;
+  border-radius: 18px;
+  border: 1px solid rgba(26, 46, 53, 0.04);
+  transition: all 0.3s ease;
+}
+
+.evolution-feed__item:hover {
+  background: #FFFFFF;
+  box-shadow: 0 8px 24px rgba(26, 46, 53, 0.04);
+  transform: translateY(-2px);
+}
+
+.evolution-feed__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.evolution-feed__date {
+  font-size: 0.85rem;
+  color: var(--color-text-soft);
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.evolution-feed__text {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--color-text-dark);
+  margin: 0;
+}
+
+/* Status Badges para EVA */
+.status-badge--eva-low {
+  background-color: #E8F5F1;
+  color: #3B7A8E;
+}
+
+.status-badge--eva-mid {
+  background-color: #FFF9E6;
+  color: #B38F00;
+}
+
+.status-badge--eva-high {
+  background-color: #FEE2E2;
+  color: #EF4444;
+}
+
+@media (max-width: 768px) {
+
+  .status-pill {
+    width: auto;
+    min-width: 140px;
+  }
+
+  .evolution-chart {
+    overflow-x: auto;
+    padding-bottom: 1rem;
+    width: 100%;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .evolution-chart__bars {
+    min-width: 450px;
+    height: 150px;
+  }
+
+  .evolution-feed__item {
+    padding: 1rem;
+  }
+
+  .evolution-feed__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .patient-progress {
+    width: 100%;
+    margin: 0;
+  }
+
+}
+
+/* ==========================================================================
+   Reports Page & Modal Style Enhancements
+   ========================================================================== */
+.status-badge {
+  text-decoration: none;
+}
+
+/* ==========================================================================
+   Loader & Warning Modal Styles
+   ========================================================================== */
+.loader {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(85, 169, 138, 0.15);
+  border-top-color: var(--color-brand, #55A98A);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loader--centered {
+  margin: 0 auto 1rem;
+}
+
+.loader--margin-auto {
+  margin: 0 auto;
+}
+
+/* ==========================================================================
+   Dashboard Home and Patient Dashboard Cleanups
+   ========================================================================== */
+.status-badge--absolute-top-right {
+  position: absolute;
+  top: 1.2rem;
+  right: 1.2rem;
+}
+
+.status-badge--small {
+  font-size: 0.75rem;
+  padding: 2px 8px;
+}
+

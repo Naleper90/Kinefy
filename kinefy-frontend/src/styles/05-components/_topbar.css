@@ -1,0 +1,536 @@
+/* ==========================================================================
+   Kinefy Topbar and Notifications Component
+   ========================================================================== */
+
+/* Barra Superior */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 2rem;
+  background-color: #ffffff;
+  position: relative;
+  z-index: 2;
+  min-height: 64px;
+  flex-shrink: 0;
+}
+
+.mobile-header {
+  display: none;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  padding: 0.75rem 1.25rem;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(26, 46, 53, 0.05);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.mobile-header__logo {
+  height: 32px;
+}
+
+.mobile-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.topbar__search {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.6);
+  padding: 0.8rem 1.5rem;
+  border-radius: 12px;
+  width: 350px;
+}
+
+.topbar__search-icon {
+  width: 18px;
+  color: var(--color-text-soft);
+}
+
+.topbar__search-input {
+  border: none;
+  background: transparent;
+  flex: 1;
+  font-size: 0.95rem;
+  color: var(--color-text-dark);
+}
+
+.topbar__search-input:focus {
+  outline: none;
+}
+
+.topbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.topbar__btn {
+  background: none;
+  border: none;
+  color: var(--color-text-dark);
+}
+
+.topbar__btn:hover {
+  transform: scale(1.1);
+}
+
+.topbar__icon {
+  width: 20px;
+  height: 20px;
+}
+
+.topbar__user {
+  margin: 0;
+}
+
+.topbar__avatar-img {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid white;
+  box-shadow: 0 4px 12px rgba(26, 46, 53, 0.08);
+  transition: transform 0.3s ease;
+}
+
+.topbar__avatar-img:hover {
+  transform: scale(1.05);
+}
+
+.topbar__avatar-sketchy {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.topbar__avatar-initials {
+  position: relative;
+  z-index: 2;
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--color-text-dark);
+  opacity: 0.8;
+}
+
+.topbar__avatar-sketchy:hover {
+  transform: scale(1.05) rotate(2deg);
+}
+
+.topbar__avatar-blob {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Responsivo */
+/* Detalle de Paciente y Notificaciones */
+.toast-notification {
+  position: fixed;
+  bottom: 2.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  background: rgba(26, 46, 53, 0.85);
+  backdrop-filter: blur(10px);
+  color: white;
+  padding: 0.8rem 1.8rem;
+  border-radius: 100px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-size: 0.9rem;
+}
+
+.toast-notification__dot {
+  color: var(--color-brand);
+  font-size: 1.2rem;
+}
+
+/* Responsivo */
+/* Detalle de Paciente y Notificaciones */
+.toast-notification {
+  position: fixed;
+  bottom: 2.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  background: rgba(26, 46, 53, 0.85);
+  backdrop-filter: blur(10px);
+  color: white;
+  padding: 0.8rem 1.8rem;
+  border-radius: 100px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-size: 0.9rem;
+}
+
+.toast-notification__dot {
+  color: var(--color-brand);
+  font-size: 1.2rem;
+}
+
+/* Notificaciones Responsivas */
+/* Patient Detail Responsive Tweaks */
+/* Estilos Base de Notificaciones */
+.notifications-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 320px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  z-index: 1000;
+  margin-top: 10px;
+  padding: 1rem;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+/* Final Polish for Responsive UI */
+/* Fixes tras captura de pantalla */
+.mobile-header__logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mobile-header__logo .auth__logo-text {
+  display: none; /* Solo mostramos la K en el header móvil */
+}
+
+/* Ajustes finales de espacio y ancho */
+/* Corrección de corte de tarjetas */
+/* Fix para informes que se salen */
+/* Menú de Usuario */
+.user-menu-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0.8rem 1rem;
+  background: none;
+  border: none;
+  color: var(--color-text-dark);
+  font-family: var(--font-main);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+}
+
+.user-menu-item:hover {
+  background-color: #F0FAF6;
+  color: var(--color-brand);
+}
+
+/* Kinefy Premium Dropdowns */
+.notifications-dropdown {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 28px;
+  box-shadow: 0 25px 50px rgba(26, 46, 53, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  padding: 1.8rem;
+}
+
+.user-menu-item {
+  border-radius: 16px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  padding: 1rem 1.2rem;
+}
+
+.user-menu-item:hover {
+  background: rgba(85, 169, 138, 0.1);
+  transform: translateX(5px);
+}
+
+.user-menu-item--danger:hover {
+  background: rgba(239, 68, 68, 0.08);
+  color: #EF4444;
+}
+
+.dropdown-header {
+  padding: 0 0.5rem 1.2rem 0.5rem;
+  border-bottom: 1px solid rgba(26, 46, 53, 0.06);
+  margin-bottom: 1rem;
+}
+
+.dropdown-user-name {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: var(--color-text-dark);
+}
+
+.dropdown-user-role {
+  margin: 4px 0 0 0;
+  font-size: 0.75rem;
+  color: var(--color-brand);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+@media (min-width: 769px) {
+
+  .mobile-header,
+    .mobile-nav {
+    display: none;
+  }
+
+}
+
+@media (max-width: 768px) {
+
+  .topbar {
+    display: none;
+  }
+
+  .mobile-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 0.75rem;
+    background: #FFFFFF;
+    border-bottom: 1px solid rgba(26, 46, 53, 0.05);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+  }
+
+  .mobile-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(26, 46, 53, 0.08);
+    display: flex;
+    justify-content: space-around;
+    padding: 0.6rem 0.25rem env(safe-area-inset-bottom);
+    z-index: 10000;
+    right: 0;
+  }
+
+  .mobile-nav__link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    color: #5A6B6D;
+    text-decoration: none;
+    font-size: 0.6rem;
+    font-weight: 600;
+    transition: color 0.2s;
+    flex: 1;
+    min-width: 0;
+    text-align: center;
+  }
+
+  .mobile-nav__link--active {
+    color: #55A98A;
+  }
+
+  .mobile-nav__icon {
+    width: 22px;
+    height: 22px;
+    margin-bottom: 2px;
+  }
+
+  .topbar__search {
+    display: none;
+  }
+
+  .topbar__actions {
+    gap: 0.5rem;
+  }
+
+  .notifications-dropdown {
+    position: fixed;
+    top: 70px;
+    left: 10px;
+    right: 10px;
+    width: auto;
+    max-height: calc(100vh - 150px);
+    margin-top: 0;
+    box-shadow: 0 15px 50px rgba(0,0,0,0.15);
+  }
+
+  .mobile-header__actions {
+    gap: 0.5rem;
+    margin-left: auto;
+  }
+
+}
+
+/* ==========================================================================
+   Dashboard Layout and Notifications Dropdown Refactoring (BEM)
+   ========================================================================== */
+.notifications-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 320px;
+  background: white;
+  border: 1px solid #F0F4F4;
+  border-radius: var(--radius-sm, 12px);
+  padding: 1.2rem;
+  box-shadow: var(--shadow-soft, 0 10px 40px rgba(0, 0, 0, 0.03));
+  margin-top: 0.5rem;
+  z-index: 10000;
+}
+
+.notifications-dropdown--user-menu {
+  width: 240px;
+}
+
+.notifications-dropdown__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.notifications-dropdown__title {
+  margin: 0;
+  color: var(--color-text-dark, #1A2E35);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.notifications-dropdown__close-btn {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  color: var(--color-text-soft, #5A6B6D);
+  cursor: pointer;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s;
+}
+
+.notifications-dropdown__close-btn:hover {
+  opacity: 0.7;
+}
+
+.notifications-dropdown__empty-text {
+  font-size: 0.85rem;
+  color: var(--color-text-soft, #5A6B6D);
+  text-align: center;
+  margin: 1rem 0;
+}
+
+.notifications-dropdown__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.notifications-dropdown__item {
+  padding: 0.75rem;
+  border-radius: var(--radius-sm, 12px);
+  background: transparent;
+  border: 1px solid #F0F4F4;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  text-align: left;
+}
+
+.notifications-dropdown__item--unread {
+  background: #F0FAF6;
+}
+
+.notifications-dropdown__item:hover {
+  background: #E8F5F1;
+}
+
+.notifications-dropdown__item-title {
+  margin: 0 0 4px 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--color-text-dark, #1A2E35);
+}
+
+.notifications-dropdown__item-message {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--color-text-soft, #5A6B6D);
+  line-height: 1.4;
+}
+
+.notifications-dropdown__item-date {
+  font-size: 0.65rem;
+  color: #A0AEC0;
+  margin-top: 4px;
+  display: block;
+}
+
+.notifications-dropdown__menu-list {
+  padding: 0.4rem 0;
+}
+
+.topbar__action-wrapper {
+  position: relative;
+}
+
+.topbar__notification-badge {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: #EF4444;
+  color: white;
+  font-size: 10px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid white;
+}
+
+.topbar__user--clickable {
+  cursor: pointer;
+}
+
+.topbar__avatar-img--mobile {
+  width: 36px;
+  height: 36px;
+}
+
+.topbar__avatar-sketchy--mobile {
+  width: 36px;
+  height: 36px;
+}
+
+.topbar__avatar-initials--mobile {
+  font-size: 0.8rem;
+}
+
