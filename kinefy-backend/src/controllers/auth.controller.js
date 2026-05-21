@@ -87,8 +87,37 @@ const getMe = async (req, res) => {
     }
 };
 
+const updateMe = async (req, res) => {
+    try {
+        const { name, email, currentPassword, newPassword } = req.body;
+        const user = await User.findById(req.user.id);
+        if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
+        if (name) user.name = name.trim();
+        if (email && email !== user.email) {
+            const exists = await User.findOne({ email });
+            if (exists) return res.status(400).json({ error: 'Ese correo ya está en uso' });
+            user.email = email;
+        }
+        if (newPassword) {
+            if (!currentPassword) return res.status(400).json({ error: 'Introduce tu contraseña actual' });
+            const ok = await bcrypt.compare(currentPassword, user.password);
+            if (!ok) return res.status(400).json({ error: 'Contraseña actual incorrecta' });
+            if (newPassword.length < 6) return res.status(400).json({ error: 'Mínimo 6 caracteres' });
+            user.password = newPassword;
+        }
+        await user.save();
+        const updated = await User.findById(user._id).select('-password');
+        res.json({ msg: 'Perfil actualizado', user: updated });
+    } catch (err) {
+        console.error("Error in updateMe:", err);
+        res.status(500).json({ error: 'Error del servidor' });
+    }
+};
+
 module.exports = {
     register,
     login,
-    getMe
+    getMe,
+    updateMe
 };
+

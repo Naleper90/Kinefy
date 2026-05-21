@@ -15,4 +15,8 @@ router.post('/login', authController.login);
 // @route   GET /api/auth/me
 router.get('/me', authMiddleware, authController.getMe);
 
+// @desc    Update current logged in user (Protected Route)
+// @route   PUT /api/auth/me
+router.put('/me', authMiddleware, authController.updateMe);
+
 module.exports = router;

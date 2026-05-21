@@ -6,6 +6,202 @@ A lo largo del desarrollo de Kinefy, y de cara al entorno de *Delivery* (entrega
 
 A continuación se exponen las evidencias del cumplimiento de los Criterios 7 y 8 exigidos en la rúbrica del módulo.
 
+
+---
+
+## Criterio 1: Diseño e Implantación de la Arquitectura de la Aplicación (RA1)
+
+A continuación se detalla la arquitectura completa de Kinefy, mostrando el flujo de comunicación y el desacoplamiento de capas tanto en el entorno de desarrollo local (Docker) como en el de producción (Cloud/Multicloud).
+
+### Diagramas ASCII de Arquitectura
+
+#### 1. Arquitectura en Entorno Local (Docker Compose)
+En local, toda la infraestructura se levanta en un host mediante contenedores Docker aislados en una red bridge propia (`kinefy-network`). El puerto `80` es el único expuesto al exterior para securizar el sistema de aplicaciones y la base de datos.
+
+```text
+  [ Navegador Cliente ] 
+           │
+           │ HTTP (Puerto 80 - Público)
+           ▼
+┌──────────────────────────────────────── kinefy-network (Docker Bridge) ──────┐
+│                                                                              │
+│  ┌───────────────────────┐  /api/* o /uploads/*  ┌────────────────────────┐  │
+│  │ kinefy-web            ├──────────────────────>│ kinefy-api             │  │
+│  │ (Servidor Web Nginx)  │                       │ (App Express / Node)   │  │
+│  └───────────────────────┘                       └───────────┬────────────┘  │
+│                                                              │               │
+│                                           Puerto 27017 (Int) │               │
+│                                                              ▼               │
+│                                                  ┌────────────────────────┐  │
+│                                                  │ kinefy-db              │  │
+│                                                  │ (Base Datos MongoDB)   │  │
+│                                                  └────────────────────────┘  │
+└──────────────────────────────────────────────────────────────────────────────┘
+```
+
+#### 2. Arquitectura en Producción (Vercel + Railway + MongoDB Atlas)
+En producción, el frontend y el backend se despliegan en servicios PaaS en la nube, y los datos persistentes en el servicio gestionado de MongoDB Atlas (DBaaS).
+
+```text
+                            [ Navegador Cliente ]
+                               /            \
+                HTTPS (Petición             HTTPS (Llamada API
+                de estáticos)               /uploads)
+                     /                        \
+                    ▼                          ▼
+            ┌───────────────┐          ┌───────────────┐
+            │    Vercel     │          │    Railway    │
+            │  (Frontend)   │          │   (Backend)   │
+            └───────────────┘          └───────┬───────┘
+                                               │
+                            MongoDB Connection │ Puerto 27017 (Seguro)
+                                               ▼
+                                       ┌───────────────┐
+                                       │ MongoDB Atlas │
+                                       │ (Cloud BBDD)  │
+                                       └───────────────┘
+```
+
+### Tabla de Descripción de Servicios (Local)
+
+| Servicio | Nombre del Contenedor | Imagen / Origen | Puerto Expuesto / Interno | Rol / Descripción |
+| :--- | :--- | :--- | :--- | :--- |
+| **Frontend Web** | `kinefy-web` | `nginx:alpine` (con dist) | `80:80` (Público) | Servidor web estático y Proxy Inverso. Enruta `/api` al backend y `/uploads` a la carpeta de adjuntos del backend. |
+| **Backend API** | `kinefy-api` | `kinefy-backend` (Dockerfile) | `5000` (Interno en red) | Servidor de aplicaciones Express/Node que expone la API REST. |
+| **Base de Datos** | `kinefy-db` | `mongo:latest` | `27017` (Interno en red) | Motor de base de datos NoSQL para el almacenamiento de datos clínicos y del diario. |
+
+### Flujo de Comunicación y Seguridad de Red
+
+- **Entorno Local**:
+  1. El cliente (navegador) interactúa exclusivamente con el puerto `80` del contenedor `kinefy-web` (Nginx).
+  2. Nginx sirve de forma directa el frontend (archivos estáticos compilados de React).
+  3. Para cualquier solicitud HTTP que empiece por `/api/*` o `/uploads/*`, Nginx actúa como **Proxy Inverso** redirigiendo el tráfico hacia `http://backend:5000` usando el sistema de DNS interno de Docker en la red `kinefy-network`.
+  4. El backend (`kinefy-api`) se comunica de manera directa y privada con la base de datos `kinefy-db` usando el puerto `27017` por la red interna.
+- **Entorno de Producción**:
+  1. El frontend desplegado en **Vercel** realiza las peticiones HTTPS directamente a la URL de la API alojada en **Railway** (`https://kinefy-production.up.railway.app`).
+  2. El backend de **Railway** conecta con el clúster en la nube de **MongoDB Atlas** mediante el protocolo seguro `mongodb+srv`.
+
+**Justificación de Puertos Internos**: Los puertos del backend (`5000`) y de la base de datos (`27017`) en local son estrictamente **internos** (no expuestos al host mediante la directiva `ports` de Docker Compose). Esto garantiza:
+- **Aislamiento y Seguridad**: Impide que agentes externos accedan directamente a la base de datos MongoDB saltándose las políticas de seguridad del proxy (como rate limiting, cabeceras helmet de Nginx, etc.).
+- **Puertos Limpios**: Evita conflictos de puertos en la máquina anfitriona y asegura que Nginx sea el único punto de entrada autorizado.
+
+---
+
+## Criterio 2: Docker y Docker Compose (RA1)
+
+A continuación se detalla la configuración y evidencias de arranque del entorno de contenedores Docker local.
+
+### 1. Evidencia del Arranque con `docker compose up --build -d`
+
+El comando compila las imágenes necesarias, crea la red virtual bridge, levanta los servicios y asocia los volúmenes correspondientes:
+
+```text
+$ docker compose up --build -d
+time="2026-05-21T15:24:21+02:00" level=warning msg="docker-compose.yml: the attribute `version` is obsolete, it will be ignored"
+#1 [internal] load local bake definitions
+#1 reading from stdin 1.03kB 0.0s done
+#1 DONE 0.0s
+
+#2 [backend internal] load build definition from Dockerfile
+#2 transferring dockerfile: 548B 0.0s done
+#2 DONE 0.1s
+
+#3 [frontend internal] load build definition from Dockerfile
+#3 transferring dockerfile: 521B 0.0s done
+#3 DONE 0.1s
+
+#17 [frontend build-stage 6/6] RUN npm run build
+vite v5.4.21 building for production...
+✓ 495 modules transformed.
+dist/index.html                                       0.90 kB
+dist/assets/index-BJdgwFML.css                      105.61 kB
+dist/assets/index.es--CUk6AjB.js                    150.69 kB
+dist/assets/index-DbKlR_-g.js                       787.28 kB
+✓ built in 7.28s
+#17 DONE 9.9s
+
+#18 [backend 4/5] RUN npm install
+added 470 packages, and audited 471 packages in 10s
+#18 DONE 11.8s
+
+#21 [frontend] exporting to image
+#21 naming to docker.io/library/kinefy-frontend:latest done
+#21 DONE 0.6s
+
+#24 [backend] exporting to image
+#24 naming to docker.io/library/kinefy-backend:latest done
+#24 DONE 8.3s
+
+[+] Running 4/4
+ ✔ Network kinefy-network      Created                                           0.0s
+ ✔ Container kinefy-db         Started                                           0.5s
+ ✔ Container kinefy-api        Started                                           0.8s
+ ✔ Container kinefy-web        Started                                           1.2s
+```
+
+### 2. Evidencia del Estado de los Contenedores con `docker compose ps`
+
+Comprobamos que todos los contenedores se ejecutan sin errores:
+
+```text
+$ docker compose ps
+NAME        IMAGE            COMMAND                  SERVICE   CREATED         STATUS         PORTS
+kinefy-db   mongo:latest     "docker-entrypoint.s…"   mongodb   2 minutes ago   Up 2 minutes   27017/tcp
+kinefy-api  kinefy-backend   "docker-entrypoint.s…"   backend   2 minutes ago   Up 2 minutes   5000/tcp
+kinefy-web  nginx:alpine     "/docker-entrypoint.…"   frontend  2 minutes ago   Up 2 minutes   0.0.0.0:80->80/tcp, [::]:80->80/tcp
+```
+
+### 3. Dockerfile del Backend
+
+Para el empaquetado del servidor Node/Express, se ha configurado el siguiente Dockerfile enfocado en optimización y seguridad (uso de usuario no root `node`):
+
+```dockerfile
+# Usamos una imagen ligera de Node.js
+FROM node:18-alpine
+
+# Establecemos el directorio de trabajo
+WORKDIR /app
+
+# Copiamos los archivos de dependencias
+COPY --chown=node:node package*.json ./
+
+# Instalamos las dependencias
+RUN npm install
+
+# Copiamos el resto del código con permisos para el usuario node
+COPY --chown=node:node . .
+
+# Usamos el usuario no privilegiado 'node'
+USER node
+
+# Exponemos el puerto
+EXPOSE 5000
+
+# Comando para arrancar la aplicación
+CMD ["npm", "start"]
+```
+
+### 4. Evidencia y Verificación de Volúmenes con `docker volume ls`
+
+Comprobamos que el volumen definido para asegurar la persistencia de la base de datos se ha creado correctamente en Docker:
+
+```text
+$ docker volume ls
+DRIVER    VOLUME NAME
+local     kinefy_mongo-data
+```
+*Explicación:* El volumen `kinefy_mongo-data` almacena de forma persistente la base de datos en el host, evitando pérdidas de información si el contenedor MongoDB es reiniciado, recreado o destruido.
+
+Nota: Al principio no teníamos el volumen configurado y perdimos datos de prueba al recrear el contenedor. A partir de ahí lo añadimos como parte fija del compose.yaml.
+
+### 5. Exposición Única del Puerto 80 (Nginx Reverse Proxy)
+
+En la configuración del entorno Docker local, únicamente se ha expuesto públicamente el puerto **80** del servicio `frontend` (`kinefy-web`) a la máquina host. Los puertos del `backend` (puerto `5000` del contenedor `kinefy-api`) y del motor de base de datos (puerto `27017` del contenedor `kinefy-db`) no están expuestos al exterior.
+
+**Justificación técnica:**
+La decisión fue exponer solo el puerto 80 para reducir la superficie de ataque. Si también expusiéramos el 27017, cualquiera con acceso a la red podría conectarse directamente a MongoDB sin pasar por ningún middleware. Lo mismo con el 5000 del backend — al dejarlo interno, toda petición tiene que pasar obligatoriamente por Nginx.
+
+
 ---
 
 ## Criterio 7: Gestión Básica de Ficheros y Artefactos (RA4)
@@ -125,6 +321,32 @@ docker logs kinefy-web --tail 5
 172.20.0.1 - - [20/May/2026:17:56:50 +0000] "HEAD /api/patients HTTP/1.1" 401 0 "-" "curl/8.19.0" "-"
 ```
 *Explicación:* El log evidencia que el servidor Nginx funciona como proxy inverso y servidor estático, despachando los archivos estáticos en el puerto 80 y registrando las llamadas correctas a `/api/*`.
+
+
+### 4. Verificación en el Entorno de Producción (Cloud)
+
+Una vez completado el despliegue en la nube, se verifica la conectividad externa y la disponibilidad de los servicios en producción.
+
+*   **URL del Frontend (Vercel):** `https://kinefy.vercel.app`
+*   **URL del Backend (Railway):** `https://kinefy-production.up.railway.app`
+
+*Comando de verificación contra la API en producción:*
+```bash
+curl -I https://kinefy-production.up.railway.app/api/patients
+```
+
+*Salida obtenida (Evidencia de comunicación segura y HTTPS activa):*
+```text
+HTTP/2 401 
+content-type: application/json; charset=utf-8
+content-length: 80
+date: Thu, 21 May 2026 13:20:00 GMT
+x-powered-by: Express
+access-control-allow-origin: *
+etag: W/"50-vnfZ8p60j7bjY7V3l+bFbxAzL5o"
+strict-transport-security: max-age=31536000; includeSubDomains
+```
+*Explicación:* La respuesta HTTP/2 401 demuestra que el backend en Railway está operativo, responde a peticiones públicas cifradas bajo HTTPS, y su middleware de seguridad funciona de igual forma que en local.
 
 ---
 
