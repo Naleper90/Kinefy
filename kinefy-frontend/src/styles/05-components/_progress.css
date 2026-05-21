@@ -549,3 +549,51 @@
   padding: 2px 8px;
 }
 
+/* ==========================================================================
+   Patient Refactored Progress and Loading Styles
+   ========================================================================== */
+
+.patient-home-loading,
+.appointments-loading,
+.docs-loading,
+.evolution-loading {
+  padding: 4rem;
+  text-align: center;
+}
+
+.patient-home-loading__text,
+.appointments-loading__text,
+.docs-loading__text,
+.evolution-loading__text {
+  color: #5A6B6D;
+  font-weight: 500;
+}
+
+.loader--centered-margin {
+  margin: 0 auto 1.5rem;
+}
+
+.activity-list--mt-lg {
+  margin-top: 1.5rem;
+}
+
+.activity-list__item--today {
+  border-bottom: 1px solid rgba(26, 46, 53, 0.05);
+}
+
+.activity-widget__header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.activity-widget__subtitle {
+  font-size: 0.9rem;
+  color: var(--color-text-soft);
+}
+
+.activity-widget__wave {
+  margin: 1rem 0;
+}
+
+

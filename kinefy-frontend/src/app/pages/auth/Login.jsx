@@ -35,8 +35,8 @@ const Login = () => {
             subtitle="Inicia sesión en tu cuenta de Kinefy"
             footerActions={
                 <>
-                    <Link to="#">¿Olvidaste tu contraseña?</Link>
-                    <Link to="/register">Crear una cuenta</Link>
+                    <span className="auth__nav-link--disabled" title="Esta función está deshabilitada temporalmente">¿Olvidaste tu contraseña?</span>
+                    <span className="auth__nav-link--disabled" title="Esta función está deshabilitada temporalmente">Crear una cuenta</span>
                 </>
             }
         >

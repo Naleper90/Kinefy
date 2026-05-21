@@ -350,3 +350,16 @@
   border-color: #EF5350;
 }
 
+/* ==========================================================================
+   Patient Refactored Premium Modals Size Styles
+   ========================================================================== */
+
+.modal-container--premium.modal-container--premium--sm {
+  max-width: 450px;
+}
+
+.modal-container--premium.modal-container--premium-w450 {
+  max-width: 450px;
+}
+
+

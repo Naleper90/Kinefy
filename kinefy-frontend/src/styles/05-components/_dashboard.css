@@ -731,3 +731,382 @@
   max-width: 200px;
 }
 
+
+/* ==========================================================================
+   Patient Page Headers (Mis Citas, Mi Evolucion, Documentos)
+   ========================================================================== */
+
+.evolution-card-grid-span2 {
+  grid-column: span 2;
+}
+
+.appointments-header,
+.evolution-header,
+.docs-header {
+  margin-bottom: 2.5rem;
+}
+
+/* ==========================================================================
+   Documentos (PatientDocs) BEM Components
+   ========================================================================== */
+
+.docs-grid {
+  grid-column: span 3;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.docs-empty-wrapper {
+  grid-column: span 3;
+}
+
+/* ==========================================================================
+   Mi Evolucion (PatientEvolution) BEM Components
+   ========================================================================== */
+
+.evolution-chart__container {
+  position: relative;
+  width: 100%;
+  margin: 1rem 0;
+}
+
+.evolution-chart__x-axis {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 0.5rem;
+  margin-top: 0.8rem;
+}
+
+.evolution-chart__date {
+  font-size: 0.7rem;
+  color: #718096;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.evolution-chart__empty {
+  text-align: center;
+  padding: 2rem 0;
+  color: #718096;
+}
+
+.evolution-section-title {
+  margin-top: 2.5rem;
+}
+
+/* ==========================================================================
+   Pain Timeline BEM Components
+   ========================================================================== */
+
+.pain-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  max-height: 600px;
+  overflow-y: auto;
+  padding-right: 0.4rem;
+}
+
+.pain-timeline__item {
+  position: relative;
+  padding-left: 1.5rem;
+  border-left: 2px solid #EBF0F0;
+  padding-bottom: 0.5rem;
+}
+
+.pain-timeline__dot {
+  position: absolute;
+  left: -7px;
+  top: 4px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid #FFF;
+}
+
+.pain-timeline__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.pain-timeline__date {
+  font-size: 0.75rem;
+  color: #A0AEC0;
+  font-weight: 700;
+}
+
+.pain-timeline__badge {
+  font-size: 0.75rem;
+  font-weight: bold;
+  padding: 2px 8px;
+  border-radius: 8px;
+}
+
+.pain-timeline__desc {
+  margin: 0.5rem 0 0;
+  font-size: 0.85rem;
+  color: var(--color-text-dark);
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+.pain-timeline__empty-obs {
+  color: #A0AEC0;
+  font-size: 0.8rem;
+}
+
+.pain-timeline__empty-text {
+  color: #A0AEC0;
+  font-size: 0.85rem;
+  text-align: center;
+  padding: 2rem;
+}
+
+/* ==========================================================================
+   Patient Dashboard Home - Layout and Utility Classes
+   ========================================================================== */
+
+.home-header__info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+@keyframes animateIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-in {
+  animation: animateIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.grid-col__title--mt-lg {
+  margin-top: 2.5rem;
+}
+
+.meta-row--mt-md {
+  margin-top: 1.2rem;
+}
+
+.no-appointments-view {
+  text-align: center;
+  padding: 2.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.no-appointments-view__text {
+  color: var(--color-text-soft);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.appointment-card__status-badge {
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-brand);
+  background: #E8F5F1;
+  padding: 0.3rem 0.7rem;
+  border-radius: 8px;
+}
+
+/* ==========================================================================
+   Patient Dashboard Home - Medical Documents Widget
+   ========================================================================== */
+
+.home-docs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.home-docs-empty {
+  color: var(--color-text-soft);
+  font-size: 0.85rem;
+  text-align: center;
+  padding: 1.5rem 0;
+  opacity: 0.7;
+}
+
+.home-doc-item {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.7rem 0.9rem;
+  background: #F9FBFB;
+  border-radius: 12px;
+  border: 1px solid #F0F4F4;
+  transition: all 0.2s ease;
+}
+
+.home-doc-item:hover {
+  border-color: rgba(85, 169, 138, 0.2);
+  background: #FFFFFF;
+}
+
+.home-doc-item__icon-wrapper {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #E8F5F1;
+  color: var(--color-brand);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.home-doc-item__meta {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.home-doc-item__title {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text-dark);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.home-doc-item__date {
+  font-size: 0.72rem;
+  color: #A0AEC0;
+  font-weight: 500;
+}
+
+.home-doc-item__link {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: #F0FAF6;
+  color: var(--color-brand);
+  border: 1px solid rgba(85, 169, 138, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.home-doc-item__link:hover {
+  background: var(--color-brand);
+  color: #FFF;
+}
+
+/* ==========================================================================
+   Patient Dashboard Home - Video Preview Overlay
+   ========================================================================== */
+
+.video-preview-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(26, 46, 53, 0.7);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 1.5rem;
+}
+
+.video-preview-container {
+  width: 100%;
+  max-width: 700px;
+  border-radius: 28px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+  padding: 0;
+}
+
+.video-preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  background: #F9FBFB;
+  border-bottom: 1px solid #F0F4F4;
+}
+
+.video-preview-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-text-dark);
+}
+
+.video-preview-close-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid #F0F4F4;
+  background: #FFFFFF;
+  color: var(--color-text-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.video-preview-close-btn:hover {
+  background: #FDF2F2;
+  color: #E57373;
+  transform: rotate(90deg);
+}
+
+.video-preview-media-wrapper {
+  flex: 1;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  max-height: 60vh;
+  overflow: hidden;
+}
+
+.video-preview-media-wrapper video,
+.video-preview-media-wrapper iframe {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.video-preview-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  max-height: 60vh;
+}

@@ -6,7 +6,7 @@ const PatientExercises = () => {
     const [exercises, setExercises] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedExercise, setSelectedExercise] = useState(null);
-    
+
     const isVideo = (url) => {
         if (!url) return false;
         const videoExtensions = ['.mp4', '.mov', '.webm', '.avi', '.mkv'];
@@ -61,7 +61,7 @@ const PatientExercises = () => {
 
                 <div className="patient-exercises__list">
                     {exercises.map(ex => (
-                        <article 
+                        <article
                             key={ex._id}
                             onClick={() => setSelectedExercise(ex)}
                             className={`patient-exercises__card ${selectedExercise?._id === ex._id ? 'patient-exercises__card--active' : ''}`}
@@ -71,7 +71,7 @@ const PatientExercises = () => {
                                     <h4 className="patient-exercises__card-title">{ex.nombre}</h4>
                                     <span className="patient-exercises__card-meta">{ex.series}</span>
                                 </div>
-                                <div 
+                                <div
                                     onClick={(e) => { e.stopPropagation(); toggleExercise(ex._id); }}
                                     className={`patient-exercises__checkbox ${ex.completado ? 'patient-exercises__checkbox--completed' : ''}`}
                                 >
@@ -96,7 +96,7 @@ const PatientExercises = () => {
                                 <h2 className="card-title-big patient-exercises__title">{selectedExercise.nombre}</h2>
                                 <p className="card-subtitle">Objetivo: {selectedExercise.series}</p>
                             </div>
-                            <button 
+                            <button
                                 onClick={() => toggleExercise(selectedExercise._id)}
                                 className={selectedExercise.completado ? "btn-ghost patient-exercises__action-btn" : "btn-primary patient-exercises__action-btn"}
                             >
@@ -110,7 +110,7 @@ const PatientExercises = () => {
                                 <div className="patient-exercises__instructions">
                                     {selectedExercise.descripcion || "Tu fisioterapeuta no ha añadido instrucciones específicas para este ejercicio, pero recuerda seguir las indicaciones dadas en consulta."}
                                 </div>
-                                
+
                                 <div className="patient-exercises__clinical-alert">
                                     <h5 className="patient-exercises__clinical-alert-title">Recordatorio Clínico</h5>
                                     <p className="patient-exercises__clinical-alert-text">Si sientes dolor agudo durante la ejecución, detén el ejercicio y consulta con tu profesional en la próxima cita.</p>
@@ -120,19 +120,19 @@ const PatientExercises = () => {
                             <div className="patient-exercises__media">
                                 {selectedExercise.mediaUrl ? (
                                     selectedExercise.mediaUrl.includes('youtube.com') || selectedExercise.mediaUrl.includes('vimeo.com') ? (
-                                        <iframe 
-                                            width="100%" 
-                                            height="100%" 
-                                            src={selectedExercise.mediaUrl.replace('watch?v=', 'embed/')} 
+                                        <iframe
+                                            width="100%"
+                                            height="100%"
+                                            src={selectedExercise.mediaUrl.replace('watch?v=', 'embed/')}
                                             title="Vídeo de ejercicio"
                                             frameBorder="0"
-                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                             allowFullScreen
                                         ></iframe>
                                     ) : isVideo(selectedExercise.mediaUrl) ? (
-                                        <video 
-                                            src={selectedExercise.mediaUrl} 
-                                            controls 
+                                        <video
+                                            src={selectedExercise.mediaUrl}
+                                            controls
                                             className="patient-exercises__video"
                                         />
                                     ) : (
@@ -149,7 +149,7 @@ const PatientExercises = () => {
                     </>
                 ) : (
                     <div className="empty-state--centered empty-state--flex-1">
-                        <div className="patient-exercises__empty-icon patient-exercises__empty-icon--small">👋</div>
+                        <div className="patient-exercises__empty-icon patient-exercises__empty-icon--small"></div>
                         <h3 className="card-title-big">Selecciona un ejercicio</h3>
                         <p className="card-subtitle">Pulsa en la lista para ver los detalles.</p>
                     </div>

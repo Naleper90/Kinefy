@@ -218,6 +218,18 @@ nav.auth__nav a:hover {
   font-size: 0.9rem;
 }
 
+.auth__nav-link--disabled {
+  font-size: 1rem;
+  color: var(--color-text-soft);
+  text-decoration: none;
+  font-weight: 600;
+  opacity: 0.5;
+  cursor: not-allowed;
+  width: fit-content;
+  pointer-events: none;
+}
+
+
 /* Responsividad */
 @media (max-width: 900px) {
   .auth-page {

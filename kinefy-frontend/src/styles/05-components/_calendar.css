@@ -535,3 +535,245 @@
   margin: 0;
 }
 
+/* ==========================================================================
+   Patient Refactored Calendar Styles
+   ========================================================================== */
+
+.past-appointment-item {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.8rem;
+  background: #F9FBFB;
+  border-radius: 12px;
+  border: 1px solid #F0F4F4;
+}
+
+.past-appointment-item__icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #E8F5F1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-brand);
+}
+
+.past-appointment-item__meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.past-appointment-item__title {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.past-appointment-item__time {
+  font-size: 0.75rem;
+  color: #A0AEC0;
+  font-weight: 600;
+}
+
+.past-appointment-item__badge {
+  font-size: 0.75rem;
+  color: var(--color-brand);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.date-btn-select {
+  flex: 0 0 68px;
+  height: 84px;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0.4rem 0.2rem;
+}
+
+.date-btn-select__weekday {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.date-btn-select__day {
+  font-size: 1.3rem;
+  font-weight: 800;
+  margin-top: 0.1rem;
+  line-height: 1.2;
+}
+
+.date-btn-select__month {
+  font-size: 0.6rem;
+  font-weight: 600;
+  margin-top: 0.1rem;
+}
+
+.time-slot-btn {
+  padding: 0.6rem 0.2rem;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.8rem;
+  transition: all 0.2s ease;
+  text-align: center;
+  position: relative;
+}
+
+.date-badge-scroll {
+  display: flex;
+  gap: 0.6rem;
+  overflow-x: auto;
+  padding: 0.4rem 0.2rem;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.time-slots-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.5rem;
+}
+
+.date-btn-container {
+  display: flex;
+  gap: 0.6rem;
+  overflow-x: auto;
+  padding: 0.4rem 0.2rem;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.hour-btn-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.5rem;
+}
+
+.hour-btn-select {
+  padding: 0.6rem 0.2rem;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+/* ==========================================================================
+   Patient Appointments (Mis Citas) BEM Components
+   ========================================================================== */
+
+.appointments-header {
+  margin-bottom: 2.5rem;
+}
+
+.appointments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.past-appointments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  max-height: 420px;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.past-appointments-empty {
+  color: #A0AEC0;
+  font-size: 0.85rem;
+  text-align: center;
+  padding: 2rem;
+}
+
+.appointment-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.appointment-card__date-label {
+  font-size: 0.85rem;
+  color: var(--color-brand);
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 0.4rem;
+  display: block;
+}
+
+.appointment-card__title {
+  margin: 0.3rem 0 0.5rem;
+}
+
+.appointment-card__subtitle {
+  font-size: 0.85rem;
+  color: var(--color-text-soft);
+  display: block;
+}
+
+.appointment-card__actions {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.appointment-card__details {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.appointment-card__badge-wrapper {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.appointment-card__reason-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.appointment-card__reason-val {
+  font-weight: 600;
+  color: var(--color-text-dark);
+  font-size: 0.95rem;
+}
+
+.appointment-card__status-col {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.status-badge--top-right {
+  position: absolute;
+  top: 1.2rem;
+  right: 1.2rem;
+}
+
+.appointment-modal__flex-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.6rem;
+}
+

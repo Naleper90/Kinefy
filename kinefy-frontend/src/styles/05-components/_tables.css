@@ -623,3 +623,39 @@
   padding-right: 6px;
 }
 
+/* ==========================================================================
+   Patient Dashboard Home — Exercise List Extras
+   ========================================================================== */
+
+.exercise-list--mt-lg {
+  margin-top: 1.5rem;
+}
+
+.exercise-list__empty {
+  color: var(--color-text-soft);
+  font-size: 0.9rem;
+  text-align: center;
+  padding: 1.5rem 0;
+  opacity: 0.7;
+}
+
+.exercise-list__preview-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: #F0FAF6;
+  color: var(--color-brand);
+  border: 1px solid rgba(85, 169, 138, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.exercise-list__preview-btn:hover {
+  background: var(--color-brand);
+  color: #FFF;
+}

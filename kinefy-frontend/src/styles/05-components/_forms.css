@@ -1381,3 +1381,263 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   font-size: 0.8rem;
 }
 
+/* ==========================================================================
+   Patient Refactored Form, Button and Input Styles
+   ========================================================================== */
+
+.pain-form--padding {
+  padding: 0.5rem;
+}
+
+.pain-scale__container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  justify-content: space-between;
+  margin-bottom: 1.8rem;
+}
+
+.pain-scale__btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid #E2E8F0;
+  font-weight: bold;
+  font-size: 1.05rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  transform: scale(1);
+  box-shadow: none;
+}
+
+.pain-scale__btn--active {
+  border: 2.5px solid var(--color-brand);
+  transform: scale(1.15);
+  box-shadow: 0 5px 15px rgba(85, 169, 138, 0.3);
+}
+
+.pain-scale__summary {
+  margin-bottom: 1.5rem;
+  background: #F4FAF8;
+  padding: 0.8rem 1.2rem;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.pain-scale__summary-text {
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.pain-form__textarea {
+  width: 100%;
+  padding: 1rem;
+  border: 1px solid #E2E8F0;
+  border-radius: 14px;
+  outline: none;
+  background: #F9FBFB;
+  resize: vertical;
+}
+
+.pain-form__textarea--refactored {
+  /* Inherits from pain-form__textarea and dashboard__input */
+}
+
+.pain-form__submit-btn {
+  width: 100%;
+  height: 48px;
+}
+
+.pain-success-view {
+  text-align: center;
+  padding: 3rem 2rem;
+}
+
+.pain-success-view__icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #E8F5F1;
+  color: var(--color-brand);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.pain-success-view__title {
+  margin: 0 0 0.5rem;
+  color: var(--color-text-dark);
+}
+
+.pain-success-view__text {
+  color: var(--color-text-soft);
+  font-size: 0.9rem;
+  margin: 0 0 1.5rem;
+}
+
+.pain-success-view__btn {
+  width: auto;
+  padding: 0.6rem 1.5rem;
+}
+
+.clinical-input-group--mb {
+  margin-bottom: 1.2rem;
+}
+
+.clinical-input-group--mb-lg {
+  margin-bottom: 1.5rem;
+}
+
+.clinical-card--dashed-spacing {
+  margin-top: 1rem;
+  padding: 1rem;
+}
+
+.clinical-card__disclaimer-text {
+  font-size: 0.8rem;
+  color: #5A6B6D;
+  margin: 0;
+}
+
+.clinical-card--dashed--compact {
+  margin-top: 1rem;
+  padding: 1rem;
+}
+
+.clinical-input-group__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.6rem;
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: var(--color-brand);
+  font-weight: 700;
+  font-size: 0.75rem;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
+
+.clinical-input-group__link-btn {
+  /* Inherits from link-btn */
+}
+
+.pain-form--widget {
+  background: #F9FBFB;
+  padding: 1.2rem;
+  border-radius: 18px;
+}
+
+.pain-scale--widget {
+  gap: 0.4rem;
+  margin-bottom: 1.2rem;
+}
+
+.dashboard__input--textarea-short {
+  width: 100%;
+  min-height: 60px;
+  font-size: 0.85rem;
+  background: #FFF;
+}
+
+.btn-primary--mt-md-h44 {
+  margin-top: 1rem;
+  height: 44px;
+}
+
+.pain-success--widget {
+  padding: 2rem;
+}
+
+.pain-success__icon-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #55A98A;
+  color: #FFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+}
+
+.pain-success__title {
+  font-weight: 700;
+  margin-bottom: 0.3rem;
+}
+
+.pain-form__label--block {
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.pain-form__input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  width: 100%;
+}
+
+.pain-form__input-group--mb {
+  margin-bottom: 1.5rem;
+}
+
+.appointment-card__confirm-btn {
+  height: 36px;
+  padding: 0 1.2rem;
+  font-size: 0.85rem;
+}
+
+.btn-appointment-confirm {
+  margin-top: 1.5rem;
+  width: 100%;
+  height: 44px;
+}
+
+.btn-appointment-agenda {
+  margin-top: 1rem;
+  width: 100%;
+  height: 40px;
+}
+
+.btn-appointment-request {
+  margin-top: 1rem;
+  width: auto;
+  padding: 0.6rem 1.2rem;
+}
+
+.btn-ghost--full-w-h36 {
+  margin-top: 1.2rem;
+  width: 100%;
+  height: 36px;
+  font-size: 0.8rem;
+}
+
+.btn-ghost--mt-md-h36 {
+  margin-top: 1rem;
+  width: 100%;
+  height: 36px;
+  font-size: 0.8rem;
+}
+
+.appointment-modal__toggle-btn {
+  /* Inherits from link-btn */
+}
+
+.pain-dot--small {
+  width: 22px;
+  height: 22px;
+  font-size: 0.65rem;
+}
+
+
