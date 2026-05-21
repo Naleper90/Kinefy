@@ -2,8 +2,6 @@
 
 Kinefy es una aplicación web centrada en facilitar el registro de ejercicios y la monitorización del dolor en procesos de rehabilitación. El proyecto surge para cubrir la falta de comunicación estructural entre las sesiones presenciales de fisioterapia, proporcionando un canal de datos real entre el profesional y el paciente.
 
-🚀 **Acceso a la Aplicación en Producción:** [https://kinefy-beryl.vercel.app](https://kinefy-beryl.vercel.app)
-
 ## Enfoque y Diseño: Organic Minimalism
 
 El proyecto se aleja de los frameworks de componentes tradicionales para priorizar la mantenibilidad y el rendimiento mediante código artesanal:
@@ -55,8 +53,6 @@ El detalle técnico y académico se encuentra en la carpeta `docs/`:
 8.  [Despliegue](docs/08-despliegue.md)
 9.  [Guía de Uso](docs/09-manual-usuario.md)
 10. [Conclusiones finales](docs/10-conclusiones.md)
-11. [Evaluación de Despliegue](docs/11-despliegue-eval.md)
-12. [Credenciales de Prueba](docs/12-credenciales-prueba.md)
 ---
 
 ## Credenciales de Acceso Rápido (Pruebas)
@@ -64,13 +60,13 @@ El detalle técnico y académico se encuentra en la carpeta `docs/`:
 Para facilitar la evaluación del proyecto por el tribunal, se han pre-configurado dos cuentas de prueba en el entorno local:
 
 *   **Fisioterapeuta (Administrador):**
-    *   **Email:** `natalia@kinefy.com`
-    *   **Contraseña:** `Kinefy2024!`
-*   **Paciente (Demo - Elena García):**
-    *   **Email:** `elena@kinefy.com`
-    *   **Contraseña:** `Paciente2024!`
+    *   **Email:** `fisio@test.com`
+    *   **Contraseña:** `FisioDemo2026`
+*   **Paciente (Demo):**
+    *   **Email:** `paciente@test.com`
+    *   **Contraseña:** `PacienteDemo2026`
 
-> **Nota:** Para mayor detalle sobre el flujo de correos y variables, consulta la documentación en [docs/12-credenciales-prueba.md](docs/12-credenciales-prueba.md).
+> **Nota:** Para mayor detalle sobre el flujo de correos y variables, consulta la documentación en [docs/10-credenciales-prueba.md](file:///c:/Users/esana/Desktop/Kinefy/docs/10-credenciales-prueba.md).
 
 ---
 

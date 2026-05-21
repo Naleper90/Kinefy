@@ -13,17 +13,14 @@ import PrivacyPolicy from './app/pages/legal/PrivacyPolicy';
  * Si no hay sesión o el rol no coincide → redirige al login
  */
 const ProtectedRoute = ({ children, requiredRole }) => {
-    //
-    /*const stored = localStorage.getItem('kinefy_user');
+    const stored = localStorage.getItem('kinefy_user');
     if (!stored) return <Navigate to="/login" replace />;
     
     const user = JSON.parse(stored);
     if (requiredRole && user.role !== requiredRole) {
         // Redirige al dashboard correcto según rol real de DB
         return <Navigate to={user.role === 'paciente' ? '/dashboard/patient' : '/dashboard/physio'} replace />;
-    }*/
-
-    //
+    }
     return children;
 };
 
@@ -54,7 +51,7 @@ function App() {
                 <Route path="/dashboard" element={
                     <ProtectedRoute>
                         {/* El ProtectedRoute ya redirige a la ruta específica según rol */}
-                        <div />
+                        <div /> 
                     </ProtectedRoute>
                 } />
 

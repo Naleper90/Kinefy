@@ -1,4 +1,4 @@
-# 11. Evaluación de Despliegue
+# Despliegue de la aplicación web
 
 *Documento de justificación técnica para la evaluación del módulo "Despliegue de Aplicaciones Web".*
 
@@ -327,7 +327,7 @@ docker logs kinefy-web --tail 5
 
 Una vez completado el despliegue en la nube, se verifica la conectividad externa y la disponibilidad de los servicios en producción.
 
-*   **URL del Frontend (Vercel):** `https://kinefy-beryl.vercel.app`
+*   **URL del Frontend (Vercel):** `https://kinefy.vercel.app`
 *   **URL del Backend (Railway):** `https://kinefy-production.up.railway.app`
 
 *Comando de verificación contra la API en producción:*
