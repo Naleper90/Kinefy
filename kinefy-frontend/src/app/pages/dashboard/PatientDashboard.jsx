@@ -6,6 +6,7 @@ import PatientExercises from './PatientExercises';
 import PatientAppointments from './PatientAppointments';
 import PatientEvolution from './PatientEvolution';
 import PatientDocs from './PatientDocs';
+import Settings from './Settings';
 import { HomeIcon, ExercisesIcon, AppointmentsIcon, EvolutionIcon, DocsIcon } from '../../components/dashboard/DashboardIcons';
 
 const PAT_NAV_ITEMS = [
@@ -23,7 +24,7 @@ const PatientDashboard = () => {
     return (
         <DashboardLayout 
             navItems={PAT_NAV_ITEMS}
-            user={{ name: user.name, initials: initials, color: '#EBF4FF' }}
+            user={{ name: user.name, initials: initials, color: '#EBF4FF', role: 'Paciente' }}
             searchPlaceholder="Buscar ejercicio..."
         >
             <Routes>
@@ -32,6 +33,7 @@ const PatientDashboard = () => {
                 <Route path="/appointments" element={<PatientAppointments />} />
                 <Route path="/evolution" element={<PatientEvolution />} />
                 <Route path="/docs" element={<PatientDocs />} />
+                <Route path="/settings" element={<Settings />} />
                 
                 <Route path="*" element={<Navigate to="/dashboard/patient" replace />} />
             </Routes>

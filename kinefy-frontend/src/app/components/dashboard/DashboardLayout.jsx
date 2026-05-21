@@ -110,7 +110,12 @@ const DashboardLayout = ({
             <div className="notifications-dropdown__menu-list">
                 <button 
                     className="user-menu-item"
-                    onClick={() => setShowUserMenu(false)}
+                    onClick={() => {
+                        setShowUserMenu(false);
+                        const localUser = JSON.parse(localStorage.getItem('kinefy_user')) || {};
+                        const role = localUser.role || localUser.rol;
+                        navigate(role === 'paciente' ? '/dashboard/patient/settings' : '/dashboard/physio/settings');
+                    }}
                 >
                     <SettingsIcon size={18} />
                     <span>Configuración</span>

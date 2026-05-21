@@ -8,6 +8,7 @@ import NewPatient from './NewPatient';
 import Appointments from './Appointments';
 import ExerciseLibrary from './ExerciseLibrary';
 import Reports from './Reports';
+import Settings from './Settings';
 import { HomeIcon, PatientsIcon, AppointmentsIcon, ExercisesIcon, ReportsIcon } from '../../components/dashboard/DashboardIcons';
 
 
@@ -26,7 +27,7 @@ const Dashboard = () => {
     return (
         <DashboardLayout 
             navItems={PHYS_NAV_ITEMS}
-            user={{ name: user.name, initials: initials, color: '#E8F5F1' }}
+            user={{ name: user.name, initials: initials, color: '#E8F5F1', role: 'Fisioterapeuta' }}
             searchPlaceholder="Buscar paciente..."
         >
             <Routes>
@@ -37,6 +38,7 @@ const Dashboard = () => {
                 <Route path="/appointments" element={<Appointments />} />
                 <Route path="/exercises" element={<ExerciseLibrary />} />
                 <Route path="/reports" element={<Reports />} />
+                <Route path="/settings" element={<Settings />} />
                 {/* Fallback interno */}
 
                 <Route path="*" element={<DashboardHome />} />

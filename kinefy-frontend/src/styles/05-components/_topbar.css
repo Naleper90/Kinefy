@@ -10,7 +10,7 @@
   padding: 0.75rem 2rem;
   background-color: #ffffff;
   position: relative;
-  z-index: 2;
+  z-index: 10000;
   min-height: 64px;
   flex-shrink: 0;
 }
@@ -25,7 +25,7 @@
   border-bottom: 1px solid rgba(26, 46, 53, 0.05);
   position: sticky;
   top: 0;
-  z-index: 1000;
+  z-index: 10000;
 }
 
 .mobile-header__logo {
@@ -318,7 +318,7 @@
     border-bottom: 1px solid rgba(26, 46, 53, 0.05);
     position: sticky;
     top: 0;
-    z-index: 1000;
+    z-index: 10000;
   }
 
   .mobile-nav {
