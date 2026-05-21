@@ -2,6 +2,15 @@
 
 El diseño técnico de Kinefy se ha fundamentado en la creación de un sistema escalable, mantenible y con una clara separación de responsabilidades (Separation of Concerns). Para lograrlo, se ha optado por una arquitectura cliente-servidor desacoplada utilizando el stack MERN.
 
+```mermaid
+graph LR
+    A[Navegador Cliente] -->|Puerto 80| B[Nginx / Frontend]
+    B -->|/api/*| C[Express Backend :5000]
+    B -->|/uploads/*| C
+    B -->|Archivos estáticos| B
+    C -->|Puerto 27017| D[(MongoDB)]
+```
+
 ---
 
 ## 5.1. Arquitectura del Sistema (Stack MERN)

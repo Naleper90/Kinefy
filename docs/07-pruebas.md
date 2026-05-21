@@ -67,3 +67,36 @@ Al implementar los botones orgánicos complejos en CSS puro, existía riesgo de 
 Utilizando herramientas como *Lighthouse* y simuladores de déficit visual, se auditaron los colores del diseño "Organic Minimalism":
 *   Se detectaron y corrigieron problemas de contraste en tonos secundarios (grises sobre fondo crema), elevando el color HEX hasta superar el umbral de contraste `4.5:1`.
 *   Se verificó que los botones sin texto tuvieran sus correspondientes etiquetas semánticas (`aria-label`) para los lectores de pantalla (Screen Readers).
+
+---
+
+## Pruebas de rendimiento (carga ligera)
+
+Para verificar el comportamiento del servidor de aplicaciones bajo condiciones de concurrencia y comprobar la robustez de los middlewares implantados, se ha diseñado una prueba de rendimiento ligera.
+
+### Herramienta utilizada
+*   **autocannon**: Generador de carga ligera basado en Node.js, muy rápido y eficiente.
+
+### Comandos de ejecución
+```bash
+# Instalar de forma global (o ejecutar localmente)
+npm install -g autocannon
+
+# Levantar la infraestructura Docker
+docker compose up -d
+
+# Ejecutar test de carga contra la API de login
+autocannon -c 50 -d 10 http://localhost/api/auth/login
+```
+
+### Objetivo de la prueba
+El objetivo es verificar que la API responde correctamente bajo carga concurrente (50 conexiones concurrentes sostenidas durante 10 segundos) y confirmar que el middleware `express-rate-limit` actúa bloqueando las peticiones excesivas provenientes de una misma dirección IP una vez superado el límite configurado (máximo 20 peticiones por minuto para la ruta de login).
+
+### Resultados esperados aproximados
+
+| Métrica | Valor esperado |
+| :--- | :--- |
+| **Peticiones/segundo** | > 50 req/s |
+| **Latencia media** | < 200ms |
+| **Errores de red** | 0 |
+| **Respuestas 429 (rate limit)** | Presentes tras 20 req/min |

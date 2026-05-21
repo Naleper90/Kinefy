@@ -8,7 +8,7 @@ Para garantizar la reproducibilidad del entorno de desarrollo y facilitar la eva
 
 *   **Motor de Contenedores:** Docker Engine v20.10+ y Docker Compose v2+. (Se recomienda Docker Desktop en Windows/Mac).
 *   **Git:** Para la clonación del repositorio.
-*   **Puertos libres:** Asegurarse de que los puertos `3000` (Backend) y `5174` (Frontend Vite) no estén siendo utilizados por otros servicios locales.
+*   **Puertos libres:** Asegurarse de que los puertos `5000` (Backend) y `80` (Frontend Nginx) no estén siendo utilizados por otros servicios locales.
 
 ---
 
@@ -25,7 +25,7 @@ Antes de arrancar, es obligatorio configurar las variables de entorno:
 
 2. Duplicar los archivos de ejemplo en cada subproyecto y renombrarlos a `.env`:
    * En `kinefy-backend`: Copiar `.env.example` a `.env` y establecer una cadena secreta para `JWT_SECRET`.
-   * En `kinefy-frontend`: Copiar `.env.example` a `.env` y verificar que `VITE_API_URL` apunte al puerto correcto (ej. `http://localhost:3000/api`).
+   * En `kinefy-frontend`: Copiar `.env.example` a `.env` y verificar que `VITE_API_URL` apunte al puerto correcto (ej. `http://localhost:5000/api` para desarrollo local, o dejar vacío en producción).
 
 ---
 
@@ -41,8 +41,8 @@ docker compose up --build -d
 
 ### 3.3.1. Verificación del despliegue local
 Una vez finalizado el proceso de *build* e *install*, la aplicación estará accesible en:
-*   **Frontend (App):** [http://localhost:5174](http://localhost:5174)
-*   **Backend (API):** [http://localhost:3000](http://localhost:3000)
+*   **Frontend (App):** [http://localhost](http://localhost)
+*   **Backend (API):** [http://localhost:5000](http://localhost:5000) (acceso directo al backend, solo para desarrollo sin Docker)
 
 Se puede comprobar el estado de los contenedores ejecutando:
 ```bash

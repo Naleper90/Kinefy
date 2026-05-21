@@ -18,6 +18,17 @@ El proyecto se encuentra totalmente implementado y listo para producción:
 - **Seguridad y Auditoría:** Autenticación robusta basada en JWT y un sistema de restablecimiento/generación segura de contraseñas temporales para pacientes (sin edición directa).
 - **Gestión Documental:** Capacidad de adjuntar y almacenar informes médicos e imágenes clínicas dentro de la ficha de cada paciente.
 
+## Arquitectura
+
+```mermaid
+graph LR
+    A[Navegador Cliente] -->|Puerto 80| B[Nginx / Frontend]
+    B -->|/api/*| C[Express Backend :5000]
+    B -->|/uploads/*| C
+    B -->|Archivos estáticos| B
+    C -->|Puerto 27017| D[(MongoDB)]
+```
+
 ## Stack Tecnológico
 
 | Capa | Tecnología | Justificación |
