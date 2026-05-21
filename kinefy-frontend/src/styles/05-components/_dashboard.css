@@ -3145,17 +3145,55 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   font-weight: 800;
 }
 
-.agenda-calendar__today-dot {
+.agenda-calendar__dots-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
   position: absolute;
-  bottom: 6px;
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: var(--color-brand);
+  bottom: 8px;
 }
 
-.agenda-calendar__day--selected .agenda-calendar__today-dot {
+.agenda-calendar__dot,
+.calendar__day-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+  transition: all 0.3s ease;
+}
+
+.agenda-calendar__dot--today {
+  background: var(--color-brand);
+  box-shadow: 0 0 4px rgba(85, 169, 138, 0.4);
+}
+
+.agenda-calendar__dot--pending {
+  background: #E57373;
+  box-shadow: 0 0 4px rgba(229, 115, 115, 0.6);
+}
+
+.agenda-calendar__dot--active {
+  background: var(--color-brand);
+  box-shadow: 0 0 4px rgba(85, 169, 138, 0.6);
+}
+
+/* Modificadores al seleccionar el día */
+.agenda-calendar__day--selected .agenda-calendar__dot,
+.agenda-calendar__day--selected .calendar__day-dot,
+.agenda-calendar__dot--selected {
   background: #FFFFFF;
+  box-shadow: none;
+}
+
+.agenda-calendar__day--today,
+.calendar__day--today {
+  border: 1.5px solid var(--color-brand);
+}
+
+.agenda-calendar__day--today.agenda-calendar__day--selected,
+.calendar__day--today.agenda-calendar__day--selected {
+  border-color: transparent;
 }
 
 /* Lista de Citas y Timeline */

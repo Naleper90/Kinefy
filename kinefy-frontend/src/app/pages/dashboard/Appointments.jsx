@@ -324,7 +324,7 @@ const Appointments = () => {
                                 <button 
                                     key={day.fullDate} 
                                     onClick={() => setSelectedDate(day.fullDate)} 
-                                    className={`agenda-calendar__day ${selectedDate === day.fullDate ? 'agenda-calendar__day--selected' : ''}`}
+                                    className={`agenda-calendar__day ${day.isToday ? 'agenda-calendar__day--today calendar__day--today' : ''} ${selectedDate === day.fullDate ? 'agenda-calendar__day--selected' : ''}`}
                                 >
                                     <span className="agenda-calendar__day-name">{day.name}</span>
                                     <span className="agenda-calendar__day-number">{day.number}</span>
@@ -333,19 +333,19 @@ const Appointments = () => {
                                         {day.isToday && (
                                             <span 
                                                 title="Hoy" 
-                                                className={`agenda-calendar__dot agenda-calendar__dot--today ${selectedDate === day.fullDate ? 'agenda-calendar__dot--selected' : ''}`}
+                                                className={`agenda-calendar__dot agenda-calendar__dot--today calendar__day-dot ${selectedDate === day.fullDate ? 'agenda-calendar__dot--selected' : ''}`}
                                             />
                                         )}
                                         {hasPending && (
                                             <span 
                                                 title="Solicitud pendiente" 
-                                                className="agenda-calendar__dot agenda-calendar__dot--pending"
+                                                className="agenda-calendar__dot agenda-calendar__dot--pending calendar__day-dot"
                                             />
                                         )}
                                         {hasActive && (
                                             <span 
                                                 title="Citas programadas" 
-                                                className={`agenda-calendar__dot agenda-calendar__dot--active ${selectedDate === day.fullDate ? 'agenda-calendar__dot--selected' : ''}`}
+                                                className={`agenda-calendar__dot agenda-calendar__dot--active calendar__day-dot ${selectedDate === day.fullDate ? 'agenda-calendar__dot--selected' : ''}`}
                                             />
                                         )}
                                     </div>

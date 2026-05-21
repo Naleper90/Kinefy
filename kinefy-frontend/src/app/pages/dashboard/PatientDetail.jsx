@@ -311,7 +311,7 @@ const PatientDetail = () => {
 
                     <nav className="patient-detail__actions">
                         {!isEditing && (
-                            <button className="btn-pdf" onClick={() => generatePatientReport(patient, appointments, evolution)}>
+                            <button className="btn-primary" onClick={() => generatePatientReport(patient, appointments, evolution)}>
                                 <FilePdfIcon size={20} />
                                 <span>Descargar Informe PDF</span>
                             </button>
