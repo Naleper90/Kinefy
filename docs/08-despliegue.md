@@ -3,7 +3,7 @@
 > [!IMPORTANT]
 > **Nota para el Tribunal Evaluador (Módulo Despliegue):**
 > La documentación técnica específica exigida para la rúbrica del módulo de Despliegue de Aplicaciones Web (Justificación de herramientas, Criterio 7 sobre artefactos y ficheros, y Criterio 8 sobre verificación de red) ha sido extraída a un documento anexo para facilitar su corrección. 
-> **Por favor, diríjase a: [08-despliegue-eval.md](08-despliegue-eval.md)**
+> **Por favor, diríjase a: [11-despliegue-eval.md](11-despliegue-eval.md)**
 
 ---
 
@@ -102,6 +102,6 @@ Tras pasar satisfactoriamente la validación en GitHub Actions, la integración 
 - **Despliegue de Backend (Railway)**: Railway detecta automáticamente los nuevos commits en la rama protegida `master`, reconstruye la imagen a partir del `Dockerfile` del backend e inicia el nuevo contenedor, gestionando el reemplazo progresivo de la instancia anterior sin tiempo de inactividad (*zero-downtime deployment*).
 
 **URLs de Producción:**
-* **Frontend Web (Vercel):** [https://kinefy.vercel.app](https://kinefy.vercel.app)
+* **Frontend Web (Vercel):** [https://kinefy-beryl.vercel.app](https://kinefy-beryl.vercel.app)
 * **Backend API (Railway):** [https://kinefy-production.up.railway.app](https://kinefy-production.up.railway.app)
 

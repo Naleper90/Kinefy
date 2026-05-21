@@ -1,16 +1,16 @@
-# 10. Credenciales de Prueba
+# 12. Credenciales de Prueba
 
 Para facilitar la evaluación del proyecto por parte del tribunal y de los docentes, se incluyen dos cuentas de referencia que pueden utilizarse sin necesidad de crear usuarios nuevos.
 
 ## 🔐 Cuenta de **Fisioterapeuta** (admin)
-- **Email:** `fisio@test.com`
-- **Contraseña:** `FisioDemo2026`
+- **Email:** `natalia@kinefy.com`
+- **Contraseña:** `Kinefy2024!`
 - **Rol:** `fisioterapeuta`
 - **Permisos:** Acceso completo a la gestión de pacientes, creación de rutinas, reset de contraseñas y visualización de auditorías.
 
-## 🧑‍⚕️ Cuenta de **Paciente** (demo)
-- **Email:** `paciente@test.com`
-- **Contraseña:** `PacienteDemo2026`
+## 🧑‍⚕️ Cuenta de **Paciente** (demo - Elena García)
+- **Email:** `elena@kinefy.com`
+- **Contraseña:** `Paciente2024!`
 - **Rol:** `paciente`
 - **Características:** Paciente pre‑creado asociado al fisioterapeuta anterior, con algunos ejercicios asignados y datos de evolución cargados para poder demostrar la visualización de gráficas y la captura de la escala EVA.
 
