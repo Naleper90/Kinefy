@@ -1,9 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { AppointmentsIcon, ExercisesIcon } from '../../components/dashboard/DashboardIcons';
 import api from '../../api/api';
 import { CustomCalendar, CustomTimePicker } from '../../components/dashboard/DatePickerPremium';
+
+const toLocalDateString = (date) => {
+    if (!date) return '';
+    if (typeof date === 'string') {
+        const match = date.match(/^\d{4}-\d{2}-\d{2}/);
+        if (match) return match[0];
+    }
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+};
 
 const getNextDays = (count = 14) => {
     const days = [];
@@ -32,13 +45,27 @@ const PatientDashboardHome = () => {
     const [previewEx, setPreviewEx] = useState(null);
     const [showApptModal, setShowApptModal] = useState(false);
     const [apptForm, setApptForm] = useState({
-        fecha: new Date().toISOString().split('T')[0],
+        fecha: toLocalDateString(new Date()),
         hora: '10:00',
         tipo: 'Sesión de Seguimiento'
     });
     const [customDateMode, setCustomDateMode] = useState(false);
     const [customTimeMode, setCustomTimeMode] = useState(false);
     const [statusMsg, setStatusMsg] = useState(null);
+    const [chartWidth, setChartWidth] = useState(240);
+    const containerRef = useRef(null);
+
+    useEffect(() => {
+        if (!containerRef.current) return;
+        const handleResize = () => {
+            if (containerRef.current) {
+                setChartWidth(containerRef.current.getBoundingClientRect().width || 240);
+            }
+        };
+        handleResize();
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, [loading]);
 
     const showNotification = (msg) => {
         setStatusMsg(msg);
@@ -163,22 +190,24 @@ const PatientDashboardHome = () => {
     const progressPct    = exercises.length > 0 ? Math.round((completedCount / exercises.length) * 100) : 0;
 
     // Gráfica de evolución
-    const svgW = 240, svgH = 70;
+    const svgW = chartWidth, svgH = 70;
+    const paddingX = 8;
     const pts  = painHistory.length > 0 
         ? painHistory.map((v, i) => ({
-            x: i * (svgW / (Math.max(painHistory.length - 1, 1))),
-            y: svgH - (v / 10) * svgH,
+            x: paddingX + i * ((svgW - 2 * paddingX) / (Math.max(painHistory.length - 1, 1))),
+            y: svgH - (v / 10) * (svgH - 10) - 5,
           }))
-        : [{x: 0, y: svgH}, {x: svgW, y: svgH}];
+        : [{x: paddingX, y: svgH}, {x: svgW - paddingX, y: svgH}];
     const polyStr = pts.map(p => `${p.x},${p.y}`).join(' ');
 
     return (
         <section className="home animate-in">
-            {statusMsg && (
+            {statusMsg && createPortal(
                 <article className="toast-notification">
                     <span className="toast-notification__dot">●</span>
                     {statusMsg}
-                </article>
+                </article>,
+                document.body
             )}
 
             <header className="home-header">
@@ -350,15 +379,15 @@ const PatientDashboardHome = () => {
                             <p className="activity-widget__subtitle">Tendencia de <strong>Dolor</strong></p>
                         </header>
 
-                        <figure className="activity-widget__wave">
-                            <svg width={svgW} height={svgH} viewBox={`0 0 ${svgW} ${svgH}`} preserveAspectRatio="none">
+                        <figure className="activity-widget__wave" ref={containerRef}>
+                            <svg width="100%" height={svgH} viewBox={`0 0 ${svgW} ${svgH}`}>
                                 <defs>
                                     <linearGradient id="painGrad" x1="0" y1="0" x2="0" y2="1">
                                         <stop offset="0%"   stopColor="#55A98A" stopOpacity="0.4" />
                                         <stop offset="100%" stopColor="#81BAA5" stopOpacity="0.05" />
                                     </linearGradient>
                                 </defs>
-                                <polygon points={`0,${svgH} ${polyStr} ${svgW},${svgH}`} fill="url(#painGrad)" />
+                                <polygon points={`${pts[0].x},${svgH} ${polyStr} ${pts[pts.length-1].x},${svgH}`} fill="url(#painGrad)" />
                                 <polyline points={polyStr} fill="none" stroke="#55A98A" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
                                 <circle cx={pts[pts.length-1].x} cy={pts[pts.length-1].y} r="5" fill="#1A2E35" stroke="#fff" strokeWidth="2" />
                             </svg>
@@ -466,7 +495,7 @@ const PatientDashboardHome = () => {
                                     ) : (
                                         <div className="no-scrollbar date-btn-container">
                                             {getNextDays().map((d, index) => {
-                                                const isoStr = d.toISOString().split('T')[0];
+                                                const isoStr = toLocalDateString(d);
                                                 const isSelected = apptForm.fecha === isoStr;
                                                 return (
                                                     <button

@@ -55,7 +55,15 @@ const DashboardLayout = ({
         
         let targetDate = null;
         if (n.metadata && n.metadata.fecha) {
-            targetDate = typeof n.metadata.fecha === 'string' ? n.metadata.fecha.split('T')[0] : new Date(n.metadata.fecha).toISOString().split('T')[0];
+            if (typeof n.metadata.fecha === 'string') {
+                targetDate = n.metadata.fecha.split('T')[0];
+            } else {
+                const d = new Date(n.metadata.fecha);
+                const year = d.getUTCFullYear();
+                const month = String(d.getUTCMonth() + 1).padStart(2, '0');
+                const day = String(d.getUTCDate()).padStart(2, '0');
+                targetDate = `${year}-${month}-${day}`;
+            }
         }
         
         const appointmentId = n.metadata?.appointmentId || null;

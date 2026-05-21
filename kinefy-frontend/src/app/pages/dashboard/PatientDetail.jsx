@@ -2,13 +2,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../api/api';
-import { 
-    KneeIcon, 
-    BlobIcon, 
-    DownloadIcon, 
-    EditIcon, 
-    CheckIcon, 
-    SaveIcon, 
+import {
+    KneeIcon,
+    BlobIcon,
+    DownloadIcon,
+    EditIcon,
+    CheckIcon,
+    SaveIcon,
     ArrowLeftIcon,
     TrashIcon,
     UploadIcon,
@@ -31,8 +31,8 @@ const PatientDetail = () => {
     const [appointments, setAppointments] = useState([]);
     const [isEditing, setIsEditing] = useState(false);
 
-    const [editForm, setEditForm] = useState({ 
-        nombre: '', email: '', 
+    const [editForm, setEditForm] = useState({
+        nombre: '', email: '',
         telefono: '', profesion: '', actividadFisica: 'moderado',
         diagnostico: '', notas: '', ejercicios: [],
         newPassword: ''
@@ -62,11 +62,11 @@ const PatientDetail = () => {
 
     const fetchPatientData = async () => {
         try {
-            const res = await api.get(`/patients`); 
+            const res = await api.get(`/patients`);
             const found = res.data.find(p => p._id === id);
             setPatient(found);
-            setEditForm({ 
-                nombre: found.nombre || '', 
+            setEditForm({
+                nombre: found.nombre || '',
                 email: found.email || '',
                 telefono: found.telefono || '',
                 profesion: found.profesion || '',
@@ -151,11 +151,11 @@ const PatientDetail = () => {
     const importFromLibrary = (libEx) => {
         setEditForm({
             ...editForm,
-            ejercicios: [...editForm.ejercicios, { 
-                nombre: libEx.nombre, 
-                series: libEx.seriesDefecto || '', 
+            ejercicios: [...editForm.ejercicios, {
+                nombre: libEx.nombre,
+                series: libEx.seriesDefecto || '',
                 completado: false,
-                mediaUrl: libEx.mediaUrl || '' 
+                mediaUrl: libEx.mediaUrl || ''
             }]
         });
         setShowLibraryModal(false);
@@ -192,7 +192,7 @@ const PatientDetail = () => {
     const handleDocUpload = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
-        
+
         // Auto-rellenar el nombre si está vacío
         if (!newDoc.nombre) {
             const cleanName = file.name.split('.').slice(0, -1).join('.');
@@ -226,11 +226,11 @@ const PatientDetail = () => {
             showNotification("Por favor, sube un archivo o pega un enlace primero");
             return;
         }
-        
+
         try {
-            const res = await api.post(`/patients/${id}/documents`, { 
-                nombre: newDoc.nombre, 
-                url: newDoc.url || '#' 
+            const res = await api.post(`/patients/${id}/documents`, {
+                nombre: newDoc.nombre,
+                url: newDoc.url || '#'
             });
             setPatient({ ...patient, informes: res.data });
             setNewDoc({ nombre: '', url: '' });
@@ -274,11 +274,12 @@ const PatientDetail = () => {
 
     return (
         <main className="patients-page animate-in">
-            {statusMsg && (
+            {statusMsg && createPortal(
                 <article className="toast-notification">
                     <span className="toast-notification__dot">●</span>
                     {statusMsg}
-                </article>
+                </article>,
+                document.body
             )}
 
             <header className="patient-detail__header">
@@ -288,7 +289,7 @@ const PatientDetail = () => {
                         <span>Volver al listado</span>
                     </button>
                 </nav>
-                
+
                 <section className="patient-detail__identity">
                     <header className="patient-detail__profile">
                         <figure className="patient-avatar patient-avatar--large">
@@ -297,10 +298,10 @@ const PatientDetail = () => {
                         </figure>
                         <hgroup className="patient-detail__info">
                             {isEditing ? (
-                                <input 
+                                <input
                                     className="dashboard__input dashboard__input--title"
                                     value={editForm.nombre || ''}
-                                    onChange={e => setEditForm({...editForm, nombre: e.target.value})}
+                                    onChange={e => setEditForm({ ...editForm, nombre: e.target.value })}
                                 />
                             ) : (
                                 <h1 className="patient-detail__name">{patient.nombre || 'Paciente Sin Nombre'}</h1>
@@ -339,12 +340,12 @@ const PatientDetail = () => {
                 <article className="dashboard-card patient-detail__card">
                     <h3 className="card-title-big">Información General</h3>
                     <dl className="clinical-data-list">
-                        
+
                         <div className="clinical-data-item">
                             <dt className="meta-label">Email de Acceso</dt>
                             <dd>
                                 {isEditing ? (
-                                    <input className="dashboard__input" value={editForm.email || ''} onChange={e => setEditForm({...editForm, email: e.target.value})} />
+                                    <input className="dashboard__input" value={editForm.email || ''} onChange={e => setEditForm({ ...editForm, email: e.target.value })} />
                                 ) : (
                                     <span className="clinical-value">{patient.email}</span>
                                 )}
@@ -361,7 +362,7 @@ const PatientDetail = () => {
                                         type="password"
                                         placeholder="Escribe una nueva contraseña (opcional)"
                                         value={editForm.newPassword || ''}
-                                        onChange={e => setEditForm({...editForm, newPassword: e.target.value})}
+                                        onChange={e => setEditForm({ ...editForm, newPassword: e.target.value })}
                                         autoComplete="new-password"
                                     />
                                 ) : (
@@ -376,7 +377,7 @@ const PatientDetail = () => {
                             <dt className="meta-label">Teléfono</dt>
                             <dd>
                                 {isEditing ? (
-                                    <input className="dashboard__input" value={editForm.telefono || ''} onChange={e => setEditForm({...editForm, telefono: e.target.value})} />
+                                    <input className="dashboard__input" value={editForm.telefono || ''} onChange={e => setEditForm({ ...editForm, telefono: e.target.value })} />
                                 ) : (
                                     <span className="clinical-value">{patient.telefono || 'No registrado'}</span>
                                 )}
@@ -387,7 +388,7 @@ const PatientDetail = () => {
                             <dt className="meta-label">Profesión</dt>
                             <dd>
                                 {isEditing ? (
-                                    <input className="dashboard__input" value={editForm.profesion || ''} onChange={e => setEditForm({...editForm, profesion: e.target.value})} />
+                                    <input className="dashboard__input" value={editForm.profesion || ''} onChange={e => setEditForm({ ...editForm, profesion: e.target.value })} />
                                 ) : (
                                     <span className="clinical-value">{patient.profesion || 'No registrada'}</span>
                                 )}
@@ -399,8 +400,8 @@ const PatientDetail = () => {
                             <dd>
                                 {isEditing ? (
                                     <div className="clinical-select">
-                                        <div 
-                                            className="clinical-select__trigger" 
+                                        <div
+                                            className="clinical-select__trigger"
                                             onClick={() => setShowActivityMenu(!showActivityMenu)}
                                         >
                                             <span>{activityOptions.find(o => o.value === editForm.actividadFisica)?.label || 'Seleccionar...'}</span>
@@ -409,7 +410,7 @@ const PatientDetail = () => {
                                         {showActivityMenu && (
                                             <div className="clinical-select__menu">
                                                 {activityOptions.map(o => (
-                                                    <div key={o.value} className="clinical-select__option" onClick={() => { setEditForm({...editForm, actividadFisica: o.value}); setShowActivityMenu(false); }}>
+                                                    <div key={o.value} className="clinical-select__option" onClick={() => { setEditForm({ ...editForm, actividadFisica: o.value }); setShowActivityMenu(false); }}>
                                                         {o.label}
                                                     </div>
                                                 ))}
@@ -430,16 +431,16 @@ const PatientDetail = () => {
                         <h3 className="card-title-big">Plan de Entrenamiento</h3>
                         {isEditing && (
                             <nav className="card-actions-nav">
-                                <button 
-                                    type="button" 
-                                    className="btn-ghost btn-sm" 
-                                    onClick={(e) => { 
-                                        e.preventDefault(); 
+                                <button
+                                    type="button"
+                                    className="btn-ghost btn-sm"
+                                    onClick={(e) => {
+                                        e.preventDefault();
                                         e.stopPropagation();
-                                        setShowLibraryModal(true); 
+                                        setShowLibraryModal(true);
                                     }}
                                 >
-                                    📚 Biblioteca
+                                    Biblioteca
                                 </button>
                                 <button type="button" className="btn-primary btn-sm" onClick={addExercise}>
                                     + Nuevo
@@ -454,19 +455,19 @@ const PatientDetail = () => {
                             editForm.ejercicios.map((ex, i) => (
                                 <article key={i} className="exercise-card">
                                     <div className="exercise-card__inputs">
-                                        <input 
-                                            className="dashboard__input" 
-                                            placeholder="Nombre ejercicio" 
-                                            value={ex.nombre || ''} 
-                                            onChange={e => updateExercise(i, 'nombre', e.target.value)} 
+                                        <input
+                                            className="dashboard__input"
+                                            placeholder="Nombre ejercicio"
+                                            value={ex.nombre || ''}
+                                            onChange={e => updateExercise(i, 'nombre', e.target.value)}
                                         />
-                                        <input 
-                                            className="dashboard__input" 
-                                            placeholder="Series/Reps" 
-                                            value={ex.series || ''} 
-                                            onChange={e => updateExercise(i, 'series', e.target.value)} 
+                                        <input
+                                            className="dashboard__input"
+                                            placeholder="Series/Reps"
+                                            value={ex.series || ''}
+                                            onChange={e => updateExercise(i, 'series', e.target.value)}
                                         />
-                                        <button 
+                                        <button
                                             type="button"
                                             className="btn-delete-icon"
                                             onClick={() => removeExercise(i)}
@@ -476,11 +477,11 @@ const PatientDetail = () => {
                                         </button>
                                     </div>
                                     <div className="exercise-card__media-actions">
-                                        <input 
-                                            className="dashboard__input dashboard__input--sm" 
-                                            placeholder="URL del vídeo" 
-                                            value={ex.mediaUrl || ''} 
-                                            onChange={e => updateExercise(i, 'mediaUrl', e.target.value)} 
+                                        <input
+                                            className="dashboard__input dashboard__input--sm"
+                                            placeholder="URL del vídeo"
+                                            value={ex.mediaUrl || ''}
+                                            onChange={e => updateExercise(i, 'mediaUrl', e.target.value)}
                                         />
                                         <label className="btn-upload-label">
                                             <UploadIcon size={14} />
@@ -516,11 +517,11 @@ const PatientDetail = () => {
                     <footer className="clinical-diagnosis">
                         <label className="meta-label">Diagnóstico Clínico</label>
                         {isEditing ? (
-                            <textarea 
-                                className="dashboard__input dashboard__input--textarea" 
+                            <textarea
+                                className="dashboard__input dashboard__input--textarea"
                                 placeholder="Escribe aquí el diagnóstico detallado..."
-                                value={editForm.diagnostico || ''} 
-                                onChange={e => setEditForm({...editForm, diagnostico: e.target.value})} 
+                                value={editForm.diagnostico || ''}
+                                onChange={e => setEditForm({ ...editForm, diagnostico: e.target.value })}
                             />
                         ) : (
                             <article className="clinical-report-box">
@@ -549,12 +550,12 @@ const PatientDetail = () => {
                             <div className="clinical-upload-zone__fields">
                                 <div className="clinical-data-item">
                                     <label className="meta-label">Nombre del Documento</label>
-                                    <input className="dashboard__input" placeholder="Ej: Resonancia Rodilla" value={newDoc.nombre || ''} onChange={e => setNewDoc({...newDoc, nombre: e.target.value})} />
+                                    <input className="dashboard__input" placeholder="Ej: Resonancia Rodilla" value={newDoc.nombre || ''} onChange={e => setNewDoc({ ...newDoc, nombre: e.target.value })} />
                                 </div>
                                 <div className="clinical-data-item clinical-data-item--mt-sm">
                                     <label className="meta-label meta-label--block">Archivo / Documento</label>
-                                    <label 
-                                        htmlFor="doc-upload-input" 
+                                    <label
+                                        htmlFor="doc-upload-input"
                                         className="file-upload-dropzone"
                                     >
                                         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="file-upload-dropzone__icon"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
@@ -587,10 +588,10 @@ const PatientDetail = () => {
                                             </div>
                                         )}
                                     </label>
-                                    <input 
+                                    <input
                                         id="doc-upload-input"
-                                        type="file" 
-                                        required 
+                                        type="file"
+                                        required
                                         onChange={handleDocUpload}
                                         className="u-hidden"
                                         accept=".pdf,.doc,.docx"
@@ -616,12 +617,12 @@ const PatientDetail = () => {
                                         <time className="document-card__date">{new Date(doc.fecha).toLocaleDateString()}</time>
                                     </div>
                                     <nav className="document-card__actions">
-                                        <a href={doc.url} target="_blank" rel="noopener noreferrer" className="btn-icon-link" title="Descargar">
+                                        <a href={doc.url} target="_blank" rel="noopener noreferrer" className="patient-action-btn patient-action-btn--view" title="Descargar">
                                             <DownloadIcon size={18} />
                                         </a>
                                         {isEditing && (
-                                            <button onClick={() => handleDeleteDocument(doc._id)} className="btn-delete-icon" title="Eliminar">
-                                                <TrashIcon size={16} />
+                                            <button onClick={() => handleDeleteDocument(doc._id)} className="patient-action-btn patient-action-btn--delete" title="Eliminar">
+                                                <TrashIcon size={18} />
                                             </button>
                                         )}
                                     </nav>
@@ -642,9 +643,9 @@ const PatientDetail = () => {
                             <div className="evolution-chart__bars">
                                 {evolution.map((e, i) => (
                                     <div key={i} className="evolution-chart__bar-container">
-                                        <div 
-                                            className="evolution-chart__bar" 
-                                            style={{ height: `${e.nivelDolor * 10}%`, opacity: 0.3 + (i / evolution.length) }} 
+                                        <div
+                                            className="evolution-chart__bar"
+                                            style={{ height: `${e.nivelDolor * 10}%`, opacity: 0.3 + (i / evolution.length) }}
                                         />
                                         <span className="evolution-chart__label">EVA {e.nivelDolor}</span>
                                     </div>
@@ -666,16 +667,16 @@ const PatientDetail = () => {
                             <p className="card-subtitle">Comentarios detallados del paciente sobre su evolución diaria.</p>
                         </div>
                     </hgroup>
-                    
+
                     <div className="evolution-feed">
                         {evolution.length > 0 ? (
-                            [...evolution].sort((a,b) => new Date(b.fecha) - new Date(a.fecha)).map((entry, idx) => (
+                            [...evolution].sort((a, b) => new Date(b.fecha) - new Date(a.fecha)).map((entry, idx) => (
                                 <article key={idx} className="evolution-feed__item">
                                     <header className="evolution-feed__header">
                                         <time className="evolution-feed__date">
-                                            {new Date(entry.fecha).toLocaleDateString('es-ES', { 
-                                                day: '2-digit', 
-                                                month: 'long', 
+                                            {new Date(entry.fecha).toLocaleDateString('es-ES', {
+                                                day: '2-digit',
+                                                month: 'long',
                                                 year: 'numeric',
                                                 hour: '2-digit',
                                                 minute: '2-digit'
@@ -704,7 +705,7 @@ const PatientDetail = () => {
             {/* MODAL DE BIBLIOTECA */}
             {showLibraryModal && createPortal(
                 <div className="modal-overlay">
-                    <article 
+                    <article
                         className="modal-container modal-container--medium"
                         onClick={(e) => e.stopPropagation()}
                     >
@@ -715,13 +716,13 @@ const PatientDetail = () => {
                             </hgroup>
                             <button type="button" className="btn-close-circle" onClick={() => setShowLibraryModal(false)}>✕</button>
                         </header>
-                        
+
                         <div className="modal-content">
                             {(library && Array.isArray(library) && library.length > 0) ? (
                                 <div className="library-grid">
                                     {library.map(ex => (
-                                        <div key={ex._id} className="library-item" 
-                                            onClick={() => importFromLibrary(ex)} 
+                                        <div key={ex._id} className="library-item"
+                                            onClick={() => importFromLibrary(ex)}
                                         >
                                             <hgroup>
                                                 <h4 className="library-item__name">{ex.nombre}</h4>

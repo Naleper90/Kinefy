@@ -5,6 +5,19 @@ import api from '../../api/api';
 import { CustomCalendar, CustomTimePicker } from '../../components/dashboard/DatePickerPremium';
 import { EditIcon, CloseIcon, PlusIcon } from '../../components/dashboard/DashboardIcons';
 
+const toLocalDateString = (date) => {
+    if (!date) return '';
+    if (typeof date === 'string') {
+        const match = date.match(/^\d{4}-\d{2}-\d{2}/);
+        if (match) return match[0];
+    }
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+};
+
 const getNextDays = (count = 14) => {
     const days = [];
     const today = new Date();
@@ -23,7 +36,7 @@ const PatientAppointments = () => {
 
     const getApptDateTime = (fecha, hora) => {
         if (!fecha) return new Date(0);
-        const dateStr = typeof fecha === 'string' ? fecha.split('T')[0] : new Date(fecha).toISOString().split('T')[0];
+        const dateStr = toLocalDateString(fecha);
         return new Date(`${dateStr}T${hora || '00:00'}`);
     };
     const [showApptModal, setShowApptModal] = useState(false);
@@ -32,7 +45,7 @@ const PatientAppointments = () => {
     const [highlightedApptId, setHighlightedApptId] = useState(null);
 
     const [apptForm, setApptForm] = useState({
-        fecha: new Date().toISOString().split('T')[0],
+        fecha: toLocalDateString(new Date()),
         hora: '10:00',
         tipo: 'Sesión de Seguimiento'
     });
@@ -116,8 +129,8 @@ const PatientAppointments = () => {
         if (!fecha || !hora) return false;
         return occupiedAppointments.some(appt => {
             if (isEditing && editingApptId === appt._id) return false;
-            const apptDateStr = new Date(appt.fecha).toISOString().split('T')[0];
-            const targetDateStr = new Date(fecha).toISOString().split('T')[0];
+            const apptDateStr = toLocalDateString(appt.fecha);
+            const targetDateStr = toLocalDateString(fecha);
             return apptDateStr === targetDateStr && appt.hora === hora;
         });
     };
@@ -126,7 +139,7 @@ const PatientAppointments = () => {
         setIsEditing(false);
         setEditingApptId(null);
         setApptForm({
-            fecha: new Date().toISOString().split('T')[0],
+            fecha: toLocalDateString(new Date()),
             hora: '10:00',
             tipo: 'Sesión de Seguimiento'
         });
@@ -137,7 +150,7 @@ const PatientAppointments = () => {
     };
 
     const handleOpenEdit = (appt) => {
-        const datePart = new Date(appt.fecha).toISOString().split('T')[0];
+        const datePart = toLocalDateString(appt.fecha);
         setApptForm({
             fecha: datePart,
             hora: appt.hora,
@@ -222,11 +235,12 @@ const PatientAppointments = () => {
 
     return (
         <section className="home animate-in">
-            {statusMsg && (
+            {statusMsg && createPortal(
                 <article className="toast-notification">
                     <span className="toast-notification__dot">●</span>
                     {statusMsg}
-                </article>
+                </article>,
+                document.body
             )}
 
             <header className="home-header appointments-header">
@@ -422,7 +436,7 @@ const PatientAppointments = () => {
                                     ) : (
                                         <div className="date-badge-scroll no-scrollbar">
                                             {getNextDays().map((d, index) => {
-                                                const isoStr = d.toISOString().split('T')[0];
+                                                const isoStr = toLocalDateString(d);
                                                 const isSelected = apptForm.fecha === isoStr;
                                                 return (
                                                     <button

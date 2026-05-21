@@ -13,6 +13,19 @@ import {
 } from '../../components/dashboard/DashboardIcons';
 import { CustomCalendar, CustomTimePicker } from '../../components/dashboard/DatePickerPremium';
 
+const toLocalDateString = (date) => {
+    if (!date) return '';
+    if (typeof date === 'string') {
+        const match = date.match(/^\d{4}-\d{2}-\d{2}/);
+        if (match) return match[0];
+    }
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+};
+
 const getNextDays = (count = 14) => {
     const days = [];
     const today = new Date();
@@ -37,13 +50,7 @@ const Appointments = () => {
         setTimeout(() => setStatusMsg(null), 3000);
     };
     
-    const toLocalDateString = (date) => {
-        const d = new Date(date);
-        const year = d.getFullYear();
-        const month = String(d.getMonth() + 1).padStart(2, '0');
-        const day = String(d.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    };
+
 
     const now = new Date();
     const [currentDate, setCurrentDate] = useState(new Date(now.getFullYear(), now.getMonth(), 1));
@@ -255,11 +262,12 @@ const Appointments = () => {
 
     return (
         <main className="agenda-container animate-in">
-            {statusMsg && (
+            {statusMsg && createPortal(
                 <article className="toast-notification">
                     <span className="toast-notification__dot">●</span>
                     {statusMsg}
-                </article>
+                </article>,
+                document.body
             )}
             <header className="agenda-header">
                 <nav className="agenda-month-nav">
@@ -514,7 +522,7 @@ const Appointments = () => {
                                         ) : (
                                             <div className="no-scrollbar date-btn-container">
                                                 {getNextDays().map((d, index) => {
-                                                    const isoStr = d.toISOString().split('T')[0];
+                                                    const isoStr = toLocalDateString(d);
                                                     const isSelected = newApptData.fecha === isoStr;
                                                     return (
                                                         <button

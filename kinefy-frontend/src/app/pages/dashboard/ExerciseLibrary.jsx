@@ -79,11 +79,12 @@ const ExerciseLibrary = () => {
 
     return (
         <main className="patients-page animate-in">
-            {statusMsg && (
+            {statusMsg && createPortal(
                 <article className="toast-notification">
                     <span className="toast-notification__dot">●</span>
                     {statusMsg}
-                </article>
+                </article>,
+                document.body
             )}
             <header className="patients-header">
                 <hgroup>

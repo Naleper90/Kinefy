@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { KneeIcon, BlobIcon } from '../../components/dashboard/DashboardIcons';
 import api from '../../api/api';
@@ -105,11 +106,12 @@ const DashboardHome = () => {
     };
     return (
         <section className="home animate-in">
-            {statusMsg && (
+            {statusMsg && createPortal(
                 <article className="toast-notification">
                     <span className="toast-notification__dot">●</span>
                     {statusMsg}
-                </article>
+                </article>,
+                document.body
             )}
             <header className="home-header">
                 <hgroup className="home-header__info">

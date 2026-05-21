@@ -105,11 +105,12 @@ const PatientDocs = () => {
 
     return (
         <section className="home animate-in">
-            {statusMsg && (
+            {statusMsg && createPortal(
                 <article className="toast-notification">
                     <span className="toast-notification__dot">●</span>
                     {statusMsg}
-                </article>
+                </article>,
+                document.body
             )}
 
             <header className="home-header docs-header">

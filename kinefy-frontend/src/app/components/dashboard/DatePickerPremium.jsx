@@ -1,5 +1,18 @@
 import React, { useState } from 'react';
 
+const toLocalDateString = (date) => {
+    if (!date) return '';
+    if (typeof date === 'string') {
+        const match = date.match(/^\d{4}-\d{2}-\d{2}/);
+        if (match) return match[0];
+    }
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+};
+
 export const CustomCalendar = ({ selectedDate, onSelectDate }) => {
     const [viewDate, setViewDate] = useState(selectedDate ? new Date(selectedDate) : new Date());
     
@@ -15,7 +28,7 @@ export const CustomCalendar = ({ selectedDate, onSelectDate }) => {
     const startDayOfWeek = (firstDayOfMonth.getDay() + 6) % 7; // Lunes = 0, Domingo = 6
     
     const totalDaysInMonth = new Date(year, month + 1, 0).getDate();
-    const todayStr = new Date().toISOString().split('T')[0];
+    const todayStr = toLocalDateString(new Date());
     
     // Rellenar días vacíos antes del primer día del mes
     for (let i = 0; i < startDayOfWeek; i++) {
@@ -65,9 +78,7 @@ export const CustomCalendar = ({ selectedDate, onSelectDate }) => {
                 {days.map((day, idx) => {
                     if (!day) return <div key={idx} />;
                     
-                    // Ajustar zona horaria local para comparar fechas
-                    const offsetDate = new Date(day.getTime() - (day.getTimezoneOffset() * 60000));
-                    const isoStr = offsetDate.toISOString().split('T')[0];
+                    const isoStr = toLocalDateString(day);
                     
                     const isSelected = selectedDate === isoStr;
                     const isPast = isoStr < todayStr;

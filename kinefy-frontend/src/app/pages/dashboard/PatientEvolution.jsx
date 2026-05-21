@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import api from '../../api/api';
 
 const PatientEvolution = () => {
@@ -9,6 +10,20 @@ const PatientEvolution = () => {
     const [observation, setObservation] = useState('');
     const [submitted, setSubmitted] = useState(false);
     const [statusMsg, setStatusMsg] = useState(null);
+    const [chartWidth, setChartWidth] = useState(500);
+    const containerRef = useRef(null);
+
+    useEffect(() => {
+        if (!containerRef.current) return;
+        const handleResize = () => {
+            if (containerRef.current) {
+                setChartWidth(containerRef.current.getBoundingClientRect().width || 500);
+            }
+        };
+        handleResize();
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, [loading]);
 
     const showNotification = (msg) => {
         setStatusMsg(msg);
@@ -87,20 +102,21 @@ const PatientEvolution = () => {
         return 'Dolor Insoportable';
     };
 
-    // Preparar puntos del gráfico SVG ampliado (500x150)
-    const svgW = 500, svgH = 150;
+    // Preparar puntos del gráfico SVG ampliado
+    const svgW = chartWidth, svgH = 165;
+    const paddingX = 25;
     const pts = painHistory.length > 0 
         ? painHistory.map((item, i) => {
-            const x = i * (svgW / (Math.max(painHistory.length - 1, 1)));
-            // Invertir Y para que 0 dolor esté abajo y 10 dolor esté arriba
-            const y = svgH - ((item.nivelDolor / 10) * (svgH - 20) + 10);
+            const x = paddingX + i * ((svgW - 2 * paddingX) / (Math.max(painHistory.length - 1, 1)));
+            // Invertir Y para que 0 dolor esté abajo y 10 dolor esté arriba (mapeado de y=20 a y=120)
+            const y = 120 - (item.nivelDolor / 10) * 100;
             return { x, y, level: item.nivelDolor, date: new Date(item.fecha).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }) };
           })
         : [];
 
     const linePath = pts.map(p => `${p.x},${p.y}`).join(' L ');
     const areaPath = pts.length > 0
-        ? `M 0,${svgH} L ${linePath} L ${pts[pts.length - 1].x},${svgH} Z`
+        ? `M ${pts[0].x},120 L ${linePath} L ${pts[pts.length - 1].x},120 Z`
         : '';
 
     // Timeline ordenado cronológicamente al revés (más reciente arriba)
@@ -108,11 +124,12 @@ const PatientEvolution = () => {
 
     return (
         <section className="home animate-in">
-            {statusMsg && (
+            {statusMsg && createPortal(
                 <article className="toast-notification">
                     <span className="toast-notification__dot">●</span>
                     {statusMsg}
-                </article>
+                </article>,
+                document.body
             )}
 
             <header className="home-header evolution-header">
@@ -129,8 +146,8 @@ const PatientEvolution = () => {
                     <article className="dashboard-card evolution-card--chart">
                         {pts.length > 0 ? (
                             <div>
-                                <div className="evolution-chart__container" style={{ height: `${svgH}px` }}>
-                                    <svg width="100%" height={svgH} viewBox={`0 0 ${svgW} ${svgH}`} preserveAspectRatio="none">
+                                <div className="evolution-chart__container" ref={containerRef} style={{ height: `${svgH}px` }}>
+                                    <svg width="100%" height={svgH} viewBox={`0 0 ${svgW} ${svgH}`}>
                                         <defs>
                                             <linearGradient id="painGrad" x1="0" y1="0" x2="0" y2="1">
                                                 <stop offset="0%" stopColor="var(--color-brand)" stopOpacity="0.25" />
@@ -139,13 +156,13 @@ const PatientEvolution = () => {
                                         </defs>
 
                                         {/* Líneas horizontales de referencia */}
-                                        {[0.2, 0.5, 0.8].map((ratio, index) => (
+                                        {[40, 70, 100].map((yVal, index) => (
                                             <line 
                                                 key={index} 
                                                 x1="0" 
-                                                y1={svgH * ratio} 
+                                                y1={yVal} 
                                                 x2={svgW} 
-                                                y2={svgH * ratio} 
+                                                y2={yVal} 
                                                 stroke="#EDF2F2" 
                                                 strokeWidth="1.5" 
                                                 strokeDasharray="4,4" 
@@ -191,16 +208,22 @@ const PatientEvolution = () => {
                                                 >
                                                     {p.level}
                                                 </text>
+
+                                                {/* Eje de fechas en la parte inferior */}
+                                                <text 
+                                                    x={p.x} 
+                                                    y="152" 
+                                                    textAnchor="middle" 
+                                                    fontSize="0.7rem" 
+                                                    fontWeight="700" 
+                                                    fill="#718096"
+                                                    style={{ textTransform: 'uppercase' }}
+                                                >
+                                                    {p.date}
+                                                </text>
                                             </g>
                                         ))}
                                     </svg>
-                                </div>
-                                <div className="evolution-chart__x-axis">
-                                    {pts.map((p, idx) => (
-                                        <span key={idx} className="evolution-chart__date">
-                                            {p.date}
-                                        </span>
-                                    ))}
                                 </div>
                             </div>
                         ) : (
