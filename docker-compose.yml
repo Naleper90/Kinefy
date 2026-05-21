@@ -5,8 +5,6 @@ services:
   mongodb:
     image: mongo:latest
     container_name: kinefy-db
-    ports:
-      - "27017:27017"
     volumes:
       - mongo-data:/data/db
     networks:
@@ -16,8 +14,6 @@ services:
   backend:
     build: ./kinefy-backend
     container_name: kinefy-api
-    ports:
-      - "5000:5000"
     environment:
       - MONGO_URI=mongodb://mongodb:27017/kinefy
       - JWT_SECRET=${JWT_SECRET}
@@ -26,6 +22,7 @@ services:
       - EMAIL_PORT=${EMAIL_PORT}
       - EMAIL_USER=${EMAIL_USER}
       - EMAIL_PASS=${EMAIL_PASS}
+      - NODE_ENV=production
 
     depends_on:
       - mongodb
