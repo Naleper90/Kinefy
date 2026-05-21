@@ -36,27 +36,29 @@ En una base de datos NoSQL como MongoDB, si el contenedor se apaga, los datos se
 *Snippet del archivo Compose (fragmento MongoDB):*
 ```yaml
 services:
-  db:
+  mongodb:
     image: mongo:latest
-    ports:
-      - "27017:27017"
+    container_name: kinefy-db
     volumes:
-      - kinefy-data:/data/db # <--- Persistencia asegurada
+      - mongo-data:/data/db
+    networks:
+      - kinefy-network
 volumes:
-  kinefy-data:
+  mongo-data:
 ```
 
 ### 3. Dockerfile (Construcción de Imágenes)
-Para el Backend, se ha creado un `Dockerfile` que empaqueta el código fuente de Node.js.
+Para el Backend, se ha creado un `Dockerfile` que empaqueta el código fuente de Node.js de manera segura utilizando un usuario no root (`node`).
 
 *Snippet de `kinefy-backend/Dockerfile`:*
 ```dockerfile
 FROM node:18-alpine
 WORKDIR /app
-COPY package*.json ./
+COPY --chown=node:node package*.json ./
 RUN npm install
-COPY . .
-EXPOSE 3000
+COPY --chown=node:node . .
+USER node
+EXPOSE 5000
 CMD ["npm", "start"]
 ```
 
@@ -67,21 +69,21 @@ CMD ["npm", "start"]
 Una vez ejecutado el comando orquestador (`docker compose up -d`), se procede a verificar que las rutas y los puertos son accesibles y que la comunicación Frontend-Backend es operativa.
 
 ### 1. Comprobación de Puertos Públicos
-Se mapean los puertos principales hacia el *host*:
-*   Frontend (Nginx Reverse Proxy): `80`
-*   Backend API (Node/Express): `5000`
-*   Base de Datos NoSQL (MongoDB): `27017`
+Siguiendo las mejores prácticas de seguridad y para cumplir el criterio de "puertos limpios", únicamente se expone de forma pública al host el puerto del frontend (Nginx Reverse Proxy):
+*   Frontend (Nginx Reverse Proxy): `80` (Público al Host)
+*   Backend API (Node/Express): `5000` (Interno en red bridge)
+*   Base de Datos NoSQL (MongoDB): `27017` (Interno en red bridge)
 
 *Comando de verificación (Consola):*
 ```bash
-> docker ps
+> docker compose ps
 ```
 *Salida obtenida (Evidencia):*
 ```text
-CONTAINER ID   IMAGE                            COMMAND                  CREATED         STATUS         PORTS                                             NAMES
-585ca55412e3   kinefy-frontend                  "/docker-entrypoint.…"   2 minutes ago   Up 2 minutes   0.0.0.0:80->80/tcp, [::]:80->80/tcp               kinefy-web
-dd3da4d0e7ac   kinefy-backend                   "docker-entrypoint.s…"   2 minutes ago   Up 2 minutes   0.0.0.0:5000->5000/tcp, [::]:5000->5000/tcp       kinefy-api
-7b3dc457618f   mongo:latest                     "docker-entrypoint.s…"   25 hours ago    Up 2 minutes   0.0.0.0:27017->27017/tcp, [::]:27017->27017/tcp   kinefy-db
+NAME        IMAGE          COMMAND                  SERVICE   CREATED        STATUS       PORTS
+kinefy-db   mongo:latest   "docker-entrypoint.s…"   mongodb   38 hours ago   Up 9 hours   27017/tcp
+kinefy-api  kinefy-backend "docker-entrypoint.s…"   backend   38 hours ago   Up 9 hours   5000/tcp
+kinefy-web  nginx:alpine   "/docker-entrypoint.…"   frontend  38 hours ago   Up 9 hours   0.0.0.0:80->80/tcp, [::]:80->80/tcp
 ```
 *Explicación:* Los tres servicios están "Up" y escuchando correctamente peticiones desde la máquina anfitriona hacia los contenedores.
 
@@ -145,7 +147,7 @@ curl -I http://localhost
 curl -I http://localhost/api/auth/login
 # Esperado: HTTP/1.1 404 o 405 (llega al backend, Nginx redirige correctamente)
 # Ver logs del proxy en tiempo real
-docker logs kinefy-frontend -f
+docker logs kinefy-web -f
 ```
 
 ## Middlewares de seguridad y logs del backend
