@@ -1,15 +1,3 @@
-:root {
-  --color-brand: #81BAA5;
-  --color-brand-hover: #6BA38E;
-  --color-bg-paper: #FDFEFE;
-  --color-bg-alt: #F3F8F6;
-  --color-text-dark: #1A2E35;
-  --color-text-soft: #5A6B6D;
-  --color-text-link: #3B7A8E;
-  --color-sky-blue: #B4E1FF;
-  --color-input-bg: #F9FBFB;
-}
-
 .auth-page {
   margin: 0;
   height: 100vh;
@@ -17,12 +5,12 @@
   display: grid;
   grid-template-columns: 42fr 58fr;
   overflow: hidden;
-  background-color: var(--color-bg-paper);
+  background-color: var(--color-bg);
 }
 
 /* Panel de Identidad: El Elenco Artístico */
 .auth-page__identity {
-  background-color: var(--color-bg-alt);
+  background-color: var(--color-mint-pale);
   position: relative;
   display: flex;
   align-items: center;
