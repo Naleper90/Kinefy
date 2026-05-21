@@ -5245,3 +5245,711 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 }
 
+/* ==========================================================================
+   Dashboard Layout and Notifications Dropdown Refactoring (BEM)
+   ========================================================================== */
+
+.notifications-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 320px;
+  background: white;
+  border: 1px solid #F0F4F4;
+  border-radius: var(--radius-sm, 12px);
+  padding: 1.2rem;
+  box-shadow: var(--shadow-soft, 0 10px 40px rgba(0, 0, 0, 0.03));
+  margin-top: 0.5rem;
+  z-index: 10000;
+}
+
+.notifications-dropdown--user-menu {
+  width: 240px;
+}
+
+.notifications-dropdown__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.notifications-dropdown__title {
+  margin: 0;
+  color: var(--color-text-dark, #1A2E35);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.notifications-dropdown__close-btn {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  color: var(--color-text-soft, #5A6B6D);
+  cursor: pointer;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s;
+}
+
+.notifications-dropdown__close-btn:hover {
+  opacity: 0.7;
+}
+
+.notifications-dropdown__empty-text {
+  font-size: 0.85rem;
+  color: var(--color-text-soft, #5A6B6D);
+  text-align: center;
+  margin: 1rem 0;
+}
+
+.notifications-dropdown__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.notifications-dropdown__item {
+  padding: 0.75rem;
+  border-radius: var(--radius-sm, 12px);
+  background: transparent;
+  border: 1px solid #F0F4F4;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  text-align: left;
+}
+
+.notifications-dropdown__item--unread {
+  background: #F0FAF6;
+}
+
+.notifications-dropdown__item:hover {
+  background: #E8F5F1;
+}
+
+.notifications-dropdown__item-title {
+  margin: 0 0 4px 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--color-text-dark, #1A2E35);
+}
+
+.notifications-dropdown__item-message {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--color-text-soft, #5A6B6D);
+  line-height: 1.4;
+}
+
+.notifications-dropdown__item-date {
+  font-size: 0.65rem;
+  color: #A0AEC0;
+  margin-top: 4px;
+  display: block;
+}
+
+.notifications-dropdown__menu-list {
+  padding: 0.4rem 0;
+}
+
+.topbar__action-wrapper {
+  position: relative;
+}
+
+.topbar__notification-badge {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: #EF4444;
+  color: white;
+  font-size: 10px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid white;
+}
+
+.topbar__user--clickable {
+  cursor: pointer;
+}
+
+.topbar__avatar-img--mobile {
+  width: 36px;
+  height: 36px;
+}
+
+.topbar__avatar-sketchy--mobile {
+  width: 36px;
+  height: 36px;
+}
+
+.topbar__avatar-initials--mobile {
+  font-size: 0.8rem;
+}
+
+.layout__overlay-click-trap {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+}
+
+/* ==========================================================================
+   Reports Page & Modal Style Enhancements
+   ========================================================================== */
+.status-badge {
+  text-decoration: none;
+}
+
+.reports__list {
+  list-style: none;
+  padding: 0;
+}
+
+.reports__action-subtitle {
+  font-size: 0.95rem;
+  opacity: 0.8;
+  margin-bottom: 1.5rem;
+}
+
+.modal-card__header {
+  margin-bottom: 2rem;
+}
+
+.modal-card__cancel-btn {
+  margin-top: 2rem;
+  width: 100%;
+}
+
+/* ==========================================================================
+   Loader & Warning Modal Styles
+   ========================================================================== */
+.loader {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(85, 169, 138, 0.15);
+  border-top-color: var(--color-brand, #55A98A);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loader--centered {
+  margin: 0 auto 1rem;
+}
+
+.loader--margin-auto {
+  margin: 0 auto;
+}
+
+.modal-card--centered {
+  text-align: center;
+}
+
+.modal-card__warning-icon-wrapper {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #FDF2F2;
+  color: #E57373;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+}
+
+.modal-card__title {
+  margin-bottom: 0.8rem;
+}
+
+.modal-card__desc {
+  margin-bottom: 2rem;
+}
+
+.modal-card__actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.modal-card__action-btn {
+  flex: 1;
+  height: 48px;
+}
+
+.modal-card__action-btn--danger {
+  background: #E57373;
+  border-color: #E57373;
+  color: white;
+}
+
+.modal-card__action-btn--danger:hover {
+  background: #EF5350;
+  border-color: #EF5350;
+}
+
+/* ==========================================================================
+   Patient Exercises Styling & BEM Enhancements
+   ========================================================================== */
+.patient-exercises__loading-wrapper {
+  padding: 4rem;
+  text-align: center;
+}
+
+.patient-exercises__loading-text {
+  margin-top: 1.5rem;
+  color: #5A6B6D;
+}
+
+.patient-exercises__card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.patient-exercises__card-info {
+  flex: 1;
+}
+
+.patient-exercises__card-title {
+  margin: 0;
+  color: #1A2E35;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.patient-exercises__card-meta {
+  font-size: 0.8rem;
+  color: #5A6B6D;
+}
+
+.patient-exercises__checkbox {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: #E2E8F0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFF;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.patient-exercises__checkbox:hover {
+  transform: scale(1.05);
+}
+
+.patient-exercises__checkbox--completed {
+  background: #55A98A;
+}
+
+.patient-exercises__checkbox-check {
+  font-size: 0.9rem;
+}
+
+.patient-exercises__header-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+}
+
+.patient-exercises__title {
+  margin-top: 0.75rem;
+  margin-bottom: 0.25rem;
+}
+
+.patient-exercises__action-btn {
+  width: auto;
+  padding: 0 2rem;
+  height: 54px;
+}
+
+.patient-exercises__desc-col {
+  overflow-y: auto;
+  padding-right: 1rem;
+}
+
+.patient-exercises__section-label {
+  margin-bottom: 0.75rem;
+}
+
+.patient-exercises__instructions {
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: #1A2E35;
+  white-space: pre-wrap;
+}
+
+.patient-exercises__clinical-alert {
+  margin-top: 2.5rem;
+  padding: 1.5rem;
+  background: #F9FBFB;
+  border-radius: 20px;
+  border: 1px solid #F0F4F4;
+}
+
+.patient-exercises__clinical-alert-title {
+  margin: 0 0 0.5rem;
+  color: #55A98A;
+}
+
+.patient-exercises__clinical-alert-text {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #5A6B6D;
+}
+
+.patient-exercises__video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+}
+
+.patient-exercises__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.patient-exercises__empty-icon {
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+}
+
+.patient-exercises__empty-icon--small {
+  margin-bottom: 1rem;
+}
+
+.patient-exercises__empty-text {
+  color: #A0AEC0;
+  max-width: 200px;
+}
+
+.empty-state--flex-1 {
+  flex: 1;
+}
+
+/* ==========================================================================
+   Patient Detail Dropzone & Obfuscated Helpers
+   ========================================================================== */
+
+.clinical-value--obfuscated {
+  color: #7A8C8E;
+  font-size: 0.85rem;
+}
+
+.clinical-value__helper-text {
+  font-style: normal;
+  color: #B0BEC5;
+}
+
+.clinical-data-item--mt-sm {
+  margin-top: 0.5rem;
+}
+
+.meta-label--block {
+  margin-bottom: 0.6rem;
+  display: block;
+}
+
+.file-upload-dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1.5rem;
+  border: 2px dashed #C2DFD4;
+  border-radius: 20px;
+  background: #F4FAF8;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  color: #55A98A;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.file-upload-dropzone:hover {
+  background: #E8F5F1;
+  border-color: #55A98A;
+}
+
+.file-upload-dropzone__icon {
+  margin-bottom: 0.8rem;
+}
+
+.file-upload-dropzone__wrapper {
+  width: 100%;
+}
+
+.file-upload-dropzone__title {
+  margin: 0 0 0.3rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #1A2E35;
+}
+
+.file-upload-dropzone__filename {
+  margin: 0 0 0.4rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #1A2E35;
+  word-break: break-all;
+}
+
+.file-upload-dropzone__subtitle {
+  font-size: 0.75rem;
+  color: #7A8C8E;
+  font-weight: 500;
+}
+
+.file-upload-dropzone__subtitle--success {
+  color: #55A98A;
+  font-weight: 600;
+}
+
+.u-hidden {
+  display: none;
+}
+
+/* ==========================================================================
+   Dashboard Home and Patient Dashboard Cleanups
+   ========================================================================== */
+
+.status-badge--absolute-top-right {
+  position: absolute;
+  top: 1.2rem;
+  right: 1.2rem;
+}
+
+.appointment-card__meta-label {
+  color: var(--color-brand);
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.appointment-card__status-msg {
+  color: var(--color-text-soft);
+}
+
+.appointment-card__status-msg--completed {
+  color: var(--color-brand);
+}
+
+.appointment-card__body {
+  margin-top: 1.5rem;
+  flex: 1;
+}
+
+.appointment-card__icon-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+}
+
+.appointment-card__icon-box--active {
+  background: #EBF4FF;
+}
+
+.appointment-card__icon-box--completed {
+  background: var(--color-mint-pale);
+}
+
+.appointment-card__icon-box--default {
+  background: #F9FBFB;
+}
+
+.appointment-card__reason-text {
+  font-weight: 600;
+  color: var(--color-text-dark);
+}
+
+.appointment-card__time-section {
+  margin-top: 1.5rem;
+}
+
+.appointment-card__footer {
+  margin-top: 2.5rem;
+  display: flex;
+  gap: 1.2rem;
+}
+
+.appointment-card__btn-ghost {
+  flex: 1;
+}
+
+.appointment-card__btn-primary {
+  flex: 1.5;
+}
+
+.appointment-card__btn-primary--active {
+  background: #3182CE;
+  border-color: #3182CE;
+  box-shadow: 0 10px 25px rgba(49, 130, 206, 0.3);
+}
+
+.appointment-card__btn-primary--active:hover {
+  background: #2B6CB0;
+  border-color: #2B6CB0;
+}
+
+.appointment-card__btn-primary--completed {
+  background: var(--color-mint-pale);
+  color: var(--color-brand);
+  border-color: var(--color-mint-pale);
+  cursor: default;
+}
+
+.appointment-card__btn-primary--completed:hover {
+  background: var(--color-mint-pale);
+}
+
+.patient-list__empty {
+  text-align: center;
+  padding: 2rem;
+  color: var(--color-text-soft);
+  opacity: 0.5;
+}
+
+.dashboard-card--flex-column-h100 {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.card-label--spaced {
+  margin-bottom: 1.2rem;
+}
+
+.patient-list--scrollable {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: 320px;
+  padding-right: 6px;
+}
+
+.patient-item--appointment-today {
+  border-bottom: 1px solid #F0F4F2;
+  padding-bottom: 0.8rem;
+  margin-bottom: 0.8rem;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.appointment-today__container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 12px;
+}
+
+.appointment-today__time {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-brand);
+  width: 60px;
+  flex-shrink: 0;
+  background: #E8F5F1;
+  padding: 4px 0;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.appointment-today__info {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.appointment-today__patient-name {
+  font-weight: 600;
+  color: var(--color-text-dark);
+  font-size: 0.95rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.appointment-today__type {
+  font-size: 0.8rem;
+  color: var(--color-text-soft);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.appointment-today__actions {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-badge--small {
+  font-size: 0.75rem;
+  padding: 2px 8px;
+}
+
+.btn-ghost--small {
+  padding: 4px 8px;
+  font-size: 0.8rem;
+}
+
+.appointments-today-empty {
+  text-align: center;
+  padding: 3.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.appointments-today-empty__icon-container {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #E8F5F1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+  color: var(--color-brand);
+}
+
+.appointments-today-empty__title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-text-dark);
+  margin: 0 0 4px 0;
+}
+
+.appointments-today-empty__subtitle {
+  font-size: 0.8rem;
+  color: var(--color-text-soft);
+  margin: 0;
+}
+
+.patient-appt-form__disclaimer {
+  font-size: 0.8rem;
+  color: #5A6B6D;
+  margin: 0;
+}

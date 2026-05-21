@@ -117,7 +117,6 @@ const Appointments = () => {
         }
     };
 
-    // Sincroniza la agenda con la base de datos
     const fetchAppointments = async () => {
         try {
             setLoading(true);
@@ -290,7 +289,7 @@ const Appointments = () => {
                     </button>
                 </nav>
                 
-                <div className="patients-search" style={{ maxWidth: '300px', margin: '0 1rem' }}>
+                <div className="patients-search agenda-search-box">
                     <span className="patients-search__icon"><SearchIcon strokeWidth={2.5} /></span>
                     <input 
                         type="text" 
@@ -321,56 +320,32 @@ const Appointments = () => {
                             const dayAppts = appointments.filter(appt => appt.date === day.fullDate);
                             const hasPending = dayAppts.some(appt => appt.status === 'pendiente');
                             const hasActive = dayAppts.some(appt => appt.status === 'confirmada' || appt.status === 'en-curso');
-                            
                             return (
                                 <button 
                                     key={day.fullDate} 
                                     onClick={() => setSelectedDate(day.fullDate)} 
                                     className={`agenda-calendar__day ${selectedDate === day.fullDate ? 'agenda-calendar__day--selected' : ''}`}
-                                    style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '80px', paddingBottom: '0.8rem' }}
                                 >
                                     <span className="agenda-calendar__day-name">{day.name}</span>
                                     <span className="agenda-calendar__day-number">{day.number}</span>
                                     
-                                    {/* Indicadores de citas en agenda */}
-                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', position: 'absolute', bottom: '8px' }}>
+                                    <div className="agenda-calendar__dots-container">
                                         {day.isToday && (
                                             <span 
                                                 title="Hoy" 
-                                                style={{ 
-                                                    width: '6px', 
-                                                    height: '6px', 
-                                                    borderRadius: '50%', 
-                                                    background: selectedDate === day.fullDate ? '#FFFFFF' : 'var(--color-brand)', 
-                                                    display: 'inline-block',
-                                                    boxShadow: selectedDate === day.fullDate ? 'none' : '0 0 4px rgba(85,169,138,0.4)'
-                                                }}
+                                                className={`agenda-calendar__dot agenda-calendar__dot--today ${selectedDate === day.fullDate ? 'agenda-calendar__dot--selected' : ''}`}
                                             />
                                         )}
                                         {hasPending && (
                                             <span 
                                                 title="Solicitud pendiente" 
-                                                style={{ 
-                                                    width: '6px', 
-                                                    height: '6px', 
-                                                    borderRadius: '50%', 
-                                                    background: '#E57373', 
-                                                    display: 'inline-block',
-                                                    boxShadow: '0 0 4px rgba(229,115,115,0.6)'
-                                                }}
+                                                className="agenda-calendar__dot agenda-calendar__dot--pending"
                                             />
                                         )}
                                         {hasActive && (
                                             <span 
                                                 title="Citas programadas" 
-                                                style={{ 
-                                                    width: '6px', 
-                                                    height: '6px', 
-                                                    borderRadius: '50%', 
-                                                    background: selectedDate === day.fullDate ? '#FFFFFF' : '#55A98A', 
-                                                    display: 'inline-block',
-                                                    boxShadow: selectedDate === day.fullDate ? 'none' : '0 0 4px rgba(85,169,138,0.6)'
-                                                }}
+                                                className={`agenda-calendar__dot agenda-calendar__dot--active ${selectedDate === day.fullDate ? 'agenda-calendar__dot--selected' : ''}`}
                                             />
                                         )}
                                     </div>
@@ -424,7 +399,7 @@ const Appointments = () => {
                                 <BlobIcon color={getStatusStyle(appt.status).bg} />
                                 <span style={{ color: getStatusStyle(appt.status).color }}>{appt.patient[0]}</span>
                             </figure>
-                            <hgroup className="appt-card__info" onClick={() => navigate(`/dashboard/physio/patients/${appt.patientId}`)} style={{ cursor: 'pointer' }}>
+                            <hgroup className="appt-card__info appt-card__info--clickable" onClick={() => navigate(`/dashboard/physio/patients/${appt.patientId}`)}>
                                 <h4>{appt.patient}</h4>
                                 <span>{appt.type}</span>
                             </hgroup>
@@ -467,7 +442,7 @@ const Appointments = () => {
 
             {showDeleteConfirm && (
                 <div className="modal-overlay">
-                    <div className="modal-container--premium" style={{ maxWidth: '400px', padding: '2.5rem', textAlign: 'center' }}>
+                    <div className="modal-container--premium modal-container--premium-w400-center">
                         <div className="icon-wrapper--danger">
                             <WarningIcon />
                         </div>
@@ -519,16 +494,13 @@ const Appointments = () => {
                                                 ))}
                                             </div>
                                         )}
-                                    </div>
-
-                                    <div className="clinical-input-group" style={{ marginBottom: '1.5rem' }}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.6rem' }}>
-                                            <label className="meta-label meta-label--brand" style={{ margin: 0 }}>Fecha de Inicio</label>
+                                                               <div className="clinical-input-group clinical-input-group--mb-lg">
+                                        <div className="clinical-input-group__header">
+                                            <label className="meta-label meta-label--brand meta-label--no-margin">Fecha de Inicio</label>
                                             <button 
                                                 type="button" 
-                                                className="link-btn" 
+                                                className="link-btn clinical-input-group__link-btn" 
                                                 onClick={() => setCustomDateMode(!customDateMode)}
-                                                style={{ background: 'none', border: 'none', color: 'var(--color-brand)', fontWeight: '700', fontSize: '0.75rem', cursor: 'pointer', textDecoration: 'underline', padding: 0 }}
                                             >
                                                 {customDateMode ? "Ver calendario rápido" : "Elegir otra fecha"}
                                             </button>
@@ -540,7 +512,7 @@ const Appointments = () => {
                                                 onSelectDate={date => setNewApptData({...newApptData, fecha: date})} 
                                             />
                                         ) : (
-                                            <div style={{ display: 'flex', gap: '0.6rem', overflowX: 'auto', padding: '0.4rem 0.2rem', scrollbarWidth: 'none', msOverflowStyle: 'none' }} className="no-scrollbar">
+                                            <div className="no-scrollbar date-btn-container">
                                                 {getNextDays().map((d, index) => {
                                                     const isoStr = d.toISOString().split('T')[0];
                                                     const isSelected = newApptData.fecha === isoStr;
@@ -549,29 +521,15 @@ const Appointments = () => {
                                                             key={index}
                                                             type="button"
                                                             onClick={() => setNewApptData(prev => ({ ...prev, fecha: isoStr }))}
-                                                            style={{
-                                                                flex: '0 0 68px',
-                                                                height: '84px',
-                                                                borderRadius: '16px',
-                                                                background: isSelected ? 'var(--color-brand)' : '#F4FAF8',
-                                                                color: isSelected ? '#FFFFFF' : '#1A2E35',
-                                                                border: isSelected ? 'none' : '1px solid #C2DFD4',
-                                                                display: 'flex',
-                                                                flexDirection: 'column',
-                                                                alignItems: 'center',
-                                                                justifyContent: 'center',
-                                                                cursor: 'pointer',
-                                                                transition: 'all 0.2s ease',
-                                                                padding: '0.4rem 0.2rem'
-                                                            }}
+                                                            className={`date-btn-select ${isSelected ? 'date-btn-select--selected' : ''}`}
                                                         >
-                                                            <span style={{ fontSize: '0.65rem', fontWeight: '700', textTransform: 'uppercase', color: isSelected ? '#E2F1EC' : '#7A8C8E' }}>
+                                                            <span className="date-btn-select__weekday">
                                                                 {d.toLocaleDateString('es-ES', { weekday: 'short' })}
                                                             </span>
-                                                            <span style={{ fontSize: '1.3rem', fontWeight: '800', marginTop: '0.1rem', lineHeight: '1.2' }}>
+                                                            <span className="date-btn-select__day">
                                                                 {d.getDate()}
                                                             </span>
-                                                            <span style={{ fontSize: '0.6rem', fontWeight: '600', color: isSelected ? '#E2F1EC' : '#7A8C8E', marginTop: '0.1rem' }}>
+                                                            <span className="date-btn-select__month">
                                                                 {d.toLocaleDateString('es-ES', { month: 'short' })}
                                                             </span>
                                                         </button>
@@ -580,26 +538,25 @@ const Appointments = () => {
                                             </div>
                                         )}
                                     </div>
-                                    <div className="clinical-input-group" style={{ marginBottom: '1.5rem' }}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.6rem' }}>
-                                            <label className="meta-label meta-label--brand" style={{ margin: 0 }}>Hora</label>
+                                    <div className="clinical-input-group clinical-input-group--mb-lg">
+                                        <div className="clinical-input-group__header">
+                                            <label className="meta-label meta-label--brand meta-label--no-margin">Hora</label>
                                             <button 
                                                 type="button" 
-                                                className="link-btn" 
+                                                className="link-btn clinical-input-group__link-btn" 
                                                 onClick={() => setCustomTimeMode(!customTimeMode)}
-                                                style={{ background: 'none', border: 'none', color: 'var(--color-brand)', fontWeight: '700', fontSize: '0.75rem', cursor: 'pointer', textDecoration: 'underline', padding: 0 }}
                                             >
                                                 {customTimeMode ? "Ver turnos rápidos" : "Elegir otra hora"}
                                             </button>
                                         </div>
-
+ 
                                         {customTimeMode ? (
                                             <CustomTimePicker 
                                                 selectedTime={newApptData.hora} 
                                                 onSelectTime={time => setNewApptData({...newApptData, hora: time})} 
                                             />
                                         ) : (
-                                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '0.5rem' }}>
+                                            <div className="hour-btn-grid">
                                                 {[
                                                     '09:00', '10:00', '11:00', '12:00', '13:00',
                                                     '16:00', '17:00', '18:00', '19:00', '20:00'
@@ -610,18 +567,7 @@ const Appointments = () => {
                                                             key={idx}
                                                             type="button"
                                                             onClick={() => setNewApptData(prev => ({ ...prev, hora: time }))}
-                                                            style={{
-                                                                padding: '0.6rem 0.2rem',
-                                                                borderRadius: '12px',
-                                                                background: isSelected ? 'var(--color-brand)' : '#FFFFFF',
-                                                                color: isSelected ? '#FFFFFF' : '#1A2E35',
-                                                                border: isSelected ? 'none' : '1.5px solid #E2E8F0',
-                                                                fontWeight: '700',
-                                                                fontSize: '0.8rem',
-                                                                cursor: 'pointer',
-                                                                transition: 'all 0.2s ease',
-                                                                textAlign: 'center'
-                                                            }}
+                                                            className={`hour-btn-select ${isSelected ? 'hour-btn-select--selected' : ''}`}
                                                         >
                                                             {time}
                                                         </button>
@@ -629,7 +575,7 @@ const Appointments = () => {
                                                 })}
                                             </div>
                                         )}
-                                    </div>
+                                    </div>               </div>
 
                                     <div className="clinical-input-group">
                                         <label className="meta-label meta-label--brand">Motivo de Sesión</label>
@@ -656,7 +602,7 @@ const Appointments = () => {
                                                     ))}
                                                 </div>
                                                 <div className="clinical-input-group mt-3">
-                                                    <label className="meta-label--mini" style={{ marginBottom: '0.5rem', display: 'block' }}>Finalizar ciclo el día</label>
+                                                    <label className="meta-label--mini meta-label--block">Finalizar ciclo el día</label>
                                                     <CustomCalendar 
                                                         selectedDate={recurringEndDate} 
                                                         onSelectDate={date => setRecurringEndDate(date)} 

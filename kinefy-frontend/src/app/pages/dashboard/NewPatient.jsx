@@ -61,18 +61,17 @@ const NewPatient = () => {
                 </article>
             )}
 
-            <header className="clinical-page-header" style={{ textAlign: 'left', marginBottom: '3rem' }}>
+            <header className="clinical-page-header">
                 <button 
                     onClick={() => navigate('/dashboard/physio/patients')} 
-                    className="btn-back" 
-                    style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1.5rem', padding: '0', background: 'none', border: 'none', color: 'var(--color-brand)', cursor: 'pointer' }}
+                    className="clinical-page-header__back-btn" 
                 >
                     <ArrowLeftIcon />
-                    <span style={{ fontWeight: '600' }}>Volver al Listado</span>
+                    <span>Volver al Listado</span>
                 </button>
                 <div className="clinical-page-header__info">
-                    <h1 className="home-header__title" style={{ textAlign: 'left', fontSize: '3rem', margin: '0 0 0.5rem 0' }}>Registro Clínico</h1>
-                    <p className="home-header__subtitle" style={{ textAlign: 'left', margin: 0 }}>Apertura de nuevo historial médico y credenciales de acceso.</p>
+                    <h1 className="clinical-page-header__title">Registro Clínico</h1>
+                    <p className="clinical-page-header__subtitle">Apertura de nuevo historial médico y credenciales de acceso.</p>
                 </div>
             </header>
 
@@ -202,7 +201,6 @@ const NewPatient = () => {
                                 placeholder="Describa el historial del paciente, alergias, o cirugías previas..."
                                 value={formData.notas}
                                 onChange={e => setFormData({...formData, notas: e.target.value})}
-                                style={{ minHeight: '120px' }}
                             />
                         </div>
 
@@ -217,7 +215,7 @@ const NewPatient = () => {
                                     {selectedFiles.length > 0 ? `${selectedFiles.length} archivos preparados` : 'Subir pruebas o informes'}
                                 </p>
                                 <span className="dropzone__subtext">Click para seleccionar archivos</span>
-                                <input id="file-upload" type="file" multiple style={{ display: 'none' }} onChange={handleFileChange} />
+                                <input id="file-upload" type="file" multiple className="u-hidden" onChange={handleFileChange} />
                             </div>
                         </div>
                     </fieldset>
@@ -234,43 +232,29 @@ const NewPatient = () => {
             {tempPassword && createPortal(
                 <div className="modal-overlay animate-in">
                     <article 
-                        className="modal-container modal-container--small"
+                        className="modal-container modal-container--small modal-container--w400"
                         onClick={(e) => e.stopPropagation()}
-                        style={{ maxWidth: '400px' }}
                     >
                         <header className="modal-header">
                             <hgroup>
-                                <h2 className="modal-title" style={{ color: '#55A98A' }}>Ficha Creada</h2>
+                                <h2 className="modal-title modal-title--success">Ficha Creada</h2>
                                 <p className="modal-subtitle">Se han generado las credenciales de acceso.</p>
                             </hgroup>
                         </header>
                         
-                        <div className="modal-content" style={{ textAlign: 'center', padding: '1.5rem 0' }}>
-                            <p style={{ fontSize: '0.95rem', color: '#4A5568', marginBottom: '1.2rem', lineHeight: '1.5' }}>
+                        <div className="modal-content modal-content--center-pad">
+                            <p className="modal-content__description">
                                 Se ha creado la ficha clínica del paciente y enviado una contraseña temporal por correo electrónico.
                             </p>
-                            <p style={{ fontSize: '0.85rem', fontWeight: '700', color: '#7A8C8E', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '0.5rem' }}>
+                            <p className="modal-content__label">
                                 Contraseña Temporal de Acceso:
                             </p>
-                            <div style={{
-                                background: '#F4FAF8',
-                                border: '2px dashed #55A98A',
-                                padding: '1rem',
-                                borderRadius: '12px',
-                                fontSize: '1.6rem',
-                                fontFamily: 'monospace',
-                                fontWeight: 'bold',
-                                color: '#1A2E35',
-                                letterSpacing: '2px',
-                                userSelect: 'all',
-                                margin: '0.5rem 0 1.5rem'
-                            }}>
+                            <div className="modal-content__temp-pwd">
                                 {tempPassword}
                             </div>
                             <button 
                                 type="button" 
-                                className="btn-primary" 
-                                style={{ width: '100%', padding: '0.8rem', borderRadius: '10px' }} 
+                                className="btn-primary modal-content__btn-submit" 
                                 onClick={() => {
                                     setTempPassword(null);
                                     navigate('/dashboard/physio/patients');

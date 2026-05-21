@@ -69,37 +69,29 @@ const DashboardLayout = ({
     const unreadCount = notifications.filter(n => !n.leida).length;
 
     const renderNotificationsDropdown = () => (
-        <div className="notifications-dropdown animate-in" style={{ zIndex: 10000 }}>
-            <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                <h4 style={{ margin: 0, color: '#1A2E35' }}>Notificaciones</h4>
+        <div className="notifications-dropdown animate-in">
+            <header className="notifications-dropdown__header">
+                <h4 className="notifications-dropdown__title">Notificaciones</h4>
                 <button 
                     onClick={(e) => { e.stopPropagation(); setShowNotifications(false); }}
-                    style={{ background: 'none', border: 'none', fontSize: '1.2rem', color: '#5A6B6D', cursor: 'pointer', padding: '5px' }}
+                    className="notifications-dropdown__close-btn"
                 >
                     ✕
                 </button>
             </header>
             {notifications.length === 0 ? (
-                <p style={{ fontSize: '0.85rem', color: '#5A6B6D', textAlign: 'center' }}>No tienes notificaciones</p>
+                <p className="notifications-dropdown__empty-text">No tienes notificaciones</p>
             ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                <div className="notifications-dropdown__list">
                     {notifications.map(n => (
                         <div 
                             key={n._id} 
                             onClick={() => handleNotificationClick(n)}
-                            onMouseEnter={e => e.currentTarget.style.background = '#E8F5F1'}
-                            onMouseLeave={e => e.currentTarget.style.background = n.leida ? 'transparent' : '#F0FAF6'}
-                            style={{ 
-                                padding: '0.75rem', borderRadius: '12px', 
-                                background: n.leida ? 'transparent' : '#F0FAF6',
-                                border: '1px solid #F0F4F4',
-                                cursor: 'pointer',
-                                transition: 'background 0.2s ease'
-                            }}
+                            className={`notifications-dropdown__item ${n.leida ? '' : 'notifications-dropdown__item--unread'}`}
                         >
-                            <p style={{ margin: '0 0 4px 0', fontSize: '0.85rem', fontWeight: '700', color: '#1A2E35' }}>{n.titulo}</p>
-                            <p style={{ margin: 0, fontSize: '0.75rem', color: '#5A6B6D' }}>{n.mensaje}</p>
-                            <span style={{ fontSize: '0.65rem', color: '#A0AEC0', marginTop: '4px', display: 'block' }}>
+                            <p className="notifications-dropdown__item-title">{n.titulo}</p>
+                            <p className="notifications-dropdown__item-message">{n.mensaje}</p>
+                            <span className="notifications-dropdown__item-date">
                                 {new Date(n.createdAt).toLocaleString()}
                             </span>
                         </div>
@@ -110,12 +102,12 @@ const DashboardLayout = ({
     );
 
     const renderUserMenuDropdown = () => (
-        <div className="notifications-dropdown animate-in" style={{ zIndex: 10000, width: '240px' }}>
+        <div className="notifications-dropdown notifications-dropdown--user-menu animate-in">
             <div className="dropdown-header">
                 <p className="dropdown-user-name">{user.name}</p>
                 <p className="dropdown-user-role">{user.role || 'Profesional'}</p>
             </div>
-            <div style={{ padding: '0.4rem 0' }}>
+            <div className="notifications-dropdown__menu-list">
                 <button 
                     className="user-menu-item"
                     onClick={() => setShowUserMenu(false)}
@@ -140,7 +132,7 @@ const DashboardLayout = ({
             <header className="mobile-header">
                 <KinefyLogo className="mobile-header__logo" />
                 <div className="mobile-header__actions">
-                    <div style={{ position: 'relative' }}>
+                    <div className="topbar__action-wrapper">
                         <button 
                             className="topbar__btn" 
                             aria-label="Notificaciones"
@@ -152,13 +144,7 @@ const DashboardLayout = ({
                         >
                             <BellIcon className="topbar__icon" />
                             {unreadCount > 0 && (
-                                <span style={{ 
-                                    position: 'absolute', top: '5px', right: '5px', 
-                                    background: '#EF4444', color: 'white', fontSize: '10px', 
-                                    width: '16px', height: '16px', borderRadius: '50%', 
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                    border: '2px solid white'
-                                }}>
+                                <span className="topbar__notification-badge">
                                     {unreadCount}
                                 </span>
                             )}
@@ -166,21 +152,20 @@ const DashboardLayout = ({
                         {showNotifications && renderNotificationsDropdown()}
                     </div>
 
-                    <div style={{ position: 'relative' }}>
+                    <div className="topbar__action-wrapper">
                         <article 
-                            className="topbar__user" 
-                            style={{ width: '36px', height: '36px', cursor: 'pointer' }}
+                            className="topbar__user topbar__user--mobile topbar__user--clickable" 
                             onClick={() => {
                                 setShowUserMenu(!showUserMenu);
                                 setShowNotifications(false);
                             }}
                         >
                             {user.avatar ? (
-                                <img src={user.avatar} alt={user.name} style={{ width: '36px', height: '36px', borderRadius: '50%', objectFit: 'cover' }} />
+                                <img src={user.avatar} alt={user.name} className="topbar__avatar-img topbar__avatar-img--mobile" />
                             ) : (
-                                <figure className="topbar__avatar-sketchy" style={{ width: '36px', height: '36px' }}>
+                                <figure className="topbar__avatar-sketchy topbar__avatar-sketchy--mobile">
                                     <BlobIcon className="topbar__avatar-blob" color={user.color || '#E8F5F1'} />
-                                    <span className="topbar__avatar-initials" style={{ fontSize: '0.8rem' }}>
+                                    <span className="topbar__avatar-initials topbar__avatar-initials--mobile">
                                         {user.initials || user.name.charAt(0)}
                                     </span>
                                 </figure>
@@ -207,7 +192,7 @@ const DashboardLayout = ({
                     </form>
                     
                     <nav className="topbar__actions" aria-label="Acciones de usuario">
-                        <div style={{ position: 'relative' }}>
+                        <div className="topbar__action-wrapper">
                             <button 
                                 className="topbar__btn" 
                                 aria-label="Notificaciones"
@@ -219,13 +204,7 @@ const DashboardLayout = ({
                             >
                                 <BellIcon className="topbar__icon" />
                                 {unreadCount > 0 && (
-                                    <span style={{ 
-                                        position: 'absolute', top: '5px', right: '5px', 
-                                        background: '#EF4444', color: 'white', fontSize: '10px', 
-                                        width: '16px', height: '16px', borderRadius: '50%', 
-                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                        border: '2px solid white'
-                                    }}>
+                                    <span className="topbar__notification-badge">
                                         {unreadCount}
                                     </span>
                                 )}
@@ -233,10 +212,9 @@ const DashboardLayout = ({
                             {showNotifications && renderNotificationsDropdown()}
                         </div>
 
-                        <div style={{ position: 'relative' }}>
+                        <div className="topbar__action-wrapper">
                             <article 
-                                className="topbar__user" 
-                                style={{ cursor: 'pointer' }}
+                                className="topbar__user topbar__user--clickable" 
                                 onClick={() => {
                                     setShowUserMenu(!showUserMenu);
                                     setShowNotifications(false);
@@ -260,7 +238,7 @@ const DashboardLayout = ({
 
                 {(showNotifications || showUserMenu) && (
                     <div 
-                        style={{ position: 'fixed', inset: 0, zIndex: 9999 }} 
+                        className="layout__overlay-click-trap" 
                         onClick={() => {
                             setShowNotifications(false);
                             setShowUserMenu(false);

@@ -117,7 +117,7 @@ const PatientDetail = () => {
         }
     };
 
-    // (eliminado: handleResetPassword auto-generación — ahora la contraseña se edita en el formulario)
+
 
     const handleResetPassword = async () => {
         setShowConfirmReset(false);
@@ -365,8 +365,8 @@ const PatientDetail = () => {
                                         autoComplete="new-password"
                                     />
                                 ) : (
-                                    <span className="clinical-value" style={{ color: '#7A8C8E', fontSize: '0.85rem' }}>
-                                        ••••••••  <em style={{ fontStyle: 'normal', color: '#B0BEC5' }}>(edita la ficha para cambiarla)</em>
+                                    <span className="clinical-value clinical-value--obfuscated">
+                                        ••••••••  <em className="clinical-value__helper-text">(edita la ficha para cambiarla)</em>
                                     </span>
                                 )}
                             </dd>
@@ -551,53 +551,37 @@ const PatientDetail = () => {
                                     <label className="meta-label">Nombre del Documento</label>
                                     <input className="dashboard__input" placeholder="Ej: Resonancia Rodilla" value={newDoc.nombre || ''} onChange={e => setNewDoc({...newDoc, nombre: e.target.value})} />
                                 </div>
-                                <div className="clinical-data-item" style={{ marginTop: '0.5rem' }}>
-                                    <label className="meta-label" style={{ marginBottom: '0.6rem', display: 'block' }}>Archivo / Documento</label>
+                                <div className="clinical-data-item clinical-data-item--mt-sm">
+                                    <label className="meta-label meta-label--block">Archivo / Documento</label>
                                     <label 
                                         htmlFor="doc-upload-input" 
-                                        style={{
-                                            display: 'flex',
-                                            flexDirection: 'column',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            padding: '2.5rem 1.5rem',
-                                            border: '2px dashed #C2DFD4',
-                                            borderRadius: '20px',
-                                            background: '#F4FAF8',
-                                            cursor: 'pointer',
-                                            transition: 'all 0.3s ease',
-                                            textAlign: 'center',
-                                            color: '#55A98A',
-                                            width: '100%',
-                                            boxSizing: 'border-box'
-                                        }}
                                         className="file-upload-dropzone"
                                     >
-                                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginBottom: '0.8rem' }}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="file-upload-dropzone__icon"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
                                         {uploading ? (
-                                            <div>
-                                                <p style={{ margin: '0 0 0.3rem', fontWeight: '700', fontSize: '0.95rem', color: '#1A2E35' }}>
+                                            <div className="file-upload-dropzone__wrapper">
+                                                <p className="file-upload-dropzone__title">
                                                     Subiendo archivo...
                                                 </p>
-                                                <span style={{ fontSize: '0.75rem', color: '#55A98A', fontWeight: '600' }}>
+                                                <span className="file-upload-dropzone__subtitle file-upload-dropzone__subtitle--success">
                                                     Por favor, espera un momento
                                                 </span>
                                             </div>
                                         ) : newDoc.url ? (
-                                            <div style={{ width: '100%' }}>
-                                                <p style={{ margin: '0 0 0.4rem', fontWeight: '700', fontSize: '0.95rem', color: '#1A2E35', wordBreak: 'break-all' }}>
+                                            <div className="file-upload-dropzone__wrapper">
+                                                <p className="file-upload-dropzone__filename">
                                                     {newDoc.url.split('/').pop().replace(/^\d+-/, '')}
                                                 </p>
-                                                <span style={{ fontSize: '0.75rem', color: '#55A98A', fontWeight: '600' }}>
+                                                <span className="file-upload-dropzone__subtitle file-upload-dropzone__subtitle--success">
                                                     ¡Archivo listo! Haz clic aquí para cambiarlo
                                                 </span>
                                             </div>
                                         ) : (
-                                            <div>
-                                                <p style={{ margin: '0 0 0.3rem', fontWeight: '700', fontSize: '0.95rem', color: '#1A2E35' }}>
+                                            <div className="file-upload-dropzone__wrapper">
+                                                <p className="file-upload-dropzone__title">
                                                     Elige un archivo o arrástralo aquí
                                                 </p>
-                                                <span style={{ fontSize: '0.75rem', color: '#7A8C8E', fontWeight: '500' }}>
+                                                <span className="file-upload-dropzone__subtitle">
                                                     PDF, DOC, DOCX hasta 10MB
                                                 </span>
                                             </div>
@@ -608,7 +592,7 @@ const PatientDetail = () => {
                                         type="file" 
                                         required 
                                         onChange={handleDocUpload}
-                                        style={{ display: 'none' }}
+                                        className="u-hidden"
                                         accept=".pdf,.doc,.docx"
                                     />
                                 </div>

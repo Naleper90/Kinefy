@@ -44,9 +44,9 @@ const PatientExercises = () => {
     };
 
     if (loading) return (
-        <div style={{ padding: '4rem', textAlign: 'center' }}>
-            <div className="loader" style={{ margin: '0 auto' }}></div>
-            <p style={{ marginTop: '1.5rem', color: '#5A6B6D' }}>Cargando tu plan de ejercicios...</p>
+        <div className="patient-exercises__loading-wrapper">
+            <div className="loader loader--margin-auto"></div>
+            <p className="patient-exercises__loading-text">Cargando tu plan de ejercicios...</p>
         </div>
     );
 
@@ -66,21 +66,16 @@ const PatientExercises = () => {
                             onClick={() => setSelectedExercise(ex)}
                             className={`patient-exercises__card ${selectedExercise?._id === ex._id ? 'patient-exercises__card--active' : ''}`}
                         >
-                            <div className="flex-between align-center">
-                                <div style={{ flex: 1 }}>
-                                    <h4 style={{ margin: 0, color: '#1A2E35', fontSize: '1rem', fontWeight: '700' }}>{ex.nombre}</h4>
-                                    <span style={{ fontSize: '0.8rem', color: '#5A6B6D' }}>{ex.series}</span>
+                            <div className="patient-exercises__card-header">
+                                <div className="patient-exercises__card-info">
+                                    <h4 className="patient-exercises__card-title">{ex.nombre}</h4>
+                                    <span className="patient-exercises__card-meta">{ex.series}</span>
                                 </div>
                                 <div 
                                     onClick={(e) => { e.stopPropagation(); toggleExercise(ex._id); }}
-                                    style={{ 
-                                        width: '28px', height: '28px', borderRadius: '8px', 
-                                        background: ex.completado ? '#55A98A' : '#E2E8F0',
-                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                        color: '#FFF', transition: 'all 0.2s'
-                                    }}
+                                    className={`patient-exercises__checkbox ${ex.completado ? 'patient-exercises__checkbox--completed' : ''}`}
                                 >
-                                    {ex.completado && <span style={{ fontSize: '0.9rem' }}>✓</span>}
+                                    {ex.completado && <span className="patient-exercises__checkbox-check">✓</span>}
                                 </div>
                             </div>
                         </article>
@@ -95,31 +90,30 @@ const PatientExercises = () => {
             <section className="patient-exercises__content">
                 {selectedExercise ? (
                     <>
-                        <div className="patient-exercises__header-flex flex-between align-start mb-4">
+                        <div className="patient-exercises__header-flex">
                             <div>
                                 <span className="status-badge status-badge--done">Instrucciones de tu Fisio</span>
-                                <h2 className="card-title-big mt-3 mb-1">{selectedExercise.nombre}</h2>
+                                <h2 className="card-title-big patient-exercises__title">{selectedExercise.nombre}</h2>
                                 <p className="card-subtitle">Objetivo: {selectedExercise.series}</p>
                             </div>
                             <button 
                                 onClick={() => toggleExercise(selectedExercise._id)}
-                                className={selectedExercise.completado ? "btn-ghost" : "btn-primary"}
-                                style={{ width: 'auto', padding: '0 2rem', height: '54px' }}
+                                className={selectedExercise.completado ? "btn-ghost patient-exercises__action-btn" : "btn-primary patient-exercises__action-btn"}
                             >
                                 {selectedExercise.completado ? "Completado ✓" : "Marcar como hecho"}
                             </button>
                         </div>
 
                         <div className="patient-exercises__grid">
-                            <div style={{ overflowY: 'auto', paddingRight: '1rem' }}>
-                                <h4 className="meta-label mb-3">Cómo realizar el ejercicio</h4>
-                                <div style={{ fontSize: '1.05rem', lineHeight: '1.8', color: '#1A2E35', whiteSpace: 'pre-wrap' }}>
+                            <div className="patient-exercises__desc-col">
+                                <h4 className="meta-label patient-exercises__section-label">Cómo realizar el ejercicio</h4>
+                                <div className="patient-exercises__instructions">
                                     {selectedExercise.descripcion || "Tu fisioterapeuta no ha añadido instrucciones específicas para este ejercicio, pero recuerda seguir las indicaciones dadas en consulta."}
                                 </div>
                                 
-                                <div style={{ marginTop: '2.5rem', padding: '1.5rem', background: '#F9FBFB', borderRadius: '20px', border: '1px solid #F0F4F4' }}>
-                                    <h5 style={{ margin: '0 0 0.5rem', color: '#55A98A' }}>Recordatorio Clínico</h5>
-                                    <p style={{ margin: 0, fontSize: '0.9rem', color: '#5A6B6D' }}>Si sientes dolor agudo durante la ejecución, detén el ejercicio y consulta con tu profesional en la próxima cita.</p>
+                                <div className="patient-exercises__clinical-alert">
+                                    <h5 className="patient-exercises__clinical-alert-title">Recordatorio Clínico</h5>
+                                    <p className="patient-exercises__clinical-alert-text">Si sientes dolor agudo durante la ejecución, detén el ejercicio y consulta con tu profesional en la próxima cita.</p>
                                 </div>
                             </div>
 
@@ -139,23 +133,23 @@ const PatientExercises = () => {
                                         <video 
                                             src={selectedExercise.mediaUrl} 
                                             controls 
-                                            style={{ width: '100%', height: '100%', objectFit: 'contain', background: '#000' }}
+                                            className="patient-exercises__video"
                                         />
                                     ) : (
-                                        <img src={selectedExercise.mediaUrl} alt={selectedExercise.nombre} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                        <img src={selectedExercise.mediaUrl} alt={selectedExercise.nombre} className="patient-exercises__image" />
                                     )
                                 ) : (
                                     <div className="empty-state--centered">
-                                        <div style={{ fontSize: '4rem', marginBottom: '1.5rem' }}>🧘‍♂️</div>
-                                        <p style={{ color: '#A0AEC0', maxWidth: '200px' }}>Sin contenido multimedia asignado</p>
+                                        <div className="patient-exercises__empty-icon">🧘‍♂️</div>
+                                        <p className="patient-exercises__empty-text">Sin contenido multimedia asignado</p>
                                     </div>
                                 )}
                             </div>
                         </div>
                     </>
                 ) : (
-                    <div className="empty-state--centered" style={{ flex: 1 }}>
-                        <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>👋</div>
+                    <div className="empty-state--centered empty-state--flex-1">
+                        <div className="patient-exercises__empty-icon patient-exercises__empty-icon--small">👋</div>
                         <h3 className="card-title-big">Selecciona un ejercicio</h3>
                         <p className="card-subtitle">Pulsa en la lista para ver los detalles.</p>
                     </div>

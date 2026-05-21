@@ -57,9 +57,9 @@ const PatientEvolution = () => {
     };
 
     if (loading) return (
-        <div style={{ padding: '4rem', textAlign: 'center' }}>
-            <div className="loader" style={{ margin: '0 auto 1.5rem' }}></div>
-            <p style={{ color: '#5A6B6D', fontWeight: '500' }}>Cargando tu evolución clínica...</p>
+        <div className="evolution-loading">
+            <div className="loader loader--centered-margin"></div>
+            <p className="evolution-loading__text">Cargando tu evolución clínica...</p>
         </div>
     );
 
@@ -115,7 +115,7 @@ const PatientEvolution = () => {
                 </article>
             )}
 
-            <header className="home-header" style={{ marginBottom: '2.5rem' }}>
+            <header className="home-header evolution-header">
                 <hgroup className="home-header__info">
                     <h1 className="home-header__title">Mi Evolución Clínica</h1>
                     <p className="home-header__subtitle">Registra tu estado diario (Escala EVA) y analiza tus tendencias de recuperación.</p>
@@ -124,12 +124,12 @@ const PatientEvolution = () => {
 
             <section className="dashboard-grid dashboard-grid--home">
                 {/* COLUMNA 1: GRÁFICO Y REGISTRO */}
-                <section className="grid-col" style={{ gridColumn: 'span 2' }}>
+                <section className="grid-col evolution-card-grid-span2">
                     <h2 className="grid-col__title">Histórico de Dolor (Escala EVA)</h2>
-                    <article className="dashboard-card" style={{ padding: '2rem 1.5rem', background: '#FFFFFF', border: '1px solid #EBF0F0' }}>
+                    <article className="dashboard-card evolution-card--chart">
                         {pts.length > 0 ? (
                             <div>
-                                <div style={{ position: 'relative', width: '100%', height: `${svgH}px`, margin: '1rem 0' }}>
+                                <div className="evolution-chart__container" style={{ height: `${svgH}px` }}>
                                     <svg width="100%" height={svgH} viewBox={`0 0 ${svgW} ${svgH}`} preserveAspectRatio="none">
                                         <defs>
                                             <linearGradient id="painGrad" x1="0" y1="0" x2="0" y2="1">
@@ -195,49 +195,37 @@ const PatientEvolution = () => {
                                         ))}
                                     </svg>
                                 </div>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0 0.5rem', marginTop: '0.8rem' }}>
+                                <div className="evolution-chart__x-axis">
                                     {pts.map((p, idx) => (
-                                        <span key={idx} style={{ fontSize: '0.7rem', color: '#718096', fontWeight: '700', textTransform: 'uppercase' }}>
+                                        <span key={idx} className="evolution-chart__date">
                                             {p.date}
                                         </span>
                                     ))}
                                 </div>
                             </div>
                         ) : (
-                            <p style={{ textAlign: 'center', padding: '2rem 0', color: '#718096' }}>No hay registros de dolor registrados aún. Envía tu primer diario abajo.</p>
+                            <p className="evolution-chart__empty">No hay registros de dolor registrados aún. Envía tu primer diario abajo.</p>
                         )}
                     </article>
 
                     {/* REGISTRO DIARIO */}
-                    <h2 className="grid-col__title" style={{ marginTop: '2.5rem' }}>Registrar Diario Clínico de Hoy</h2>
+                    <h2 className="grid-col__title evolution-section-title">Registrar Diario Clínico de Hoy</h2>
                     <article className="dashboard-card">
                         {!submitted ? (
-                            <form className="pain-form" onSubmit={handleSubmitDiary} style={{ padding: '0.5rem' }}>
-                                <span className="meta-label" style={{ marginBottom: '1rem', display: 'block' }}>¿Qué nivel de dolor experimentas hoy?</span>
+                            <form className="pain-form pain-form--padding" onSubmit={handleSubmitDiary}>
+                                <span className="meta-label pain-form__label--block">¿Qué nivel de dolor experimentas hoy?</span>
                                 
                                 {/* Botones del 0 al 10 */}
-                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem', justifyContent: 'space-between', marginBottom: '1.8rem' }}>
+                                <div className="pain-scale__container">
                                     {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
                                         <button
                                             type="button"
                                             key={num}
                                             onClick={() => setPainLevel(num)}
+                                            className={`pain-scale__btn ${painLevel === num ? 'pain-scale__btn--active' : ''}`}
                                             style={{
-                                                width: '40px',
-                                                height: '40px',
-                                                borderRadius: '50%',
-                                                border: painLevel === num ? '2.5px solid var(--color-brand)' : '1px solid #E2E8F0',
                                                 background: getPainColor(num),
-                                                color: getPainTextColor(num),
-                                                fontWeight: 'bold',
-                                                fontSize: '1.05rem',
-                                                cursor: 'pointer',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                transform: painLevel === num ? 'scale(1.15)' : 'scale(1)',
-                                                transition: 'all 0.2s ease',
-                                                boxShadow: painLevel === num ? '0 5px 15px rgba(85, 169, 138, 0.3)' : 'none'
+                                                color: getPainTextColor(num)
                                             }}
                                         >
                                             {num}
@@ -246,35 +234,34 @@ const PatientEvolution = () => {
                                 </div>
 
                                 {painLevel !== null && (
-                                    <div style={{ marginBottom: '1.5rem', background: '#F4FAF8', padding: '0.8rem 1.2rem', borderRadius: '12px', textAlign: 'center' }}>
-                                        <span style={{ fontSize: '0.9rem', fontWeight: '700', color: getPainTextColor(painLevel) }}>
+                                    <div className="pain-scale__summary">
+                                        <span className="pain-scale__summary-text" style={{ color: getPainTextColor(painLevel) }}>
                                             Escala EVA {painLevel}/10 - {getPainLabel(painLevel)}
                                         </span>
                                     </div>
                                 )}
 
-                                <div className="pain-form__input-group" style={{ marginBottom: '1.5rem' }}>
+                                <div className="pain-form__input-group pain-form__input-group--mb">
                                     <label className="meta-label">Observaciones y Síntomas (Opcional)</label>
                                     <textarea
-                                        className="pain-form__textarea"
+                                        className="pain-form__textarea pain-form__textarea--refactored"
                                         placeholder="Describe dónde sientes el dolor, qué movimientos te molestan o si el ejercicio ha ayudado..."
                                         rows="3"
                                         value={observation}
                                         onChange={e => setObservation(e.target.value)}
-                                        style={{ width: '100%', padding: '1rem', border: '1px solid #E2E8F0', borderRadius: '14px', outline: 'none', background: '#F9FBFB', resize: 'vertical' }}
                                     />
                                 </div>
 
-                                <button type="submit" className="btn-primary" disabled={painLevel === null} style={{ width: '100%', height: '48px', opacity: painLevel === null ? 0.5 : 1 }}>
+                                <button type="submit" className="btn-primary pain-form__submit-btn" disabled={painLevel === null} style={{ opacity: painLevel === null ? 0.5 : 1 }}>
                                     Guardar Diario Diario
                                 </button>
                             </form>
                         ) : (
-                            <div style={{ textAlign: 'center', padding: '3rem 2rem' }}>
-                                <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#E8F5F1', color: '#55A98A', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem', fontSize: '1.5rem', fontWeight: 'bold' }}>✓</div>
-                                <h3 style={{ margin: '0 0 0.5rem', color: 'var(--color-text-dark)' }}>¡Diario Completado!</h3>
-                                <p style={{ color: 'var(--color-text-soft)', fontSize: '0.9rem', margin: '0 0 1.5rem' }}>Has registrado tu nivel de dolor de hoy. Tu fisioterapeuta podrá ver estos datos en tiempo real.</p>
-                                <button className="btn-ghost" style={{ width: 'auto', padding: '0.6rem 1.5rem' }} onClick={() => setSubmitted(false)}>Hacer Otro Registro</button>
+                            <div className="pain-success-view">
+                                <div className="pain-success-view__icon">✓</div>
+                                <h3 className="pain-success-view__title">¡Diario Completado!</h3>
+                                <p className="pain-success-view__text">Has registrado tu nivel de dolor de hoy. Tu fisioterapeuta podrá ver estos datos en tiempo real.</p>
+                                <button className="btn-ghost pain-success-view__btn" onClick={() => setSubmitted(false)}>Hacer Otro Registro</button>
                             </div>
                         )}
                     </article>
@@ -283,47 +270,42 @@ const PatientEvolution = () => {
                 {/* COLUMNA 2: TIMELINE HISTÓRICO */}
                 <section className="grid-col">
                     <h2 className="grid-col__title">Historial de Registros</h2>
-                    <article className="dashboard-card" style={{ padding: '1.5rem' }}>
+                    <article className="dashboard-card evolution-card--timeline">
                         {timeline.length > 0 ? (
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem', maxHeight: '600px', overflowY: 'auto', paddingRight: '0.4rem' }}>
+                            <div className="pain-timeline">
                                 {timeline.map((entry, idx) => (
-                                    <div key={idx} style={{ position: 'relative', paddingLeft: '1.5rem', borderLeft: '2px solid #EBF0F0', paddingBottom: '0.5rem' }}>
+                                    <div key={idx} className="pain-timeline__item">
                                         {/* Círculo indicador del timeline */}
-                                        <div style={{
-                                            position: 'absolute',
-                                            left: '-7px',
-                                            top: '4px',
-                                            width: '12px',
-                                            height: '12px',
-                                            borderRadius: '50%',
-                                            background: getPainTextColor(entry.nivelDolor),
-                                            border: '2px stroke #FFF'
-                                        }} />
+                                        <div 
+                                            className="pain-timeline__dot"
+                                            style={{
+                                                background: getPainTextColor(entry.nivelDolor)
+                                            }} 
+                                        />
                                         
-                                        <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                                            <span style={{ fontSize: '0.75rem', color: '#A0AEC0', fontWeight: '700' }}>
+                                        <header className="pain-timeline__header">
+                                            <span className="pain-timeline__date">
                                                 {new Date(entry.fecha).toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' })}
                                             </span>
-                                            <span style={{
-                                                fontSize: '0.75rem',
-                                                fontWeight: 'bold',
-                                                padding: '2px 8px',
-                                                borderRadius: '8px',
-                                                background: getPainColor(entry.nivelDolor),
-                                                color: getPainTextColor(entry.nivelDolor)
-                                            }}>
+                                            <span 
+                                                className="pain-timeline__badge"
+                                                style={{
+                                                    background: getPainColor(entry.nivelDolor),
+                                                    color: getPainTextColor(entry.nivelDolor)
+                                                }}
+                                            >
                                                 EVA {entry.nivelDolor}
                                             </span>
                                         </header>
                                         
-                                        <p style={{ margin: '0.5rem 0 0', fontSize: '0.85rem', color: 'var(--color-text-dark)', lineHeight: '1.4', fontWeight: '500' }}>
-                                            {entry.observaciones || <em style={{ color: '#A0AEC0', fontSize: '0.8rem' }}>Sin observaciones añadidas.</em>}
+                                        <p className="pain-timeline__desc">
+                                            {entry.observaciones || <em className="pain-timeline__empty-obs">Sin observaciones añadidas.</em>}
                                         </p>
                                     </div>
                                 ))}
                             </div>
                         ) : (
-                            <p style={{ color: '#A0AEC0', fontSize: '0.85rem', textAlign: 'center', padding: '2rem' }}>Aún no hay registros de evolución cargados.</p>
+                            <p className="pain-timeline__empty-text">Aún no hay registros de evolución cargados.</p>
                         )}
                     </article>
                 </section>

@@ -85,7 +85,7 @@ const PatientsList = () => {
             <section className="patients-grid">
                 {loading ? (
                     <article className="loading-state">
-                        <div className="loader" style={{ margin: '0 auto 1rem' }}></div>
+                        <div className="loader loader--centered"></div>
                         <p>Sincronizando expedientes clínicos...</p>
                     </article>
                 ) : filteredPatients.length > 0 ? (
@@ -159,15 +159,15 @@ const PatientsList = () => {
 
             {showDeleteConfirm && (
                 <section className="modal-overlay">
-                    <article className="dashboard-card modal-card animate-in" style={{ textAlign: 'center' }}>
-                        <figure style={{ width: '64px', height: '64px', borderRadius: '50%', background: '#FDF2F2', color: '#E57373', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
+                    <article className="dashboard-card modal-card modal-card--centered animate-in">
+                        <figure className="modal-card__warning-icon-wrapper">
                             <WarningIcon />
                         </figure>
-                        <h3 className="card-title-big" style={{ marginBottom: '0.8rem' }}>¿Eliminar este paciente?</h3>
-                        <p className="card-label" style={{ marginBottom: '2rem' }}>Esta acción es definitiva. Se borrará su ficha clínica, su historial de evolución y su cuenta de acceso a Kinefy.</p>
-                        <footer style={{ display: 'flex', gap: '1rem' }}>
-                            <button className="btn-ghost" onClick={() => setShowDeleteConfirm(null)} style={{ flex: 1, height: '48px' }}>Cancelar</button>
-                            <button className="btn-primary" onClick={handleDeletePatient} style={{ flex: 1, height: '48px', background: '#E57373', borderColor: '#E57373' }}>Eliminar Ficha</button>
+                        <h3 className="card-title-big modal-card__title">¿Eliminar este paciente?</h3>
+                        <p className="card-label modal-card__desc">Esta acción es definitiva. Se borrará su ficha clínica, su historial de evolución y su cuenta de acceso a Kinefy.</p>
+                        <footer className="modal-card__actions">
+                            <button className="btn-ghost modal-card__action-btn" onClick={() => setShowDeleteConfirm(null)}>Cancelar</button>
+                            <button className="btn-primary modal-card__action-btn modal-card__action-btn--danger" onClick={handleDeletePatient}>Eliminar Ficha</button>
                         </footer>
                     </article>
                 </section>

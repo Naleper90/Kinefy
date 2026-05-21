@@ -130,31 +130,37 @@ const DashboardHome = () => {
                         {nextAppointment ? (
                             <>
                                 {nextAppointment.estado === 'en-curso' && (
-                                    <span className="status-badge status-badge--active" style={{ position: 'absolute', top: '1.2rem', right: '1.2rem' }}>
+                                    <span className="status-badge status-badge--active status-badge--absolute-top-right">
                                         <span className="pulse-dot"></span>
                                         EN CURSO
                                     </span>
                                 )}
                                 
-                                <span className="meta-label" style={{ color: 'var(--color-brand)', fontWeight: '700', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
+                                <span className="meta-label appointment-card__meta-label">
                                     {formatDateHeader(nextAppointment.fecha)}
                                 </span>
                                 <h3 className="card-title-big">{nextAppointment.paciente?.nombre}</h3>
-                                <span className="appointment-card__status-msg" style={{ color: nextAppointment.estado === 'completada' ? 'var(--color-brand)' : 'var(--color-text-soft)' }}>
+                                <span className={`appointment-card__status-msg ${nextAppointment.estado === 'completada' ? 'appointment-card__status-msg--completed' : ''}`}>
                                     {nextAppointment.estado === 'completada' ? '✓ Sesión finalizada con éxito' : 
                                      toLocalDateString(nextAppointment.fecha) === toLocalDateString(new Date()) ? 'Tratamiento para hoy' : 'Próxima sesión programada'}
                                 </span>
 
-                                <section style={{ marginTop: '1.5rem', flex: 1 }}>
+                                <section className="appointment-card__body">
                                     <span className="meta-label">Motivo de consulta</span>
                                     <div className="appointment-card__reason-wrapper">
-                                        <figure className="appointment-card__icon-box" style={{ background: nextAppointment.estado === 'en-curso' ? '#EBF4FF' : nextAppointment.estado === 'completada' ? 'var(--color-mint-pale)' : '#F9FBFB' }}>
+                                        <figure className={`appointment-card__icon-box ${
+                                            nextAppointment.estado === 'en-curso' 
+                                                ? 'appointment-card__icon-box--active' 
+                                                : nextAppointment.estado === 'completada' 
+                                                    ? 'appointment-card__icon-box--completed' 
+                                                    : 'appointment-card__icon-box--default'
+                                        }`}>
                                             <KneeIcon size={20} color={nextAppointment.estado === 'en-curso' ? '#3182CE' : nextAppointment.estado === 'completada' ? 'var(--color-brand)' : '#A0AEC0'} />
                                         </figure>
-                                        <span style={{ fontWeight: '600', color: 'var(--color-text-dark)' }}>{nextAppointment.tipo}</span>
+                                        <span className="appointment-card__reason-text">{nextAppointment.tipo}</span>
                                     </div>
 
-                                    <section style={{ marginTop: '1.5rem' }}>
+                                    <section className="appointment-card__time-section">
                                         <span className="meta-label">Hora y Estado</span>
                                         <div className="appointment-card__time-row">
                                             <time className="appointment-card__time">{nextAppointment.hora}</time>
@@ -169,17 +175,17 @@ const DashboardHome = () => {
                                     </section>
                                 </section>
 
-                                <footer style={{ marginTop: '2.5rem', display: 'flex', gap: '1.2rem' }}>
-                                    <button className="btn-ghost" style={{ flex: 1 }} onClick={() => navigate(`/dashboard/physio/patients/${nextAppointment.paciente?._id}`)}>Ficha Clínica</button>
+                                <footer className="appointment-card__footer">
+                                    <button className="btn-ghost appointment-card__btn-ghost" onClick={() => navigate(`/dashboard/physio/patients/${nextAppointment.paciente?._id}`)}>Ficha Clínica</button>
                                     
                                     {nextAppointment.estado === 'pendiente' && (
-                                        <button className="btn-primary" style={{ flex: 1.5 }} onClick={() => handleUpdateAppointmentStatus('en-curso')}>Atender ahora</button>
+                                        <button className="btn-primary appointment-card__btn-primary" onClick={() => handleUpdateAppointmentStatus('en-curso')}>Atender ahora</button>
                                     )}
                                     {nextAppointment.estado === 'en-curso' && (
-                                        <button className="btn-primary" style={{ flex: 1.5, background: '#3182CE', borderColor: '#3182CE', boxShadow: '0 10px 25px rgba(49, 130, 206, 0.3)' }} onClick={() => handleUpdateAppointmentStatus('completada')}>Finalizar Sesión</button>
+                                        <button className="btn-primary appointment-card__btn-primary appointment-card__btn-primary--active" onClick={() => handleUpdateAppointmentStatus('completada')}>Finalizar Sesión</button>
                                     )}
                                     {nextAppointment.estado === 'completada' && (
-                                        <button className="btn-primary" style={{ flex: 1.5, background: 'var(--color-mint-pale)', color: 'var(--color-brand)', borderColor: 'var(--color-mint-pale)', cursor: 'default' }}>✓ Completada</button>
+                                        <button className="btn-primary appointment-card__btn-primary appointment-card__btn-primary--completed">✓ Completada</button>
                                     )}
                                 </footer>
                             </>
@@ -222,7 +228,7 @@ const DashboardHome = () => {
                                     </article>
                                 ))
                             ) : (
-                                <p style={{ textAlign: 'center', padding: '2rem', color: 'var(--color-text-soft)', opacity: 0.5 }}>No hay pacientes recientes.</p>
+                                <p className="patient-list__empty">No hay pacientes recientes.</p>
                             )}
                         </nav>
                     </article>
@@ -230,43 +236,32 @@ const DashboardHome = () => {
 
                 <section className="grid-col">
                     <h2 className="grid-col__title">Citas para Hoy</h2>
-                    <article className="dashboard-card" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-                        <p className="card-label" style={{ marginBottom: '1.2rem' }}>Horario de sesiones programadas para hoy</p>
+                    <article className="dashboard-card dashboard-card--flex-column-h100">
+                        <p className="card-label card-label--spaced">Horario de sesiones programadas para hoy</p>
                         
-                        <nav className="patient-list" style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', maxHeight: '320px', paddingRight: '6px' }}>
+                        <nav className="patient-list patient-list--scrollable">
                             {todayAppointments.length > 0 ? (
                                 todayAppointments.map((appt, i) => (
-                                    <article key={i} className="patient-item" style={{ borderBottom: '1px solid #F0F4F2', paddingBottom: '0.8rem', marginBottom: '0.8rem', width: '100%', boxSizing: 'border-box', overflow: 'hidden' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', width: '100%', gap: '12px' }}>
-                                            <time style={{ 
-                                                fontSize: '1.1rem', 
-                                                fontWeight: '700', 
-                                                color: 'var(--color-brand)', 
-                                                width: '60px',
-                                                flexShrink: 0,
-                                                background: '#E8F5F1',
-                                                padding: '4px 0',
-                                                borderRadius: '6px',
-                                                textAlign: 'center'
-                                            }}>{appt.hora}</time>
+                                    <article key={i} className="patient-item patient-item--appointment-today">
+                                        <div className="appointment-today__container">
+                                            <time className="appointment-today__time">{appt.hora}</time>
                                             
-                                            <div style={{ flex: 1, minWidth: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                                                <span style={{ fontWeight: '600', color: 'var(--color-text-dark)', fontSize: '0.95rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{appt.paciente?.nombre}</span>
-                                                <span style={{ fontSize: '0.8rem', color: 'var(--color-text-soft)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{appt.tipo}</span>
+                                            <div className="appointment-today__info">
+                                                <span className="appointment-today__patient-name">{appt.paciente?.nombre}</span>
+                                                <span className="appointment-today__type">{appt.tipo}</span>
                                             </div>
  
-                                            <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                            <div className="appointment-today__actions">
                                                 <span className={`status-badge ${
                                                     appt.estado === 'pendiente' ? 'status-badge--pending' : 
                                                     appt.estado === 'confirmada' ? 'status-badge--confirm' :
                                                     appt.estado === 'en-curso' ? 'status-badge--active' : 'status-badge--done'
-                                                }`} style={{ fontSize: '0.75rem', padding: '2px 8px' }}>
+                                                } status-badge--small`}>
                                                     {appt.estado === 'confirmada' ? 'CONFIRMADA' : appt.estado.toUpperCase()}
                                                 </span>
                                                 
                                                 <button 
-                                                    className="home-patient-item__btn btn-ghost" 
-                                                    style={{ padding: '4px 8px', fontSize: '0.8rem' }}
+                                                    className="home-patient-item__btn btn-ghost btn-ghost--small" 
                                                     onClick={() => navigate(`/dashboard/physio/patients/${appt.paciente?._id}`)} 
                                                 >
                                                     Ficha
@@ -276,22 +271,12 @@ const DashboardHome = () => {
                                     </article>
                                 ))
                             ) : (
-                                <section style={{ textAlign: 'center', padding: '3.5rem 1rem', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-                                    <figure style={{ 
-                                        width: '48px', 
-                                        height: '48px', 
-                                        borderRadius: '50%', 
-                                        background: '#E8F5F1', 
-                                        display: 'flex', 
-                                        alignItems: 'center', 
-                                        justifyContent: 'center', 
-                                        marginBottom: '1rem',
-                                        color: 'var(--color-brand)'
-                                    }}>
+                                <section className="appointments-today-empty">
+                                    <figure className="appointments-today-empty__icon-container">
                                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
                                     </figure>
-                                    <h3 style={{ fontSize: '0.95rem', fontWeight: '600', color: 'var(--color-text-dark)', margin: '0 0 4px 0' }}>¡Todo al día!</h3>
-                                    <p style={{ fontSize: '0.8rem', color: 'var(--color-text-soft)', margin: 0 }}>No tienes citas programadas para hoy.</p>
+                                    <h3 className="appointments-today-empty__title">¡Todo al día!</h3>
+                                    <p className="appointments-today-empty__subtitle">No tienes citas programadas para hoy.</p>
                                 </section>
                             )}
                         </nav>

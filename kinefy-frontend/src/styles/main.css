@@ -8,3 +8,4 @@
 /* 05-components - Component specific styles (BEM) */
 @import "./05-components/_auth.css";
 @import "./05-components/_dashboard.css";
+@import "./05-components/_legal.css";

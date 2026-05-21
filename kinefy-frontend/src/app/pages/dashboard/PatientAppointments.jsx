@@ -208,9 +208,9 @@ const PatientAppointments = () => {
     };
 
     if (loading) return (
-        <div style={{ padding: '4rem', textAlign: 'center' }}>
-            <div className="loader" style={{ margin: '0 auto 1.5rem' }}></div>
-            <p style={{ color: '#5A6B6D', fontWeight: '500' }}>Cargando tu agenda médica...</p>
+        <div className="appointments-loading">
+            <div className="loader loader--centered-margin"></div>
+            <p className="appointments-loading__text">Cargando tu agenda médica...</p>
         </div>
     );
 
@@ -229,7 +229,7 @@ const PatientAppointments = () => {
                 </article>
             )}
 
-            <header className="home-header" style={{ marginBottom: '2.5rem' }}>
+            <header className="home-header appointments-header">
                 <hgroup className="home-header__info">
                     <h1 className="home-header__title">Mis Citas Médicas</h1>
                     <p className="home-header__subtitle">Gestiona tus próximas sesiones de rehabilitación y consulta tu historial clínico.</p>
@@ -242,42 +242,34 @@ const PatientAppointments = () => {
 
             <section className="dashboard-grid dashboard-grid--home">
                 {/* COLUMNA CITAS ACTIVAS */}
-                <section className="grid-col" style={{ gridColumn: 'span 2' }}>
+                <section className="grid-col evolution-card-grid-span2">
                     <h2 className="grid-col__title">Próximas Sesiones</h2>
                     {upcoming.length > 0 ? (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                        <div className="appointments-list">
                             {upcoming.map((appt) => {
                                 const isHighlighted = highlightedApptId === appt._id;
                                 return (
                                     <article 
                                         key={appt._id} 
                                         id={`appointment-card-${appt._id}`}
-                                        className="dashboard-card dashboard-card--appointment" 
-                                        style={{ 
-                                            position: 'relative', 
-                                            background: '#FFFFFF', 
-                                            border: isHighlighted ? '2.5px solid var(--color-brand)' : '1px solid #EBF0F0',
-                                            boxShadow: isHighlighted ? '0 0 25px rgba(85, 169, 138, 0.35)' : 'none',
-                                            transform: isHighlighted ? 'scale(1.02)' : 'none',
-                                            transition: 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
-                                        }}
+                                        className={`dashboard-card dashboard-card--appointment ${isHighlighted ? 'dashboard-card--appointment--highlighted' : ''}`}
                                     >
                                         {appt.estado === 'en-curso' && (
-                                            <span className="status-badge status-badge--active" style={{ position: 'absolute', top: '1.2rem', right: '1.2rem' }}>
+                                            <span className="status-badge status-badge--active status-badge--top-right">
                                                 <span className="pulse-dot"></span>
                                                 EN CURSO
                                             </span>
                                         )}
-                                        <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                        <header className="appointment-card__header">
                                             <div>
-                                                <span className="meta-label" style={{ color: 'var(--color-brand)', fontWeight: '700', textTransform: 'uppercase', marginBottom: '0.4rem', display: 'block' }}>
+                                                <span className="appointment-card__date-label">
                                                     {new Date(appt.fecha).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}
                                                 </span>
-                                                <h3 className="card-title-big" style={{ margin: '0.3rem 0 0.5rem' }}>{appt.fisioterapeuta?.name || 'Tu Fisioterapeuta'}</h3>
-                                                <span style={{ fontSize: '0.85rem', color: 'var(--color-text-soft)', display: 'block' }}>Fisioterapeuta Colegiado</span>
+                                                <h3 className="card-title-big appointment-card__title">{appt.fisioterapeuta?.name || 'Tu Fisioterapeuta'}</h3>
+                                                <span className="appointment-card__subtitle">Fisioterapeuta Colegiado</span>
                                             </div>
                                             {/* BOTONES DE EDICIÓN Y CANCELACIÓN PREMIUM ORGÁNICOS */}
-                                            <div style={{ display: 'flex', gap: '0.6rem', alignItems: 'center' }}>
+                                            <div className="appointment-card__actions">
                                                 <button 
                                                     type="button"
                                                     className="patient-action-btn patient-action-btn--view" 
@@ -297,30 +289,47 @@ const PatientAppointments = () => {
                                             </div>
                                         </header>
 
-                                        <section style={{ marginTop: '1.5rem', display: 'flex', flexWrap: 'wrap', gap: '1.5rem', justifyContent: 'space-between', alignItems: 'center' }}>
-                                            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                                                <article className="date-badge" style={{ background: '#F4FAF8', margin: 0, padding: '0.5rem 1rem', borderRadius: '14px' }}>
-                                                    <section className="date-badge__accent" style={{ background: appt.estado === 'pendiente' ? '#E2E8F0' : '#55A98A', minWidth: '40px', padding: '4px' }}>
-                                                        <span className="date-badge__day-short" style={{ fontSize: '0.55rem', color: appt.estado === 'pendiente' ? '#4A5568' : '#FFF' }}>
+                                        <section className="appointment-card__details">
+                                            <div className="appointment-card__badge-wrapper">
+                                                <article className="date-badge date-badge--refactored">
+                                                    <section 
+                                                        className="date-badge__accent" 
+                                                        style={{ 
+                                                            background: appt.estado === 'pendiente' ? '#E2E8F0' : '#55A98A'
+                                                        }}
+                                                    >
+                                                        <span 
+                                                            className="date-badge__day-short"
+                                                            style={{ 
+                                                                color: appt.estado === 'pendiente' ? '#4A5568' : '#FFF' 
+                                                            }}
+                                                        >
                                                             {new Date(appt.fecha).toLocaleDateString('es-ES', { weekday: 'short' }).toUpperCase()}
                                                         </span>
-                                                        <span className="date-badge__day-num" style={{ fontSize: '1.1rem', color: appt.estado === 'pendiente' ? '#4A5568' : '#FFF' }}>{new Date(appt.fecha).getDate()}</span>
+                                                        <span 
+                                                            className="date-badge__day-num"
+                                                            style={{ 
+                                                                color: appt.estado === 'pendiente' ? '#4A5568' : '#FFF' 
+                                                            }}
+                                                        >
+                                                            {new Date(appt.fecha).getDate()}
+                                                        </span>
                                                     </section>
-                                                    <section className="date-badge__info" style={{ marginLeft: '0.8rem' }}>
-                                                        <span className="date-badge__month" style={{ fontSize: '0.85rem', fontWeight: '700' }}>
+                                                    <section className="date-badge__info">
+                                                        <span className="date-badge__month">
                                                             {new Date(appt.fecha).toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })}
                                                         </span>
-                                                        <time style={{ fontSize: '0.8rem', color: '#5A6B6D', fontWeight: '600' }}>Hora: {appt.hora}</time>
+                                                        <time className="date-badge__time">Hora: {appt.hora}</time>
                                                     </section>
                                                 </article>
                                             </div>
 
-                                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '0.5rem' }}>
+                                            <div className="appointment-card__reason-col">
                                                 <span className="meta-label">Motivo de Consulta</span>
-                                                <span style={{ fontWeight: '600', color: 'var(--color-text-dark)', fontSize: '0.95rem' }}>{appt.tipo}</span>
+                                                <span className="appointment-card__reason-val">{appt.tipo}</span>
                                             </div>
 
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                            <div className="appointment-card__status-col">
                                                 <span className={`status-badge ${
                                                     appt.estado === 'pendiente' ? 'status-badge--pending' : 
                                                     appt.estado === 'confirmada' ? 'status-badge--confirm' :
@@ -330,8 +339,7 @@ const PatientAppointments = () => {
                                                 </span>
                                                 {appt.estado === 'pendiente' && (
                                                     <button 
-                                                        className="btn-primary" 
-                                                        style={{ height: '36px', padding: '0 1.2rem', fontSize: '0.85rem' }}
+                                                        className="btn-primary appointment-card__confirm-btn" 
                                                         onClick={() => confirmAppointment(appt._id)}
                                                     >
                                                         Confirmar
@@ -344,11 +352,11 @@ const PatientAppointments = () => {
                             })}
                         </div>
                     ) : (
-                        <article className="dashboard-card" style={{ textAlign: 'center', padding: '3rem 2rem', background: '#F9FBFB', border: '1px dashed #D0DCDC' }}>
-                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#A0AEC0" strokeWidth="2" style={{ marginBottom: '1rem' }}><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                            <h3 style={{ margin: '0 0 0.5rem', color: '#4A5568' }}>Tu agenda está libre</h3>
-                            <p style={{ color: '#718096', fontSize: '0.9rem', margin: '0 0 1.5rem' }}>No tienes ninguna cita programada para los próximos días.</p>
-                            <button className="btn-primary" style={{ width: 'auto', padding: '0.7rem 1.5rem' }} onClick={handleOpenCreate}>Solicitar una Cita</button>
+                        <article className="dashboard-card docs-empty-card">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#A0AEC0" strokeWidth="2" className="docs-empty-card__icon"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                            <h3 className="docs-empty-card__title">Tu agenda está libre</h3>
+                            <p className="docs-empty-card__text">No tienes ninguna cita programada para los próximos días.</p>
+                            <button className="btn-primary docs-empty-card__btn" onClick={handleOpenCreate}>Solicitar una Cita</button>
                         </article>
                     )}
                 </section>
@@ -356,26 +364,26 @@ const PatientAppointments = () => {
                 {/* COLUMNA HISTORIAL */}
                 <section className="grid-col">
                     <h2 className="grid-col__title">Historial de Visitas</h2>
-                    <article className="dashboard-card" style={{ padding: '1.2rem' }}>
+                    <article className="dashboard-card past-appointments-card">
                         {past.length > 0 ? (
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', maxHeight: '420px', overflowY: 'auto', paddingRight: '0.5rem' }}>
+                            <div className="past-appointments-list">
                                 {past.map((appt, i) => (
-                                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', padding: '0.8rem', background: '#F9FBFB', borderRadius: '12px', border: '1px solid #F0F4F4' }}>
-                                        <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#E8F5F1', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#55A98A' }}>
+                                    <div key={i} className="past-appointment-item">
+                                        <div className="past-appointment-item__icon">
                                             ✓
                                         </div>
-                                        <div style={{ flex: 1, minWidth: 0 }}>
-                                            <p style={{ margin: 0, fontSize: '0.85rem', fontWeight: '700', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{appt.tipo}</p>
-                                            <span style={{ fontSize: '0.75rem', color: '#A0AEC0', fontWeight: '600' }}>
+                                        <div className="past-appointment-item__meta">
+                                            <p className="past-appointment-item__title">{appt.tipo}</p>
+                                            <span className="past-appointment-item__time">
                                                 {new Date(appt.fecha).toLocaleDateString()} a las {appt.hora}
                                             </span>
                                         </div>
-                                        <span style={{ fontSize: '0.75rem', color: '#55A98A', fontWeight: '700', textTransform: 'uppercase' }}>Sesión</span>
+                                        <span className="past-appointment-item__badge">Sesión</span>
                                     </div>
                                 ))}
                             </div>
                         ) : (
-                            <p style={{ color: '#A0AEC0', fontSize: '0.85rem', textAlign: 'center', padding: '2rem' }}>Aún no has completado ninguna sesión.</p>
+                            <p className="past-appointments-empty">Aún no has completado ninguna sesión.</p>
                         )}
                     </article>
                 </section>
@@ -384,7 +392,7 @@ const PatientAppointments = () => {
             {/* MODAL DE SOLICITUD / EDICIÓN PREMIUM */}
             {showApptModal && createPortal(
                 <div className="modal-overlay" onClick={() => setShowApptModal(false)}>
-                    <div className="modal-container--premium" style={{ maxWidth: '450px' }} onClick={e => e.stopPropagation()}>
+                    <div className="modal-container--premium modal-container--premium--sm" onClick={e => e.stopPropagation()}>
                         <header className="modal-header--clinical">
                             <h2 className="modal-header__title">{isEditing ? "Modificar Cita" : "Solicitar Nueva Cita"}</h2>
                             <p className="modal-header__subtitle">{isEditing ? "Ajusta la fecha y hora de tu sesión." : "Propón un horario y tu fisio lo confirmará."}</p>
@@ -394,14 +402,13 @@ const PatientAppointments = () => {
                         <div className="modal-body--clinical">
                             <form onSubmit={handleRequestAppointment} className="clinical-form">
                                 {/* SECCIÓN DE FECHA PREMIUM */}
-                                <div className="clinical-input-group" style={{ marginBottom: '1.5rem' }}>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.6rem' }}>
-                                        <label className="meta-label meta-label--brand" style={{ margin: 0 }}>Fecha Preferente</label>
+                                <div className="clinical-input-group clinical-input-group--mb">
+                                    <div className="appointment-modal__flex-header">
+                                        <label className="meta-label meta-label--brand meta-label--no-margin">Fecha Preferente</label>
                                         <button 
                                             type="button" 
-                                            className="link-btn" 
+                                            className="link-btn appointment-modal__toggle-btn" 
                                             onClick={() => setCustomDateMode(!customDateMode)}
-                                            style={{ background: 'none', border: 'none', color: 'var(--color-brand)', fontWeight: '700', fontSize: '0.75rem', cursor: 'pointer', textDecoration: 'underline', padding: 0 }}
                                         >
                                             {customDateMode ? "Ver calendario rápido" : "Elegir otra fecha"}
                                         </button>
@@ -413,7 +420,7 @@ const PatientAppointments = () => {
                                             onSelectDate={date => setApptForm({...apptForm, fecha: date})} 
                                         />
                                     ) : (
-                                        <div style={{ display: 'flex', gap: '0.6rem', overflowX: 'auto', padding: '0.4rem 0.2rem', scrollbarWidth: 'none', msOverflowStyle: 'none' }} className="no-scrollbar">
+                                        <div className="date-badge-scroll no-scrollbar">
                                             {getNextDays().map((d, index) => {
                                                 const isoStr = d.toISOString().split('T')[0];
                                                 const isSelected = apptForm.fecha === isoStr;
@@ -422,29 +429,30 @@ const PatientAppointments = () => {
                                                         key={index}
                                                         type="button"
                                                         onClick={() => setApptForm(prev => ({ ...prev, fecha: isoStr }))}
+                                                        className="date-btn-select"
                                                         style={{
-                                                            flex: '0 0 68px',
-                                                            height: '84px',
-                                                            borderRadius: '16px',
                                                             background: isSelected ? 'var(--color-brand)' : '#F4FAF8',
                                                             color: isSelected ? '#FFFFFF' : '#1A2E35',
-                                                            border: isSelected ? 'none' : '1px solid #C2DFD4',
-                                                            display: 'flex',
-                                                            flexDirection: 'column',
-                                                            alignItems: 'center',
-                                                            justifyContent: 'center',
-                                                            cursor: 'pointer',
-                                                            transition: 'all 0.2s ease',
-                                                            padding: '0.4rem 0.2rem'
+                                                            border: isSelected ? 'none' : '1px solid #C2DFD4'
                                                         }}
                                                     >
-                                                        <span style={{ fontSize: '0.65rem', fontWeight: '700', textTransform: 'uppercase', color: isSelected ? '#E2F1EC' : '#7A8C8E' }}>
+                                                        <span 
+                                                            className="date-btn-select__weekday"
+                                                            style={{ 
+                                                                color: isSelected ? '#E2F1EC' : '#7A8C8E' 
+                                                            }}
+                                                        >
                                                             {d.toLocaleDateString('es-ES', { weekday: 'short' })}
                                                         </span>
-                                                        <span style={{ fontSize: '1.3rem', fontWeight: '800', marginTop: '0.1rem', lineHeight: '1.2' }}>
+                                                        <span className="date-btn-select__day">
                                                             {d.getDate()}
                                                         </span>
-                                                        <span style={{ fontSize: '0.6rem', fontWeight: '600', color: isSelected ? '#E2F1EC' : '#7A8C8E', marginTop: '0.1rem' }}>
+                                                        <span 
+                                                            className="date-btn-select__month"
+                                                            style={{ 
+                                                                color: isSelected ? '#E2F1EC' : '#7A8C8E' 
+                                                            }}
+                                                        >
                                                             {d.toLocaleDateString('es-ES', { month: 'short' })}
                                                         </span>
                                                     </button>
@@ -455,14 +463,13 @@ const PatientAppointments = () => {
                                 </div>
 
                                 {/* SECCIÓN DE HORA PREMIUM CON EVITACIÓN DE COLISIÓN Y TURNOS PASADOS */}
-                                <div className="clinical-input-group" style={{ marginBottom: '1.5rem' }}>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.6rem' }}>
-                                        <label className="meta-label meta-label--brand" style={{ margin: 0 }}>Hora de la Cita</label>
+                                <div className="clinical-input-group clinical-input-group--mb">
+                                    <div className="appointment-modal__flex-header">
+                                        <label className="meta-label meta-label--brand meta-label--no-margin">Hora de la Cita</label>
                                         <button 
                                             type="button" 
-                                            className="link-btn" 
+                                            className="link-btn appointment-modal__toggle-btn" 
                                             onClick={() => setCustomTimeMode(!customTimeMode)}
-                                            style={{ background: 'none', border: 'none', color: 'var(--color-brand)', fontWeight: '700', fontSize: '0.75rem', cursor: 'pointer', textDecoration: 'underline', padding: 0 }}
                                         >
                                             {customTimeMode ? "Ver turnos rápidos" : "Elegir otra hora"}
                                         </button>
@@ -474,7 +481,7 @@ const PatientAppointments = () => {
                                             onSelectTime={time => setApptForm({...apptForm, hora: time})} 
                                         />
                                     ) : (
-                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '0.5rem' }}>
+                                        <div className="time-slots-grid">
                                             {[
                                                 '08:00', '09:00', '10:00', '11:00', '12:00',
                                                 '13:00', '15:00', '16:00', '17:00', '18:00', 
@@ -491,19 +498,13 @@ const PatientAppointments = () => {
                                                         type="button"
                                                         disabled={isDisabled}
                                                         onClick={() => setApptForm(prev => ({ ...prev, hora: time }))}
+                                                        className="time-slot-btn"
                                                         style={{
-                                                            padding: '0.6rem 0.2rem',
-                                                            borderRadius: '12px',
                                                             background: isSelected ? 'var(--color-brand)' : isDisabled ? '#F8FAFC' : '#FFFFFF',
                                                             color: isSelected ? '#FFFFFF' : isDisabled ? '#CBD5E1' : '#1A2E35',
                                                             border: isSelected ? 'none' : '1.5px solid #E2E8F0',
-                                                            fontWeight: '700',
-                                                            fontSize: '0.8rem',
                                                             cursor: isDisabled ? 'not-allowed' : 'pointer',
-                                                            transition: 'all 0.2s ease',
-                                                            textAlign: 'center',
-                                                            opacity: isDisabled ? 0.6 : 1,
-                                                            position: 'relative'
+                                                            opacity: isDisabled ? 0.6 : 1
                                                         }}
                                                         title={isOccupied ? "Horario ocupado" : isPast ? "Horario pasado" : ""}
                                                     >
@@ -515,7 +516,7 @@ const PatientAppointments = () => {
                                     )}
                                 </div>
 
-                                <div className="clinical-input-group" style={{ marginBottom: '1.5rem' }}>
+                                <div className="clinical-input-group clinical-input-group--mb">
                                     <label className="meta-label meta-label--brand">Motivo / Notas</label>
                                     <input 
                                         type="text" 
@@ -527,13 +528,13 @@ const PatientAppointments = () => {
                                     />
                                 </div>
                                 
-                                <div className="clinical-card--dashed" style={{ marginTop: '1rem', padding: '1rem' }}>
-                                    <p style={{ fontSize: '0.8rem', color: '#5A6B6D', margin: 0 }}>
+                                <div className="clinical-card--dashed clinical-card--dashed-spacing">
+                                    <p className="clinical-card__disclaimer-text">
                                         * Tu solicitud quedará en estado <strong>Pendiente</strong> hasta que el fisioterapeuta la valide en su agenda.
                                     </p>
                                 </div>
 
-                                <footer className="modal-footer--clinical-inside" style={{ marginTop: '1.5rem' }}>
+                                <footer className="modal-footer--clinical-inside">
                                     <button type="button" className="btn-ghost" onClick={() => setShowApptModal(false)}>Cancelar</button>
                                     <button type="submit" className="btn-primary--soft">
                                         {isEditing ? "Guardar Cambios" : "Enviar Solicitud"}

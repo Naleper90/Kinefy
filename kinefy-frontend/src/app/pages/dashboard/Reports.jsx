@@ -139,7 +139,7 @@ const Reports = () => {
                         />
                     </header>
 
-                    <ul className="reports__list" style={{ listStyle: 'none', padding: 0 }}>
+                    <ul className="reports__list">
                         {reportsByPatient.length > 0 ? (
                             reportsByPatient.map((patientGroup) => (
                                 <details key={patientGroup.id} className="reports__folder">
@@ -161,7 +161,7 @@ const Reports = () => {
                                                     <h4 className="reports__item-title">{report.nombre}</h4>
                                                     <p className="reports__item-meta">{new Date(report.fecha).toLocaleDateString()}</p>
                                                 </hgroup>
-                                                <a href={report.url} target="_blank" rel="noopener noreferrer" className="status-badge status-badge--done" style={{ textDecoration: 'none' }}>
+                                                <a href={report.url} target="_blank" rel="noopener noreferrer" className="status-badge status-badge--done">
                                                     Abrir
                                                 </a>
                                             </article>
@@ -177,7 +177,7 @@ const Reports = () => {
 
                 <aside className="dashboard-card dashboard-card--dark">
                     <h2 className="grid-col__title">Acciones de Control</h2>
-                    <p className="reports__action-desc" style={{ opacity: 0.8, marginBottom: '1.5rem' }}>Herramientas de exportación y gestión clínica.</p>
+                    <p className="reports__action-subtitle">Herramientas de exportación y gestión clínica.</p>
 
                     <nav className="reports__action-grid">
                         <button className="reports__action-btn" onClick={() => setModal({ show: true, type: 'generate' })}>
@@ -222,7 +222,7 @@ const Reports = () => {
             {modal.show && createPortal(
                 <section className="modal-overlay">
                     <article className="dashboard-card modal-card animate-in">
-                        <header style={{ marginBottom: '2rem' }}>
+                        <header className="modal-card__header">
                             <h3 className="card-title-big">
                                 {modal.type === 'generate' ? 'Generar Informe' : 'Importar Archivo'}
                             </h3>
@@ -252,7 +252,7 @@ const Reports = () => {
                             ))}
                         </nav>
                         
-                        <button className="btn-ghost" onClick={() => setModal({ show: false, type: null })} style={{ marginTop: '2rem', width: '100%' }}>
+                        <button className="btn-ghost modal-card__cancel-btn" onClick={() => setModal({ show: false, type: null })}>
                             Cancelar
                         </button>
                     </article>

@@ -1,0 +1,28 @@
+/* ==========================================================================
+   Kinefy Legal Pages (BEM)
+   ========================================================================== */
+
+.legal-page {
+  padding: var(--spacing-md, 2rem);
+  max-width: 800px;
+  margin: 0 auto;
+  font-family: var(--font-main, sans-serif);
+  line-height: 1.6;
+  color: var(--color-text-dark, #1A2E35);
+}
+
+.legal-page__back-link {
+  color: var(--color-brand, #55A98A);
+  text-decoration: none;
+  margin-bottom: var(--spacing-sm, 1rem);
+  display: inline-block;
+  transition: color 0.2s ease;
+}
+
+.legal-page__back-link:hover {
+  color: var(--color-brand-hover, #6BA38E);
+}
+
+.legal-page__title {
+  color: var(--color-brand, #55A98A);
+}

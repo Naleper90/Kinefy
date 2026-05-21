@@ -153,9 +153,9 @@ const PatientDashboardHome = () => {
     };
 
     if (loading) return (
-        <div style={{ padding: '4rem', textAlign: 'center' }}>
-            <div className="loader" style={{ margin: '0 auto 1.5rem' }}></div>
-            <p style={{ color: '#5A6B6D', fontWeight: '500' }}>Sincronizando tu diario clínico...</p>
+        <div className="patient-home-loading">
+            <div className="loader loader--centered-margin"></div>
+            <p className="patient-home-loading__text">Sincronizando tu diario clínico...</p>
         </div>
     );
 
@@ -194,26 +194,26 @@ const PatientDashboardHome = () => {
                 {/* PRÓXIMA CITA */}
                 <section className="grid-col">
                     <h2 className="grid-col__title">Tu Próxima Cita</h2>
-                    <article className="dashboard-card" style={{ background: 'linear-gradient(135deg, #FFFFFF 0%, #F0FAF6 100%)' }}>
+                    <article className="dashboard-card dashboard-card--appointment-highlight">
                         {nextAppointment ? (
                             <>
-                                <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                <header className="appointment-card__header">
                                     <div>
                                         <h3 className="card-title-big">{nextAppointment.fisioterapeuta?.name || 'Tu Fisioterapeuta'}</h3>
                                         <span className="card-label">{nextAppointment.tipo || 'Sesión de tratamiento'}</span>
                                     </div>
                                     {nextAppointment.estado === 'confirmada' && (
-                                        <span style={{ background: '#55A98A', color: '#FFF', fontSize: '0.65rem', padding: '4px 10px', borderRadius: '100px', fontWeight: '700' }}>CONFIRMADA ✓</span>
+                                        <span className="appointment-card__status-badge">CONFIRMADA ✓</span>
                                     )}
                                 </header>
 
-                                <header className="meta-row" style={{ marginTop: '1.2rem' }}>
+                                <header className="meta-row meta-row--mt-md">
                                     <span className="meta-label">Horario Confirmado</span>
                                 </header>
                                 <time className="appointment-time">{nextAppointment.hora}</time>
 
-                                <article className="date-badge" style={{ marginTop: '1.5rem' }}>
-                                    <section className="date-badge__accent" style={{ background: '#55A98A' }}>
+                                <article className="date-badge date-badge--mt-lg">
+                                    <section className="date-badge__accent">
                                         <span className="date-badge__day-short">
                                             {new Date(nextAppointment.fecha).toLocaleDateString('es-ES', { weekday: 'short' }).toUpperCase()}
                                         </span>
@@ -229,27 +229,24 @@ const PatientDashboardHome = () => {
 
                                 {nextAppointment.estado === 'pendiente' && (
                                     <button 
-                                        className="btn-primary" 
-                                        style={{ marginTop: '1.5rem', width: '100%', height: '44px' }}
+                                        className="btn-primary btn-appointment-confirm" 
                                         onClick={() => confirmAppointment(nextAppointment._id)}
                                     >
                                         Confirmar Asistencia
                                     </button>
                                 )}
                                 <button 
-                                    className="btn-ghost" 
-                                    style={{ marginTop: '1rem', width: '100%', height: '40px' }}
+                                    className="btn-ghost btn-appointment-agenda" 
                                     onClick={() => navigate('/dashboard/patient/appointments')}
                                 >
                                     Ver mi agenda de citas
                                 </button>
                             </>
                         ) : (
-                            <div style={{ textAlign: 'center', padding: '1rem' }}>
-                                <p style={{ color: '#A0AEC0', fontSize: '0.9rem' }}>No tienes citas programadas próximamente.</p>
+                            <div className="no-appointments-view">
+                                <p className="no-appointments-view__text">No tienes citas programadas próximamente.</p>
                                 <button 
-                                    className="btn-primary" 
-                                    style={{ marginTop: '1rem', width: 'auto', padding: '0.6rem 1.2rem' }}
+                                    className="btn-primary btn-appointment-request" 
                                     onClick={() => setShowApptModal(true)}
                                 >
                                     Solicitar Cita
@@ -259,28 +256,27 @@ const PatientDashboardHome = () => {
                     </article>
 
                     {/* MIS DOCUMENTOS (NUEVA SECCIÓN) */}
-                    <h2 className="grid-col__title" style={{ marginTop: '2.5rem' }}>Mis Informes Médicos</h2>
-                    <article className="dashboard-card" style={{ padding: '1.2rem' }}>
+                    <h2 className="grid-col__title grid-col__title--mt-lg">Mis Informes Médicos</h2>
+                    <article className="dashboard-card dashboard-card--p-sm">
                         {patientData?.informes?.length > 0 ? (
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                            <div className="home-docs-list">
                                 {patientData.informes.slice(0, 3).map((doc, i) => (
-                                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', padding: '0.8rem', background: '#F9FBFB', borderRadius: '12px' }}>
-                                        <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#FEE2E2', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#EF4444' }}>
+                                    <div key={i} className="home-doc-item">
+                                        <div className="home-doc-item__icon-wrapper">
                                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
                                         </div>
-                                        <div style={{ flex: 1, minWidth: 0 }}>
-                                            <p style={{ margin: 0, fontSize: '0.85rem', fontWeight: '700', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{doc.nombre}</p>
-                                            <span style={{ fontSize: '0.7rem', color: '#A0AEC0' }}>{new Date(doc.fecha).toLocaleDateString()}</span>
+                                        <div className="home-doc-item__meta">
+                                            <p className="home-doc-item__title">{doc.nombre}</p>
+                                            <span className="home-doc-item__date">{new Date(doc.fecha).toLocaleDateString()}</span>
                                         </div>
-                                        <a href={doc.url} target="_blank" rel="noopener noreferrer" style={{ color: '#55A98A' }}>
+                                        <a href={doc.url} target="_blank" rel="noopener noreferrer" className="home-doc-item__link">
                                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
                                         </a>
                                     </div>
                                 ))}
                                 {patientData?.informes?.length > 0 && (
                                     <button 
-                                        className="btn-ghost" 
-                                        style={{ marginTop: '1rem', width: '100%', height: '36px', fontSize: '0.8rem' }}
+                                        className="btn-ghost btn-ghost--mt-md-h36" 
                                         onClick={() => navigate('/dashboard/patient/docs')}
                                     >
                                         Ver todos los informes ({patientData.informes.length})
@@ -288,7 +284,7 @@ const PatientDashboardHome = () => {
                                 )}
                             </div>
                         ) : (
-                            <p style={{ color: '#A0AEC0', fontSize: '0.85rem', textAlign: 'center' }}>Aún no hay informes en tu expediente.</p>
+                            <p className="home-docs-empty">Aún no hay informes en tu expediente.</p>
                         )}
                     </article>
                 </section>
@@ -309,7 +305,7 @@ const PatientDashboardHome = () => {
                             </div>
                         </section>
 
-                        <ul className="exercise-list" style={{ marginTop: '1.5rem' }}>
+                        <ul className="exercise-list exercise-list--mt-lg">
                             {exercises.length > 0 ? exercises.map(ex => (
                                 <li
                                     key={ex.id}
@@ -317,14 +313,14 @@ const PatientDashboardHome = () => {
                                     onClick={() => toggleExercise(ex.id)}
                                 >
                                     <span className="exercise-list__check">{ex.done ? '✓' : ''}</span>
-                                    <section className="exercise-list__info" style={{ flex: 1 }}>
+                                    <section className="exercise-list__info">
                                         <span className="exercise-list__name">{ex.name}</span>
                                         <span className="exercise-list__series">{ex.series}</span>
                                     </section>
                                     {ex.mediaUrl && (
                                         <button 
                                             onClick={(e) => { e.stopPropagation(); setPreviewEx(ex); }} 
-                                            style={{ border: 'none', cursor: 'pointer', color: '#55A98A', background: '#E8F5F1', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                            className="exercise-list__preview-btn"
                                         >
                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
                                         </button>
@@ -332,12 +328,11 @@ const PatientDashboardHome = () => {
                                 </li>
 
                             )) : (
-                                <p style={{ color: '#A0AEC0', fontSize: '0.9rem', textAlign: 'center', padding: '1rem' }}>No tienes ejercicios asignados por tu fisio.</p>
+                                <p className="exercise-list__empty">No tienes ejercicios asignados por tu fisio.</p>
                             )}
                             {exercises.length > 0 && (
                                 <button 
-                                    className="btn-ghost" 
-                                    style={{ marginTop: '1.2rem', width: '100%', height: '36px', fontSize: '0.8rem' }}
+                                    className="btn-ghost btn-ghost--full-w-h36" 
                                     onClick={() => navigate('/dashboard/patient/exercises')}
                                 >
                                     Ver mis ejercicios detallados
@@ -355,7 +350,7 @@ const PatientDashboardHome = () => {
                             <p className="activity-widget__subtitle">Tendencia de <strong>Dolor</strong></p>
                         </header>
 
-                        <figure className="activity-widget__wave" style={{ margin: '1rem 0' }}>
+                        <figure className="activity-widget__wave">
                             <svg width={svgW} height={svgH} viewBox={`0 0 ${svgW} ${svgH}`} preserveAspectRatio="none">
                                 <defs>
                                     <linearGradient id="painGrad" x1="0" y1="0" x2="0" y2="1">
@@ -370,51 +365,48 @@ const PatientDashboardHome = () => {
                         </figure>
 
                         {!submitted ? (
-                            <form className="pain-form" onSubmit={handleSubmitDiary} style={{ background: '#F9FBFB', padding: '1.2rem', borderRadius: '18px' }}>
-                                <p className="meta-label" style={{ marginBottom: '1rem', textAlign: 'center' }}>¿Cómo te sientes hoy? (Escala EVA)</p>
-                                <div className="pain-scale" style={{ gap: '0.4rem', marginBottom: '1.2rem' }}>
+                            <form className="pain-form pain-form--widget" onSubmit={handleSubmitDiary}>
+                                <p className="meta-label meta-label--center-mb">¿Cómo te sientes hoy? (Escala EVA)</p>
+                                <div className="pain-scale pain-scale--widget">
                                     {[1,2,3,4,5,6,7,8,9,10].map(n => (
                                         <button
                                             key={n}
                                             type="button"
-                                            className={`pain-dot ${painLevel === n ? 'pain-dot--active' : ''} ${n <= 3 ? 'pain-dot--low' : n <= 6 ? 'pain-dot--mid' : 'pain-dot--high'}`}
+                                            className={`pain-dot pain-dot--small ${painLevel === n ? 'pain-dot--active' : ''} ${n <= 3 ? 'pain-dot--low' : n <= 6 ? 'pain-dot--mid' : 'pain-dot--high'}`}
                                             onClick={() => setPainLevel(n)}
-                                            style={{ width: '22px', height: '22px', fontSize: '0.65rem' }}
                                         >{n}</button>
                                     ))}
                                 </div>
                                 <textarea 
-                                    className="auth__input" 
+                                    className="dashboard__input dashboard__input--textarea-short" 
                                     placeholder="Añade una observación clínica si lo necesitas..." 
-                                    style={{ width: '100%', minHeight: '60px', fontSize: '0.85rem', background: '#FFF' }}
                                     value={observation}
                                     onChange={e => setObservation(e.target.value)}
                                 />
-                                <button className="btn-primary" type="submit" disabled={!painLevel} style={{ marginTop: '1rem', height: '44px' }}>
+                                <button className="btn-primary btn-primary--mt-md-h44" type="submit" disabled={!painLevel}>
                                     Registrar Evolución
                                 </button>
                             </form>
                         ) : (
-                            <section className="pain-success" style={{ padding: '2rem' }}>
-                                <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#55A98A', color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>✓</div>
-                                <p style={{ fontWeight: '700', marginBottom: '0.3rem' }}>¡Registro guardado!</p>
+                            <section className="pain-success pain-success--widget">
+                                <div className="pain-success__icon-circle">✓</div>
+                                <p className="pain-success__title">¡Registro guardado!</p>
                                 <p className="meta-label">Has marcado un nivel de dolor de {painLevel}/10. Tu fisio ya puede verlo.</p>
                             </section>
                         )}
 
-                        <ul className="activity-list" style={{ marginTop: '1.5rem' }}>
+                        <ul className="activity-list activity-list--mt-lg">
                             <li className="activity-list__item activity-list__item--today">
                                 <span className="activity-list__label">Objetivo Diario</span>
                                 <span className="activity-list__value">{completedCount}/{exercises.length}</span>
                             </li>
                             <li className="activity-list__item">
                                 <span className="activity-list__label">Estado del Plan</span>
-                                <span className="activity-list__value" style={{ color: '#55A98A', fontWeight: '700' }}>Activo</span>
+                                <span className="activity-list__value activity-list__value--active">Activo</span>
                             </li>
                         </ul>
                         <button 
-                            className="btn-ghost" 
-                            style={{ marginTop: '1.2rem', width: '100%', height: '36px', fontSize: '0.8rem' }}
+                            className="btn-ghost btn-ghost--full-w-h36" 
                             onClick={() => navigate('/dashboard/patient/evolution')}
                         >
                             Ver evolución y gráfico completo
@@ -423,19 +415,19 @@ const PatientDashboardHome = () => {
                 </section>
             </section>
             {previewEx && createPortal(
-                <div style={{ position: 'fixed', inset: 0, background: 'rgba(26, 46, 53, 0.6)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999999, padding: '1.5rem' }} onClick={() => setPreviewEx(null)}>
-                    <div className="dashboard-card animate-in" style={{ maxWidth: '800px', width: '100%', padding: '1.5rem', borderRadius: '28px', background: '#FFFFFF', position: 'relative' }} onClick={e => e.stopPropagation()}>
-                        <header style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <h3 style={{ margin: 0, fontSize: '1.5rem', color: '#1A2E35' }}>{previewEx.name}</h3>
-                            <button onClick={() => setPreviewEx(null)} style={{ background: '#F9FBFB', border: 'none', width: '36px', height: '36px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#5A6B6D', fontWeight: 'bold' }}>✕</button>
+                <div className="video-preview-overlay" onClick={() => setPreviewEx(null)}>
+                    <div className="dashboard-card animate-in video-preview-container" onClick={e => e.stopPropagation()}>
+                        <header className="video-preview-header">
+                            <h3 className="video-preview-title">{previewEx.name}</h3>
+                            <button className="video-preview-close-btn" onClick={() => setPreviewEx(null)}>✕</button>
                         </header>
-                        <div style={{ background: '#F0F4F4', borderRadius: '20px', overflow: 'hidden', aspectRatio: '16/9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <div className="video-preview-media-wrapper">
                             {previewEx.mediaUrl.includes('youtube.com') || previewEx.mediaUrl.includes('vimeo.com') ? (
                                 <iframe width="100%" height="100%" src={previewEx.mediaUrl.replace('watch?v=', 'embed/')} frameBorder="0" allowFullScreen></iframe>
                             ) : isVideo(previewEx.mediaUrl) ? (
-                                <video src={previewEx.mediaUrl} controls autoPlay style={{ width: '100%', height: '100%', objectFit: 'contain', background: '#000' }} />
+                                <video src={previewEx.mediaUrl} controls autoPlay className="patient-exercises__video" />
                             ) : (
-                                <img src={previewEx.mediaUrl} alt={previewEx.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                                <img src={previewEx.mediaUrl} alt={previewEx.name} className="video-preview-image" />
                             )}
                         </div>
                     </div>
@@ -445,7 +437,7 @@ const PatientDashboardHome = () => {
 
             {showApptModal && createPortal(
                 <div className="modal-overlay" onClick={() => setShowApptModal(false)}>
-                    <div className="modal-container--premium" style={{ maxWidth: '450px' }} onClick={e => e.stopPropagation()}>
+                    <div className="modal-container--premium modal-container--premium-w450" onClick={e => e.stopPropagation()}>
                         <header className="modal-header--clinical">
                             <h2 className="modal-header__title">Solicitar Nueva Cita</h2>
                             <p className="modal-header__subtitle">Propón un horario y tu fisio lo confirmará.</p>
@@ -454,14 +446,13 @@ const PatientDashboardHome = () => {
                         
                         <div className="modal-body--clinical">
                             <form onSubmit={handleRequestAppointment} className="clinical-form">
-                                <div className="clinical-input-group" style={{ marginBottom: '1.5rem' }}>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.6rem' }}>
-                                        <label className="meta-label meta-label--brand" style={{ margin: 0 }}>Fecha Preferente</label>
+                                <div className="clinical-input-group clinical-input-group--mb-lg">
+                                    <div className="clinical-input-group__header">
+                                        <label className="meta-label meta-label--brand meta-label--no-margin">Fecha Preferente</label>
                                         <button 
                                             type="button" 
-                                            className="link-btn" 
+                                            className="link-btn clinical-input-group__link-btn" 
                                             onClick={() => setCustomDateMode(!customDateMode)}
-                                            style={{ background: 'none', border: 'none', color: 'var(--color-brand)', fontWeight: '700', fontSize: '0.75rem', cursor: 'pointer', textDecoration: 'underline', padding: 0 }}
                                         >
                                             {customDateMode ? "Ver calendario rápido" : "Elegir otra fecha"}
                                         </button>
@@ -473,7 +464,7 @@ const PatientDashboardHome = () => {
                                             onSelectDate={date => setApptForm({...apptForm, fecha: date})} 
                                         />
                                     ) : (
-                                        <div style={{ display: 'flex', gap: '0.6rem', overflowX: 'auto', padding: '0.4rem 0.2rem', scrollbarWidth: 'none', msOverflowStyle: 'none' }} className="no-scrollbar">
+                                        <div className="no-scrollbar date-btn-container">
                                             {getNextDays().map((d, index) => {
                                                 const isoStr = d.toISOString().split('T')[0];
                                                 const isSelected = apptForm.fecha === isoStr;
@@ -482,29 +473,15 @@ const PatientDashboardHome = () => {
                                                         key={index}
                                                         type="button"
                                                         onClick={() => setApptForm(prev => ({ ...prev, fecha: isoStr }))}
-                                                        style={{
-                                                            flex: '0 0 68px',
-                                                            height: '84px',
-                                                            borderRadius: '16px',
-                                                            background: isSelected ? 'var(--color-brand)' : '#F4FAF8',
-                                                            color: isSelected ? '#FFFFFF' : '#1A2E35',
-                                                            border: isSelected ? 'none' : '1px solid #C2DFD4',
-                                                            display: 'flex',
-                                                            flexDirection: 'column',
-                                                            alignItems: 'center',
-                                                            justifyContent: 'center',
-                                                            cursor: 'pointer',
-                                                            transition: 'all 0.2s ease',
-                                                            padding: '0.4rem 0.2rem'
-                                                        }}
+                                                        className={`date-btn-select ${isSelected ? 'date-btn-select--selected' : ''}`}
                                                     >
-                                                        <span style={{ fontSize: '0.65rem', fontWeight: '700', textTransform: 'uppercase', color: isSelected ? '#E2F1EC' : '#7A8C8E' }}>
+                                                        <span className="date-btn-select__weekday">
                                                             {d.toLocaleDateString('es-ES', { weekday: 'short' })}
                                                         </span>
-                                                        <span style={{ fontSize: '1.3rem', fontWeight: '800', marginTop: '0.1rem', lineHeight: '1.2' }}>
+                                                        <span className="date-btn-select__day">
                                                             {d.getDate()}
                                                         </span>
-                                                        <span style={{ fontSize: '0.6rem', fontWeight: '600', color: isSelected ? '#E2F1EC' : '#7A8C8E', marginTop: '0.1rem' }}>
+                                                        <span className="date-btn-select__month">
                                                             {d.toLocaleDateString('es-ES', { month: 'short' })}
                                                         </span>
                                                     </button>
@@ -513,14 +490,13 @@ const PatientDashboardHome = () => {
                                         </div>
                                     )}
                                 </div>
-                                <div className="clinical-input-group" style={{ marginBottom: '1.5rem' }}>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.6rem' }}>
-                                        <label className="meta-label meta-label--brand" style={{ margin: 0 }}>Hora de la Cita</label>
+                                <div className="clinical-input-group clinical-input-group--mb-lg">
+                                    <div className="clinical-input-group__header">
+                                        <label className="meta-label meta-label--brand meta-label--no-margin">Hora de la Cita</label>
                                         <button 
                                             type="button" 
-                                            className="link-btn" 
+                                            className="link-btn clinical-input-group__link-btn" 
                                             onClick={() => setCustomTimeMode(!customTimeMode)}
-                                            style={{ background: 'none', border: 'none', color: 'var(--color-brand)', fontWeight: '700', fontSize: '0.75rem', cursor: 'pointer', textDecoration: 'underline', padding: 0 }}
                                         >
                                             {customTimeMode ? "Ver turnos rápidos" : "Elegir otra hora"}
                                         </button>
@@ -532,7 +508,7 @@ const PatientDashboardHome = () => {
                                             onSelectTime={time => setApptForm({...apptForm, hora: time})} 
                                         />
                                     ) : (
-                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '0.5rem' }}>
+                                        <div className="hour-btn-grid">
                                             {[
                                                 '09:00', '10:00', '11:00', '12:00', '13:00',
                                                 '16:00', '17:00', '18:00', '19:00', '20:00'
@@ -543,18 +519,7 @@ const PatientDashboardHome = () => {
                                                         key={idx}
                                                         type="button"
                                                         onClick={() => setApptForm(prev => ({ ...prev, hora: time }))}
-                                                        style={{
-                                                            padding: '0.6rem 0.2rem',
-                                                            borderRadius: '12px',
-                                                            background: isSelected ? 'var(--color-brand)' : '#FFFFFF',
-                                                            color: isSelected ? '#FFFFFF' : '#1A2E35',
-                                                            border: isSelected ? 'none' : '1.5px solid #E2E8F0',
-                                                            fontWeight: '700',
-                                                            fontSize: '0.8rem',
-                                                            cursor: 'pointer',
-                                                            transition: 'all 0.2s ease',
-                                                            textAlign: 'center'
-                                                        }}
+                                                        className={`hour-btn-select ${isSelected ? 'hour-btn-select--selected' : ''}`}
                                                     >
                                                         {time}
                                                     </button>
@@ -574,8 +539,8 @@ const PatientDashboardHome = () => {
                                     />
                                 </div>
                                 
-                                <div className="clinical-card--dashed" style={{ marginTop: '1rem', padding: '1rem' }}>
-                                    <p style={{ fontSize: '0.8rem', color: '#5A6B6D', margin: 0 }}>
+                                <div className="clinical-card--dashed clinical-card--dashed--compact">
+                                    <p className="patient-appt-form__disclaimer">
                                         * Tu solicitud quedará en estado <strong>Pendiente</strong> hasta que el fisioterapeuta la valide en su agenda.
                                     </p>
                                 </div>
