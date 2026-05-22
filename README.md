@@ -8,6 +8,7 @@ El proyecto se aleja de los frameworks de componentes tradicionales para prioriz
 - **CSS Puro y BEM**: Arquitectura de estilos basada en bloques, sin dependencias externas.
 - **Identidad Visual**: Paleta basada en tonos menta y azul con elementos orgánicos para reducir la carga cognitiva del paciente.
 - **Accesibilidad**: Cumplimiento de WCAG AA para asegurar la legibilidad y usabilidad.
+- **Prototipo Interactivo en Figma**: [Diseño completo de Kinefy en Figma](https://www.figma.com/design/UWZvBTcBHwRixnVFzIuAJy/Proyecto-final-Kinefy?node-id=1-1376&t=qolTzxqMGEtjhyUZ-1) que detalla el diseño de las pantallas y los flujos de usuario.
 
 ## Estado del Proyecto (Versión Final - Listo para Entrega)
 

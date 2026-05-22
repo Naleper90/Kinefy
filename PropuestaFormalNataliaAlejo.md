@@ -295,6 +295,6 @@ Para organizar el trabajo usaré:
 - [Render](https://render.com)
 - [Brevo (Sendinblue)](https://www.brevo.com/es/)
 - [Mailgun](https://www.mailgun.com)
-- [Figma](https://www.figma.com)
+- [Proyecto Kinefy en Figma](https://www.figma.com/design/UWZvBTcBHwRixnVFzIuAJy/Proyecto-final-Kinefy?node-id=1-1376&t=qolTzxqMGEtjhyUZ-1)
 - [Pencil](https://pencil.dev/)
 - [Toggl Track](https://toggl.com/track/)

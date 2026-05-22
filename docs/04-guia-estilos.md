@@ -55,3 +55,11 @@ La guía de estilos asegura el cumplimiento de las normativas de accesibilidad:
 *   **Contraste:** Los colores de texto principales (gris oscuro) contra el fondo menta o crema superan el ratio de contraste 4.5:1 exigido para textos normales.
 *   **Estados de foco:** Todos los elementos interactivos mantienen un estado `:focus-visible` para permitir la navegación por teclado (vital en la vista del fisioterapeuta).
 *   **Ausencia de dependencias del color:** La información crítica (como el estado "Pendiente" o "Completado" de un ejercicio) no depende únicamente del color, sino que se acompaña de iconos y etiquetas textuales.
+
+---
+
+## 4.4. Prototipo del Diseño en Figma
+
+El diseño visual, la interactividad de las pantallas y los prototipos interactivos iniciales se desarrollaron íntegramente en Figma. Este prototipo sirvió de base para la maquetación final en CSS puro, manteniendo la coherencia de estilos, tipografías y el flujo de navegación de la aplicación:
+
+*   **Enlace al Proyecto de Figma:** [Proyecto Kinefy en Figma](https://www.figma.com/design/UWZvBTcBHwRixnVFzIuAJy/Proyecto-final-Kinefy?node-id=1-1376&t=qolTzxqMGEtjhyUZ-1)
