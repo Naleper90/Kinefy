@@ -68,3 +68,19 @@ Durante el desarrollo se presentaron diversos desafíos arquitectónicos que req
 ### 3. Problemas de HMR (Hot Module Replacement) con Vite
 *   **Reto:** En fases avanzadas de estilizado, se produjeron errores `500 Internal Server Error` y desconexiones del servidor Vite al inyectar reglas complejas o corruptas de CSS (problemas de codificación UTF-16 en Windows).
 *   **Solución:** Se sanearon los archivos `.css` problemáticos, asegurando una codificación UTF-8 estricta. Además, se modularizó el archivo gigante de estilos en componentes más pequeños dentro de `05-components/`, lo que redujo el tamaño de los módulos recargados por Vite y estabilizó por completo el entorno de desarrollo local.
+
+---
+
+## 6.4. Planificación del Proyecto (GitHub Projects)
+
+Para el seguimiento del desarrollo y garantizar una metodología de trabajo ágil (Kanban/Scrum) transparente, el ciclo de vida de las tareas se ha gestionado mediante la herramienta integrada de GitHub. 
+
+*   **Enlace al Tablero del Proyecto:** [GitHub Project - Kinefy #5](https://github.com/users/Naleper90/projects/5)
+
+El flujo de trabajo y la distribución de columnas en el tablero se estructuran de la siguiente manera:
+
+*   **Backlog:** Historias de usuario nucleares del MVP (ej. HU-01 a HU-09) y epics a futuro.
+*   **Por Hacer (To Do):** Tareas del sprint que se van a acometer a corto plazo.
+*   **En Progreso (In Progress):** Tareas en desarrollo activo (asociadas a ramas de funcionalidad `feature/*`).
+*   **En Revisión / CI:** Pull Requests abiertas para revisión, donde el pipeline de **GitHub Actions** valida automáticamente la compilación del frontend y los tests unitarios del backend.
+*   **Hecho (Done):** Funcionalidades completamente integradas en la rama `master` y desplegadas de forma continua en producción (Vercel y Railway).

@@ -1,0 +1,71 @@
+========================================================================
+                      ENTREGA FINAL DEL PROYECTO: KINEFY
+========================================================================
+
+Estimados miembros del Tribunal Evaluador y Docentes:
+
+A continuación se facilitan los datos de acceso, enlaces de interés y 
+credenciales de prueba para la evaluación de la entrega final de Kinefy.
+
+------------------------------------------------------------------------
+1. ENLACES PRINCIPALES
+------------------------------------------------------------------------
+* Repositorio en GitHub:
+  https://github.com/Naleper90/Kinefy
+
+* Aplicación Desplegada (Frontend - Vercel):
+  https://kinefy-beryl.vercel.app
+
+* API Backend Desplegada (Railway):
+  https://kinefy-production.up.railway.app
+
+* Tablero de Proyecto (GitHub Project):
+  https://github.com/users/Naleper90/projects/5
+
+* Prototipo Interactivo y Guía de Estilos en Figma:
+  https://www.figma.com/design/UWZvBTcBHwRixnVFzIuAJy/Proyecto-final-Kinefy?node-id=1-1376&t=qolTzxqMGEtjhyUZ-1
+
+------------------------------------------------------------------------
+2. CREDENCIALES DE ACCESO PARA PRUEBAS (ENTORNO LIVE / PRODUCCIÓN)
+------------------------------------------------------------------------
+Para facilitar la evaluación de los roles sin necesidad de registrarse:
+
+a) Rol: FISIOTERAPEUTA (Administración y control)
+   * Email: natalia@kinefy.com
+   * Contraseña: Kinefy2024!
+
+b) Rol: PACIENTE (Ejecución y telemetría de dolor)
+   * Email: carlos.mendoza@gmail.com
+   * Contraseña: Paciente2024!
+   * Nota: Este paciente tiene asignados datos de evolución reales y rutinas 
+     pautadas para evaluar el diario interactivo y la gráfica de la escala EVA.
+
+------------------------------------------------------------------------
+3. ESTRUCTURA DE LA DOCUMENTACIÓN EN EL REPOSITORIO
+------------------------------------------------------------------------
+Dentro de la carpeta `/docs` del repositorio se encuentra la memoria estructurada:
+- docs/01-introduccion.md
+- docs/02-descripcion.md
+- docs/03-instalacion.md (Guía para despliegue local mediante Docker)
+- docs/04-guia-estilos.md
+- docs/05-diseno.md
+- docs/06-desarrollo.md (Metodología ágil y retos técnicos)
+- docs/07-pruebas.md (Evidencias de pruebas unitarias Jest e integración)
+- docs/08-despliegue.md (Flujo de CI/CD y despliegue continuo en producción)
+- docs/09-manual-usuario.md
+- docs/10-conclusiones.md
+- docs/11-despliegue-eval.md (Anexo específico de justificación para el módulo de Despliegue)
+- docs/12-credenciales-prueba.md (Copia de credenciales y evidencias de correo en Mailtrap)
+
+------------------------------------------------------------------------
+4. INSTRUCCIONES DE DESPLIEGUE LOCAL RÁPIDO (DOCKER)
+------------------------------------------------------------------------
+Si desea levantar la aplicación localmente en un entorno aislado (HTTP Puerto 80):
+1. Clonar el repositorio: git clone https://github.com/Naleper90/Kinefy.git
+2. Acceder al directorio: cd Kinefy
+3. Iniciar el entorno orquestado con Docker Desktop activo:
+   docker compose up --build -d
+4. Acceder en el navegador a: http://localhost
+5. (Opcional) Para poblar la base de datos de producción/pruebas:
+   docker exec -it kinefy-api npm run seed:prod
+========================================================================

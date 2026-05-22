@@ -386,8 +386,16 @@ docker logs kinefy-web --tail 5
 
 Una vez completado el despliegue en la nube, se verifica la conectividad externa y la disponibilidad de los servicios en producción.
 
-*   **URL del Frontend (Vercel):** `https://kinefy.vercel.app`
+*   **URL del Frontend (Vercel):** `https://kinefy-beryl.vercel.app`
 *   **URL del Backend (Railway):** `https://kinefy-production.up.railway.app`
+
+#### Evidencias de Despliegue en Producción (Cloud)
+
+A continuación se adjuntan las capturas de pantalla de los paneles de control de Vercel y Railway como evidencia del despliegue exitoso y activo de la aplicación en producción:
+
+![Evidencia de Despliegue del Frontend en Vercel](assets/evidence-vercel.png)
+
+![Evidencia de Despliegue del Backend en Railway](assets/evidence-railway.png)
 
 *Comando de verificación contra la API en producción:*
 ```bash

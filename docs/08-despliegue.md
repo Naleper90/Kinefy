@@ -102,6 +102,14 @@ Tras pasar satisfactoriamente la validación en GitHub Actions, la integración 
 - **Despliegue de Backend (Railway)**: Railway detecta automáticamente los nuevos commits en la rama protegida `master`, reconstruye la imagen a partir del `Dockerfile` del backend e inicia el nuevo contenedor, gestionando el reemplazo progresivo de la instancia anterior sin tiempo de inactividad (*zero-downtime deployment*).
 
 **URLs de Producción:**
-* **Frontend Web (Vercel):** [https://kinefy.vercel.app](https://kinefy.vercel.app)
+* **Frontend Web (Vercel):** [https://kinefy-beryl.vercel.app](https://kinefy-beryl.vercel.app)
 * **Backend API (Railway):** [https://kinefy-production.up.railway.app](https://kinefy-production.up.railway.app)
+
+#### Evidencias de Despliegue en Producción (Cloud)
+
+A continuación se adjuntan las capturas de pantalla de los paneles de control de Vercel y Railway como evidencia del despliegue exitoso y activo de la aplicación:
+
+![Evidencia de Despliegue del Frontend en Vercel](assets/evidence-vercel.png)
+
+![Evidencia de Despliegue del Backend en Railway](assets/evidence-railway.png)
 
