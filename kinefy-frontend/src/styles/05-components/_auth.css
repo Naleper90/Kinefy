@@ -301,3 +301,103 @@ nav.auth__nav a:hover {
     font-size: 1rem;
   }
 }
+
+/* --- Modal de Recuperación --- */
+
+nav.auth__nav button.auth__nav-link-btn {
+  font-size: 1rem;
+  color: var(--color-text-link);
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  width: fit-content;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font-main);
+}
+
+nav.auth__nav button.auth__nav-link-btn:hover {
+  color: var(--color-brand-hover);
+  transform: translateX(4px);
+}
+
+.auth__modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(26, 46, 53, 0.45);
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 1.5rem;
+  animation: authFadeIn 0.3s ease-out;
+}
+
+.auth__modal {
+  background-color: var(--color-white);
+  padding: 2.5rem;
+  border-radius: var(--radius-md);
+  box-shadow: 0 20px 50px rgba(26, 46, 53, 0.15);
+  max-width: 500px;
+  width: 100%;
+  animation: authScaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.auth__modal-title {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  color: var(--color-text-dark);
+  margin-bottom: 1.25rem;
+  font-weight: 700;
+}
+
+.auth__modal-text {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--color-text-soft);
+  margin-bottom: 1.25rem;
+}
+
+.auth__modal-text strong {
+  color: var(--color-text-dark);
+  font-weight: 600;
+}
+
+.auth__modal-btn {
+  background-color: var(--color-brand);
+  color: var(--color-white);
+  border: none;
+  padding: 0.85rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+  margin-top: 0.5rem;
+  font-family: var(--font-main);
+  box-shadow: 0 4px 12px rgba(85, 169, 138, 0.2);
+}
+
+.auth__modal-btn:hover {
+  background-color: var(--color-brand-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(85, 169, 138, 0.3);
+}
+
+@keyframes authFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes authScaleIn {
+  from { transform: scale(0.9) translateY(10px); }
+  to { transform: scale(1) translateY(0); }
+}

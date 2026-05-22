@@ -20,7 +20,7 @@ const register = async (req, res) => {
             name,
             email,
             password,
-            role: role || 'paciente'
+            role: 'fisioterapeuta'
         });
 
         await user.save();
