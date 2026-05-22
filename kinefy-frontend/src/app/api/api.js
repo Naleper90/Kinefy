@@ -22,7 +22,7 @@ api.interceptors.request.use(
     }
 );
 
-// Interceptor de respuesta para gestionar errores de red y de sesión de forma global (DWEC - Robustez)
+// Interceptor de respuesta para gestionar errores de red y de sesión de forma global
 api.interceptors.response.use(
     (response) => response,
     (error) => {
