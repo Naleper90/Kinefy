@@ -12,7 +12,7 @@ const exerciseSchema = new mongoose.Schema({
     },
     categoria: {
         type: String,
-        enum: ['Movilidad', 'Fuerza', 'Core', 'Estiramiento', 'Equilibrio', 'Otro'],
+        enum: ['Movilidad', 'Fuerza', 'Flexibilidad', 'Cardio', 'Core', 'Estiramiento', 'Equilibrio', 'Otro'],
         default: 'Otro'
     },
     mediaUrl: {

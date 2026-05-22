@@ -22,8 +22,8 @@ La aplicación implementa un sistema de control de acceso basado en roles (RBAC)
 *   **Propósito:** Es el gestor del tratamiento. Supervisa, pauta y audita.
 *   **Vistas principales:** 
     *   *Dashboard (Inicio):* Visión general de pacientes con cita próxima, resumen de alertas y evolución clínica media.
-    *   *Listado de Pacientes:* CRM clínico para alta, baja y modificación de perfiles de usuarios bajo su tutela.
-    *   *Biblioteca de Ejercicios:* CRUD completo de ejercicios, incluyendo parámetros por defecto (series/repeticiones) y URLs de vídeos explicativos.
+    *   *Listado de Pacientes:* gestor de pacientes para alta, baja y modificación de perfiles de usuarios bajo su tutela.
+    *   *Biblioteca de Ejercicios:* CRUD completo de ejercicios, incluyendo parámetros por defecto (series/repeticiones) y URLs de vídeos explicativos o archivos subidos por el fisioterapeuta manualmente.
     *   *Gestión de Citas y Rutinas:* Asignación de pautas temporales a pacientes específicos.
     *   *Informes:* Visualización de auditorías, historial documental y evolución de la adherencia en formato tabla/gráfico.
 
@@ -51,7 +51,7 @@ El desarrollo del MVP se ha guiado mediante la metodología de historias de usua
 *   **HU-06:** Como paciente, quiero acceder a la plataforma desde mi teléfono móvil de forma rápida para ver qué ejercicios me tocan hoy.
 *   **HU-07:** Como paciente, quiero poder marcar un ejercicio como "Completado" con un simple toque para llevar un control de mi rutina.
 *   **HU-08:** Como paciente, quiero poder visualizar un vídeo o imagen de cada ejercicio para asegurarme de que estoy ejecutando la técnica correcta.
-*   **HU-09:** Como paciente, quiero registrar mi nivel de dolor al finalizar la rutina para que mi fisio sepa cómo me encuentro sin tener que enviarle un mensaje por otra vía.
+*   **HU-09:** Como paciente, quiero registrar mi nivel de dolor al finalizar la rutina para que el fisioterapeuta pueda conocer mi estado sin necesidad de contacto externo.
 
 ---
 

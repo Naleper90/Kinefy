@@ -8,13 +8,13 @@ Alcanzar la versión de entrega (MVP) del proyecto Kinefy marca el final del cic
 
 El objetivo principal de construir una plataforma que digitalice y humanice la rehabilitación física se ha cumplido con éxito. 
 1.  **A nivel tecnológico:** He logrado orquestar una arquitectura completa MERN (MongoDB, Express, React, Node) desde cero. Comprender y aplicar flujos complejos como la autenticación mediante JWT (JSON Web Tokens) y la gestión de bases de datos documentales ha asentado mis conocimientos sobre el desarrollo Backend.
-2.  **A nivel de diseño (Frontend):** Lograr traducir el concepto abstracto de "Organic Minimalism" a código ha sido el mayor éxito. He demostrado que es posible crear interfaces de alta calidad, responsivas y accesibles usando CSS Puro (Vanilla CSS con metodología BEM) y Vite, sin depender de librerías esclavas de terceros como Bootstrap o Tailwind.
+2.  **A nivel de diseño (Frontend):** Lograr traducir el concepto abstracto de "Organic Minimalism" a código ha sido el mayor éxito. He demostrado que es posible crear interfaces de alta calidad, responsivas y accesibles usando CSS Puro (Vanilla CSS con metodología BEM) y Vite, sin depender de frameworks de componentes de terceros como Bootstrap o Tailwind, manteniendo el control absoluto sobre cada decisión de estilo."
 
 ---
 
 ## 10.2. Dificultades Encontradas
 
-El proyecto no ha estado exento de retos, algunos de los cuales supusieron picos altos de frustración y un replanteamiento de estrategias:
+El proyecto no ha estado exento de retos, algunos de los cuales requirieron replantear enfoques técnicos y reorganizar prioridades y un replanteamiento de estrategias:
 *   **Gestión del CSS Puro:** Mantener cientos de líneas de CSS para lograr los "botones mancha" (blobs) asimétricos requirió estudiar a fondo propiedades avanzadas como `border-radius` múltiple y `cubic-bezier`. En más de una ocasión el layout de Grid o Flexbox se rompía en la vista móvil, lo que exigió una refactorización constante y auditorías de código exhaustivas.
 *   **Despliegue y Contenedores:** Entender el networking de Docker, mapear correctamente los volúmenes de persistencia para la base de datos y hacer que el proxy inverso funcionara en consonancia con la API supuso una fuerte curva de aprendizaje en el módulo de Despliegue.
 *   **Gestión del Tiempo:** Ajustar todas estas funcionalidades dentro del cronograma limitado de entregas ha exigido aplicar la priorización estricta del MVP (Product Management), dejando funciones atractivas fuera para asegurar la estabilidad del núcleo del sistema.
@@ -23,11 +23,25 @@ El proyecto no ha estado exento de retos, algunos de los cuales supusieron picos
 
 ## 10.3. Líneas de Trabajo Futuras
 
-Aunque el MVP actual cumple todas las especificaciones requeridas, Kinefy está diseñado con una arquitectura escalable que permite su evolución en futuras iteraciones. Las principales líneas de mejora identificadas son:
+Aunque el MVP actual cumple todas las especificaciones requeridas, Kinefy está diseñado 
+con una arquitectura escalable que permite su evolución en futuras iteraciones. 
+Las principales líneas de mejora identificadas son:
 
-1.  **Integración con *Wearables*:** Conectar la aplicación mediante API con dispositivos como Apple Watch o pulseras Garmin para automatizar el volcado de datos biométricos (frecuencia cardíaca o movimiento articular) durante los ejercicios.
-2.  **Telemedicina Sincrónica:** Integrar WebRTC para permitir llamadas de vídeo seguras integradas en la plataforma, posibilitando que el fisio corrija la postura del paciente en tiempo real.
-3.  **Módulo de Notificaciones Push:** Implementar *Service Workers* (PWA) para enviar recordatorios reales al móvil del paciente cuando no haya completado su rutina del día, mejorando aún más la adherencia terapéutica.
+1.  **Integración con *Wearables*:** Conectar la aplicación mediante API con dispositivos 
+    como Apple Watch o pulseras Garmin para automatizar el volcado de datos biométricos 
+    (frecuencia cardíaca, pasos y actividad) durante los ejercicios.
+
+2.  **Telemedicina Sincrónica:** Integrar WebRTC para permitir llamadas de vídeo seguras 
+    integradas en la plataforma, posibilitando que el fisioterapeuta corrija la postura 
+    del paciente en tiempo real.
+
+3.  **Módulo de Notificaciones Push:** Implementar *Service Workers* (PWA) para enviar 
+    recordatorios al móvil del paciente cuando no haya completado su rutina del día, 
+    mejorando la adherencia terapéutica.
+
+4.  **Análisis Predictivo (IA):** Incorporar un módulo de análisis de tendencias sobre 
+    los datos de adherencia y dolor (EVA) para que el sistema sugiera automáticamente 
+    al fisioterapeuta ajustes en la carga de ejercicios según la evolución del paciente.
 
 ---
 

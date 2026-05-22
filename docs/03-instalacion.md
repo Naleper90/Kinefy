@@ -23,15 +23,24 @@ Antes de arrancar, es obligatorio configurar las variables de entorno:
    cd kinefy
    ```
 
-2. Duplicar los archivos de ejemplo en cada subproyecto y renombrarlos a `.env`:
-   * En `kinefy-backend`: Copiar `.env.example` a `.env` y establecer una cadena secreta para `JWT_SECRET`.
+2. Configurar las variables de entorno:
+   * En `kinefy-backend`: Crear un archivo `.env` con las siguientes variables (puedes usar como referencia la sección `environment` del `docker-compose.yml`):
+     ```env
+     PORT=5000
+     MONGO_URI=mongodb://mongodb:27017/kinefy
+     JWT_SECRET=tu_secreto_aqui
+     EMAIL_HOST=tu_host_smtp
+     EMAIL_PORT=587
+     EMAIL_USER=tu_email
+     EMAIL_PASS=tu_password
+     NODE_ENV=development
+     ```
    * En `kinefy-frontend`: Copiar `.env.example` a `.env` y verificar que `VITE_API_URL` apunte a `/api` (bajo Docker Compose se utiliza el proxy inverso de Nginx de manera transparente) o apuntando directamente al backend para desarrollo local nativo.
-
 ---
 
 ## 3.3. Despliegue Local mediante Docker Compose
 
-En la raíz del proyecto se incluye el orquestador `compose.yaml` (o `docker-compose.yml`) que levanta de forma simultánea el cliente, el servidor y la base de datos en una misma red virtual.
+En la raíz del proyecto se incluye el orquestador `docker-compose.yml` que levanta de forma simultánea el cliente, el servidor y la base de datos en una misma red virtual.
 
 Para arrancar todo el sistema con una sola instrucción, ejecutar en la raíz del proyecto:
 
@@ -42,7 +51,7 @@ docker compose up --build -d
 ### 3.3.1. Verificación del despliegue local
 Una vez finalizado el proceso de *build* e *install*, la aplicación estará accesible en:
 *   **Frontend (App) y API (Proxy):** [http://localhost](http://localhost)
-*   **Backend (API directo):** [http://localhost:5000](http://localhost:5000) (acceso directo únicamente para desarrollo nativo fuera de Docker)
+*   **Backend (API directo):** [http://localhost:5000](http://localhost:5000) 
 
 Se puede comprobar el estado de los contenedores ejecutando:
 ```bash

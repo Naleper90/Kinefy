@@ -8,7 +8,7 @@ Asegurar la estabilidad del sistema es fundamental en aplicaciones del sector sa
 
 ### 7.1.1. Pruebas Manuales (Postman y cURL)
 
-Para verificar el correcto diseño de la API RESTful (Criterio C4), se han ejecutado baterías de pruebas unitarias sobre los endpoints críticos usando herramientas como Postman y comandos cURL. 
+Para verificar el correcto diseño de la API RESTful (Criterio C4), se han ejecutado baterías de pruebas funcionales sobre los endpoints críticos usando herramientas como Postman y comandos cURL. 
 
 **Prueba de Autenticación y Autorización:**
 Validación de que un token caducado o mal formado devuelve el código HTTP correcto, y de que un usuario con rol 'Paciente' no puede acceder a las rutas restringidas del 'Fisioterapeuta'.
@@ -24,7 +24,7 @@ Comprobación de que el modelo de Mongoose rechaza datos no válidos (por ejempl
 
 Para asegurar la robustez de la seguridad (Criterio 4 de DWES y calidad del software), se ha implementado una suite de pruebas automatizadas utilizando **Jest** como framework de pruebas y **Supertest** para realizar peticiones HTTP virtuales sin necesidad de arrancar el servidor en red o requerir una base de datos conectada.
 
-*   **Fichero de prueba:** [kinefy-backend/src/tests/auth.test.js](file:///c:/Users/esana/Desktop/Kinefy/kinefy-backend/src/tests/auth.test.js)
+*   **Fichero de prueba:** [kinefy-backend/src/tests/auth.test.js](https://github.com/Naleper90/Kinefy/blob/master/kinefy-backend/src/tests/auth.test.js)
 *   **Comando de ejecución:**
     ```bash
     npm run test
@@ -70,7 +70,7 @@ Utilizando herramientas como *Lighthouse* y simuladores de déficit visual, se a
 
 ---
 
-## Pruebas de rendimiento (carga ligera)
+## 7.4. Pruebas de rendimiento (carga ligera)
 
 Para verificar el comportamiento del servidor de aplicaciones bajo condiciones de concurrencia y comprobar la robustez de los middlewares implantados, se ha diseñado una prueba de rendimiento ligera.
 
@@ -92,7 +92,7 @@ autocannon -c 50 -d 10 http://localhost/api/auth/login
 ### Objetivo de la prueba
 El objetivo es verificar que la API responde correctamente bajo carga concurrente (50 conexiones concurrentes sostenidas durante 10 segundos) y confirmar que el middleware `express-rate-limit` actúa bloqueando las peticiones excesivas provenientes de una misma dirección IP una vez superado el límite configurado (máximo 20 peticiones por minuto para la ruta de login).
 
-### Resultados esperados aproximados
+### Criterios de aceptación de la prueba"
 
 | Métrica | Valor esperado |
 | :--- | :--- |

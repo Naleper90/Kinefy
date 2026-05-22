@@ -4,7 +4,7 @@
 
 A lo largo del desarrollo de Kinefy, y de cara al entorno de *Delivery* (entrega) en local para la corrección del proyecto, se ha utilizado la contenedorización mediante **Docker**. Esto garantiza el aislamiento del servidor de aplicaciones (Node), el servidor web/frontend (Vite) y el sistema de bases de datos (MongoDB).
 
-A continuación se exponen las evidencias del cumplimiento de los Criterios 7 y 8 exigidos en la rúbrica del módulo.
+A continuación se exponen las evidencias del cumplimiento de los criterios relacionados con la arquitectura de despliegue, la contenedorización, la configuración del servidor web y proxy inverso, la gestión de artefactos, la verificación de red y la integración continua del proyecto.
 
 
 ---
@@ -192,7 +192,7 @@ local     kinefy_mongo-data
 ```
 *Explicación:* El volumen `kinefy_mongo-data` almacena de forma persistente la base de datos en el host, evitando pérdidas de información si el contenedor MongoDB es reiniciado, recreado o destruido.
 
-Nota: Al principio no teníamos el volumen configurado y perdimos datos de prueba al recrear el contenedor. A partir de ahí lo añadimos como parte fija del compose.yaml.
+Durante la fase de desarrollo se identificó la necesidad de configurar un volumen persistente tras detectar pérdida de datos al recrear el contenedor. Esta incidencia motivó la inclusión del volumen mongo-data como parte fija de la configuración.
 
 ### 5. Exposición Única del Puerto 80 y Aislamiento de Puertos (Seguridad de Red)
 
@@ -202,7 +202,6 @@ A continuación se muestra el archivo completo de orquestación `docker-compose.
 
 ```yaml
 version: '3.8'
-
 services:
   # Base de Datos (MongoDB)
   mongodb:
@@ -279,20 +278,30 @@ Para que la aplicación sea reproducible en cualquier máquina sin instalar depe
 
 ### 1. Variables de Entorno y Seguridad
 La aplicación requiere parámetros sensibles (cadenas de conexión a BD, firmas de tokens) que **jamás deben subirse al repositorio público**. 
-*   **Implementación:** Se ha incluido el archivo `.env` dentro del `.gitignore`.
-*   **Evidencia:** Para informar al administrador sobre qué variables debe crear, se ha dejado en el repositorio un fichero plantilla `kinefy-backend/.env.example` y `kinefy-frontend/.env.example`.
 
-*Snippet de `kinefy-backend/.env.example`:*
+*   **Implementación:** Se ha incluido el archivo `.env` dentro del `.gitignore`.
+*   **Evidencia del frontend:** Se ha dejado en el repositorio un fichero plantilla `kinefy-frontend/.env.example` que indica al desarrollador la variable de entorno necesaria para apuntar a la API:
+
+*Snippet de `kinefy-frontend/.env.example`:*
 ```env
-# Puerto del Backend
-PORT=3000
-# Cadena de conexión a MongoDB
-MONGODB_URI=mongodb://localhost:27017/kinefy
-# Secreto para firmar tokens
-JWT_SECRET=tu_secreto_aqui
+VITE_API_URL=
 ```
 
-### 2. El Orquestador: `compose.yaml`
+En el backend, las variables sensibles (`MONGODB_URI`, `JWT_SECRET`, `PORT`, credenciales de email) se documentan en el propio `docker-compose.yml` mediante la sección `environment`, que actúa como referencia de qué variables deben configurarse sin exponer sus valores reales:
+
+```yaml
+environment:
+  - MONGO_URI=mongodb://mongodb:27017/kinefy
+  - JWT_SECRET=${JWT_SECRET}
+  - PORT=5000
+  - EMAIL_HOST=${EMAIL_HOST}
+  - EMAIL_PORT=${EMAIL_PORT}
+  - EMAIL_USER=${EMAIL_USER}
+  - EMAIL_PASS=${EMAIL_PASS}
+  - NODE_ENV=production
+```
+
+### 2. El Orquestador: `docker-compose.yml`
 Este fichero es el núcleo del despliegue local. Define los tres servicios principales (Criterio 1: Diseño de Arquitectura claro) y mapea las redes internas.
 
 *Evidencia de la persistencia de datos (Volúmenes):*
@@ -379,7 +388,14 @@ X-Powered-By: Express
 Access-Control-Allow-Origin: *
 ETag: W/"50-vnfZ8p60j7bjY7V3l+bFbxAzL5o"
 ```
-*Explicación:* El proxy inverso de Nginx reenvía la petición al backend y este responde con un `401 Unauthorized`. Esto demuestra que la red entre contenedores funciona, la ruta existe y que, además, la arquitectura de seguridad diseñada en el Criterio 1 (Middleware JWT) está filtrando correctamente las peticiones anónimas procedentes del exterior.
+*Explicación:* El proxy inverso de Nginx reenvía la petición al backend y este responde 
+con un `401 Unauthorized`. Esto demuestra que la red entre contenedores funciona, la ruta 
+existe y que, además, la arquitectura de seguridad diseñada en el Criterio 1 (Middleware JWT) 
+está filtrando correctamente las peticiones anónimas procedentes del exterior.
+
+> **Nota sobre CORS:** La cabecera `Access-Control-Allow-Origin: *` está configurada para 
+> facilitar las pruebas de evaluación. En un entorno de producción real con datos clínicos 
+> sensibles, se restringiría al dominio de Vercel (`https://kinefy-beryl.vercel.app`).
 
 ### 3. Verificación de Logs del Proxy (Nginx)
 Cuando el frontend o herramientas de red realizan peticiones, el servidor Nginx registra la actividad.
@@ -589,7 +605,7 @@ jobs:
     - name: Install Backend Dependencies
       run: |
         cd kinefy-backend
-        npm ci
+        npm ci || npm install
         
     - name: Run Backend Tests
       run: |
@@ -600,7 +616,7 @@ jobs:
     - name: Install Frontend Dependencies
       run: |
         cd kinefy-frontend
-        npm ci
+        npm ci || npm install
         
     - name: Run Frontend Lint
       run: |
@@ -614,16 +630,53 @@ jobs:
 ```
 
 ### 2. Descripción Técnica del Pipeline de Integración
-El flujo se activa de manera autónoma en cada `push` sobre la rama `master`, `develop` o cualquier rama de funcionalidad (`feature/*`), ejecutando los siguientes pasos de control en un contenedor virtualizado limpio de Ubuntu:
+El flujo se activa automáticamente en cada `push` sobre la rama `master`, `develop` o cualquier rama de funcionalidad (`feature/*`), así como en las `pull request` dirigidas a `master`.
+
+Los pasos ejecutados en cada comprobación automática son los siguientes:
+
 1. **Checkout del Repositorio:** Descarga el código fuente del commit subido.
 2. **Entorno Node.js:** Instala el runtime en la versión certificada.
-3. **Instalación de Dependencias:** Ejecuta `npm ci` (instalación limpia basada en `package-lock.json`) para recrear los entornos deterministas del backend y frontend de forma exacta.
-4. **Verificación de Compilación (Build):** Compila el código del frontend de React/Vite. Si existe algún fallo de enrutado, sintaxis o importación rota en el frontend, el build fallará y notificará de inmediato al desarrollador.
-5. **Ejecución de Pruebas (Tests):** Lanza las pruebas automatizadas Jest del backend para comprobar que los cambios no rompen ninguna regla de negocio crítica (como autenticación o roles de pacientes).
+3. **Instalación de dependencias del backend:** ejecuta `npm ci || npm install` dentro de `kinefy-backend`.
+4. **Ejecución de pruebas del backend:** lanza `npm test` para validar el comportamiento de la API y detectar regresiones.
+5. **Instalación de dependencias del frontend:** ejecuta `npm ci || npm install` dentro de `kinefy-frontend`.
+6. **Análisis estático del frontend:** ejecuta el linter con `npm run lint`.
+7. **Compilación del frontend:** ejecuta `npm run build` para verificar que la aplicación cliente genera correctamente la versión de producción.
 
-Este pipeline asegura que solo el código que compila de forma correcta y supera todos los tests automatizados sea apto para fusionarse con las ramas principales, manteniendo la integridad del producto antes del despliegue en producción.
+Este pipeline permite validar de forma automática tanto el backend como el frontend del proyecto antes de considerar una integración segura en ramas principales.
 
-#### Evidencia de Ejecución del CI/CD (GitHub Actions)
+#### Evidencia de Ejecución del CI (GitHub Actions)
 Como evidencia de funcionamiento continuo, a continuación se adjunta la captura de pantalla de la pestaña **Actions** en el repositorio remoto, que muestra el paso satisfactorio (checks en verde) de todas las compilaciones y conjuntos de pruebas automatizadas en los commits de entrega:
 
 ![Lista de ejecuciones exitosas de GitHub Actions](assets/evidence-ci.png)
+
+### 3. Despliegue continuo (CD) con Railway
+
+El despliegue continuo no se realiza mediante un job adicional dentro de GitHub Actions, sino a través de la **integración nativa entre Railway y GitHub**.
+
+**Configuración aplicada en Railway:**
+- Repositorio conectado: `Naleper90/Kinefy`
+- Rama conectada a producción: `master`
+- Despliegue automático tras cada push a la rama principal
+- Opción **Wait for CI** activada para esperar a que GitHub Actions finalice correctamente antes de desplegar
+
+**Flujo completo CI/CD:**
+
+```text
+push a master
+      │
+      ▼
+GitHub Actions (CI)
+  ├── Instalación de dependencias backend
+  ├── Tests del backend
+  ├── Instalación de dependencias frontend
+  ├── Lint del frontend
+  └── Build del frontend
+      │
+      ▼
+Railway (CD)
+  └── Despliegue automático en producción tras validación correcta del CI
+```
+
+Este enfoque garantiza que el despliegue en producción solo se produce cuando la integración continua se ha completado con éxito, evitando publicar código con errores de compilación o fallos en pruebas.
+
+![Evidencia de configuración CD en Railway](assets/evidence-railway-cd.png)

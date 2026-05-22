@@ -24,9 +24,12 @@ La paleta se aleja del blanco hospitalario o del azul corporativo agresivo. Se h
 *   **Acentos (Danger/Error):** Se evitan rojos chillones, optando por tonos salmón (`#E57373`) para reducir la sensación de "castigo" o alerta crítica en el paciente.
 
 ### 4.1.3. Tipografía
-Se ha implementado una jerarquía tipográfica moderna utilizando tipografías sin serifa (sans-serif) para mejorar la legibilidad en pantallas móviles:
-*   Para los encabezados (H1, H2, H3), se ha priorizado un peso (*font-weight*) alto para dar contundencia y anclaje visual.
-*   Para el cuerpo de texto, se ha aumentado el interlineado (`line-height: 1.6`) para facilitar la lectura a personas con problemas de visión o presbicia.
+Se ha implementado una jerarquía tipográfica moderna con dos familias tipográficas cargadas desde Google Fonts:
+
+*   **Fraunces** (serif): Utilizada en encabezados (H1, H2, H3). Es una tipografía óptica variable de carácter orgánico y expresivo, coherente con la filosofía *Organic Minimalism* del proyecto. Su peso alto aporta contundencia y anclaje visual en los títulos.
+*   **Outfit** (sans-serif): Utilizada en el cuerpo de texto, botones y etiquetas. Su geometría limpia y moderna garantiza una legibilidad óptima en pantallas pequeñas. Se ha aumentado el interlineado (`line-height: 1.6`) para facilitar la lectura a personas con problemas de visión o presbicia.
+
+La combinación serif/sans-serif crea una jerarquía visual clara: Fraunces ancla y da personalidad, Outfit comunica con claridad.
 
 ---
 
@@ -47,7 +50,7 @@ Esta decisión arquitectónica permite que el proyecto no dependa de abstraccion
 ### 4.3.1. Enfoque Mobile-First
 Kinefy asume que el 90% de la interacción del *Paciente* será a través de un teléfono móvil mientras está en la colchoneta de ejercicios. 
 *   **Diseño:** Todas las vistas (como la lista de ejercicios o el selector de dolor) se diseñaron primero para resoluciones de 320px-400px.
-*   **Zonas táctiles:** Los botones y áreas interactivas tienen un tamaño mínimo de 44x44 píxeles (estándar de Apple/Google) para facilitar el pulsado con el pulgar o con manos temblorosas.
+*   **Zonas táctiles:** Los botones y áreas interactivas tienen un tamaño mínimo de 44x44 píxeles, siguiendo las Human Interface Guidelines de Apple y las Material Design Guidelines de Google para facilitar el pulsado con el pulgar o con manos temblorosas.
 *   **Navegación Móvil:** Se ha sustituido la barra lateral (Sidebar) del escritorio por una barra de navegación inferior (Bottom Navigation Bar), accesible fácilmente con una sola mano.
 
 ### 4.3.2. Criterios WCAG AA

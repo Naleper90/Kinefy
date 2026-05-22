@@ -27,7 +27,10 @@ Para el paso a producción (Live Environment), se tomó la decisión de utilizar
 - **Railway**: Servidor web / Web Service para el backend (Node/Express), gestionando de manera automática el escalado, variables de entorno y logs.
 - **MongoDB Atlas**: Base de datos documental NoSQL gestionada en la nube (DBaaS) para asegurar alta disponibilidad y copias de seguridad continuas.
 
-Elegimos esta combinación principalmente para no tener que gestionar un VPS manualmente. Vercel y Railway se conectan al repositorio de GitHub y despliegan solos con cada push a master, lo que nos ahorra bastante trabajo de infraestructura. El HTTPS lo gestionan ellos automáticamente, y la base de datos queda aislada en Atlas.
+Esta combinación permite delegar la gestión de infraestructura a plataformas especializadas,
+evitando la administración manual de un VPS. La integración nativa con GitHub automatiza 
+el despliegue en cada push a `master`, y el certificado HTTPS es gestionado automáticamente 
+por cada plataforma, reduciendo la superficie de error operacional. El HTTPS lo gestionan ellos automáticamente, y la base de datos queda aislada en Atlas.
 
 ---
 
@@ -39,7 +42,7 @@ El pipeline automatizado se define en el fichero `.github/workflows/ci.yml` y ej
 1. Realiza el `checkout` del código fuente.
 2. Configura el entorno de ejecución Node.js (versión 18).
 3. Instala las dependencias tanto para el backend como para el frontend.
-4. Compila el frontend (`npm run build`) para verificar que no existen errores sintácticos de Vite ni TypeScript/Vite.
+4. Compila el frontend (npm run build) para verificar que no existen errores en el bundle de producción generado por Vite.
 5. Ejecuta el set de pruebas unitarias (`npm test`) del backend.
 
 *Snippet del flujo de integración (`.github/workflows/ci.yml`):*
@@ -73,7 +76,7 @@ jobs:
     - name: Install Backend Dependencies
       run: |
         cd kinefy-backend
-        npm ci
+        npm ci || npm install
         
     - name: Run Backend Tests
       run: |
@@ -84,7 +87,7 @@ jobs:
     - name: Install Frontend Dependencies
       run: |
         cd kinefy-frontend
-        npm ci
+        npm ci || npm install
         
     - name: Run Frontend Lint
       run: |
@@ -106,7 +109,9 @@ El pipeline está integrado orgánicamente en el flujo de trabajo. Como evidenci
 Tras pasar satisfactoriamente la validación en GitHub Actions, la integración con las plataformas de producción automatiza el despliegue de las actualizaciones:
 
 - **Despliegue de Frontend (Vercel)**: Vercel escucha los cambios de la rama `master` en GitHub, descarga el repositorio, ejecuta el build de producción y despliega la aplicación de manera instantánea, asignando la versión en producción.
-- **Despliegue de Backend (Railway)**: Railway detecta automáticamente los nuevos commits en la rama protegida `master`, reconstruye la imagen a partir del `Dockerfile` del backend e inicia el nuevo contenedor, gestionando el reemplazo progresivo de la instancia anterior sin tiempo de inactividad (*zero-downtime deployment*).
+- **Despliegue de Backend (Railway)**: Railway detecta automáticamente los nuevos commits 
+en la rama protegida `master`, reconstruye la imagen a partir del `Dockerfile` del backend 
+e inicia el nuevo contenedor, sustituyendo la instancia anterior de forma automática.
 
 **URLs de Producción:**
 * **Frontend Web (Vercel):** [https://kinefy-beryl.vercel.app](https://kinefy-beryl.vercel.app)
@@ -119,4 +124,9 @@ A continuación se adjuntan las capturas de pantalla de los paneles de control d
 ![Evidencia de Despliegue del Frontend en Vercel](assets/evidence-vercel.png)
 
 ![Evidencia de Despliegue del Backend en Railway](assets/evidence-railway.png)
+
+Adicionalmente, Railway tiene configurada la opción **"Wait for CI"**, que retrasa 
+el despliegue hasta que el pipeline de GitHub Actions finaliza con éxito, garantizando 
+que nunca se despliega código que no haya superado las pruebas automatizadas.
+
 

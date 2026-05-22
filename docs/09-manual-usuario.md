@@ -40,7 +40,7 @@ Para evitar asignar ejercicios de forma manual repetitiva, el profesional puede 
 Para garantizar la protección de la información médica, el profesional no puede editar directamente ni conocer las contraseñas de los usuarios de forma permanente.
 *   **Creación del Paciente:** Al dar de alta un paciente, el sistema genera automáticamente una credencial temporal segura y la envía por email al paciente.
 *   **Restablecimiento:** Si el paciente olvida su contraseña, el fisioterapeuta puede presionar el botón **"Resetear Contraseña"** en el panel lateral del paciente.
-*   **Transmisión segura:** El sistema regenera una clave temporal y la envía por correo encriptada de forma directa. Adicionalmente, la muestra en pantalla una sola vez para comunicación verbal opcional.
+*   **Transmisión segura:** El sistema regenera una clave temporal y la envía al correo del paciente a través de una conexión SMTP segura (TLS).
 
 ---
 
@@ -62,6 +62,11 @@ Tras ejecutar el movimiento, el paciente pulsa el botón **"Completar"**. La tar
 Una vez completados todos los ejercicios, el sistema requiere que el paciente indique cómo se siente:
 1. Aparece en pantalla un slider o selector interactivo del **1 al 10** (Escala Visual Analógica).
 2. El usuario selecciona la intensidad (donde 1 es "Sin dolor" y 10 es "Dolor insoportable").
-3. Al guardar, este dato se sincroniza en tiempo real con el panel del fisioterapeuta.
+3. Al guardar, este dato queda registrado en el sistema y estará disponible en el panel del fisioterapeuta en su próxima consulta.
 
 ![Registro de nivel de dolor mediante escala EVA interactiva](assets/paciente_eva.png)
+
+### 4. Seguimiento del Progreso Semanal
+Desde la barra de navegación inferior, el paciente puede acceder a **"Mi Progreso"**, 
+donde se muestra el porcentaje de cumplimiento semanal en formato visual, 
+fomentando la adherencia al tratamiento.

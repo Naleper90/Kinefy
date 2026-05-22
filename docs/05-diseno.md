@@ -1,6 +1,6 @@
 # 5. Diseño Técnico y Arquitectura
 
-El diseño técnico de Kinefy se ha fundamentado en la creación de un sistema escalable, mantenible y con una clara separación de responsabilidades (Separation of Concerns). Para lograrlo, se ha optado por una arquitectura cliente-servidor desacoplada utilizando el stack MERN.
+El diseño técnico de Kinefy se ha fundamentado en la creación de un sistema escalable, mantenible y con una clara separación de responsabilidades (Separation of Concerns). Para lograrlo, se ha optado por una arquitectura cliente-servidor desacoplada utilizando el stack MERN (MongoDB, Express, React y Node.js), complementado con Nginx como servidor web y proxy inverso en el entorno local.
 
 ```mermaid
 graph LR
@@ -54,9 +54,15 @@ La API se ha modularizado agrupando las rutas según su contexto. A continuació
 | :--- | :--- | :--- | :---: |
 | **POST** | `/api/auth/login` | Autenticación de usuario y generación de JWT | ❌ No |
 | **GET** | `/api/patients` | Obtener listado de pacientes del profesional | ✅ Sí (Rol Fisio) |
-| **POST** | `/api/patients/:id/exercises`| Asignar tabla de ejercicios a un paciente | ✅ Sí (Rol Fisio) |
-| **PUT** | `/api/patients/exercises/:id`| Marcar ejercicio diario como "Completado" | ✅ Sí (Rol Paciente)|
-| **POST** | `/api/patients/evolution` | Registrar nivel de dolor diario (Escala EVA) | ✅ Sí |
+| **POST** | `/api/patients` | Dar de alta a un nuevo paciente | ✅ Sí (Rol Fisio) |
+| **GET** | `/api/patients/:id` | Obtener detalle de un paciente concreto | ✅ Sí (Rol Fisio) |
+| **POST** | `/api/patients/:id/exercises` | Asignar tabla de ejercicios a un paciente | ✅ Sí (Rol Fisio) |
+| **PUT** | `/api/patients/exercises/:id` | Marcar ejercicio diario como "Completado" | ✅ Sí (Rol Paciente) |
+| **POST** | `/api/patients/:id/evolution` | Registrar nivel de dolor diario (Escala EVA) | ✅ Sí (Rol Paciente) |
+| **GET** | `/api/exercises` | Obtener biblioteca completa de ejercicios | ✅ Sí (Rol Fisio) |
+| **POST** | `/api/exercises` | Crear nuevo ejercicio en la biblioteca | ✅ Sí (Rol Fisio) |
+| **PUT** | `/api/exercises/:id` | Modificar un ejercicio existente | ✅ Sí (Rol Fisio) |
+| **DELETE** | `/api/exercises/:id` | Eliminar un ejercicio de la biblioteca | ✅ Sí (Rol Fisio) |
 
 ### 5.3.2. Estándares HTTP
 Se respetan rigurosamente los verbos HTTP semánticos:

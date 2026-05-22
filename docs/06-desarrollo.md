@@ -6,7 +6,7 @@ El desarrollo de Kinefy se ha ejecutado siguiendo metodologías ágiles (sprints
 
 ## 6.1. Inicialización y Setup
 
-El proyecto se dividió físicamente en dos repositorios/carpetas de trabajo para mantener la separación estricta entre cliente y servidor:
+El proyecto se dividió en dos carpetas de trabajo dentro del mismo repositorio para mantener la separación estricta entre cliente y servidor.
 
 ### Frontend (`kinefy-frontend`)
 Se inicializó el proyecto utilizando **Vite** con la plantilla de React. La elección de Vite frente al clásico `create-react-app` se fundamenta en su servidor de desarrollo basado en ES modules nativos (HMR ultra-rápido) y su proceso de build optimizado.
@@ -40,7 +40,7 @@ src/
 ```
 
 ### 6.2.2. Arquitectura de Directorios del Backend
-El servidor sigue el patrón clásico de diseño MVC (adaptado a API):
+El servidor sigue el patrón MVC adaptado a API REST (sin capa View, sustituida por las respuestas JSON de los controladores):
 
 ```text
 src/
