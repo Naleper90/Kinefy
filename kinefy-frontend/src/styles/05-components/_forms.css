@@ -989,20 +989,24 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   width: 36px;
   height: 36px;
   padding: 0;
-  border-radius: 10px;
-  background: #FDF2F2;
+  border-radius: 60% 40% 70% 30% / 50% 60% 40% 50%;
+  background-color: #FFF5F5;
+  border: 1.5px solid rgba(229, 115, 115, 0.4);
   color: #E57373;
-  border: none;
   cursor: pointer;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.03);
 }
 
 .btn-icon--delete:hover {
-  background: #FFEBEB;
-  transform: scale(1.05);
+  transform: scale(1.1) rotate(4deg);
+  border-radius: 40% 60% 30% 70% / 60% 40% 60% 40%;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.06);
+  background-color: #FFF5F5;
+  color: #E57373;
 }
 
 .btn-primary--danger {
@@ -1119,22 +1123,27 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 .btn-delete-icon {
-  background: transparent;
-  border: none;
-  color: #E57373;
-  padding: 0.5rem;
+  background-color: #FFF5F5;
+  border: 1.5px solid rgba(229, 115, 115, 0.4);
+  border-radius: 60% 40% 70% 30% / 50% 60% 40% 50%;
+  width: 36px;
+  height: 36px;
   cursor: pointer;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 8px;
-  transition: all 0.2s;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+  color: #E57373;
+  padding: 0;
 }
 
 .btn-delete-icon:hover {
-  background: #FDF2F2;
-  transform: scale(1.1);
-  color: #D32F2F;
+  transform: scale(1.1) rotate(4deg);
+  border-radius: 40% 60% 30% 70% / 60% 40% 60% 40%;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.06);
+  background-color: #FFF5F5;
+  color: #E57373;
 }
 
 .dashboard__input--title {
@@ -1341,7 +1350,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   .patient-action-btn {
     width: 40px;
     height: 40px;
-    border-radius: 14px;
+    border-radius: 60% 40% 70% 30% / 50% 60% 40% 50%;
     margin: 0;
   }
 

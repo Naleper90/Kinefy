@@ -265,7 +265,7 @@
 
 /* Responsividad de Informes */
 /* Unificación de botones en Biblioteca de Ejercicios */
-.exercise-card__btn, .exercise-card__media-link, .modal-close {
+.modal-close {
   border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   display: inline-flex;
