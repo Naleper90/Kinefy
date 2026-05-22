@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
-import { AppointmentsIcon, ExercisesIcon } from '../../components/dashboard/DashboardIcons';
+import { ExercisesIcon } from '../../components/dashboard/DashboardIcons';
 import api from '../../api/api';
 import { CustomCalendar, CustomTimePicker } from '../../components/dashboard/DatePickerPremium';
 

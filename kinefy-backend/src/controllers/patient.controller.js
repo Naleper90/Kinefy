@@ -46,7 +46,7 @@ const createPatient = async (req, res) => {
         const patient = await newPatient.save();
 
         sendEmail({
-            email: patient.email,
+            email: email,
             subject: 'Bienvenido/a a Kinefy - Tu plan de rehabilitación',
             html: `
                 <div style="font-family: sans-serif; color: #1A2E35; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #E8F5F1; border-radius: 10px;">
@@ -60,7 +60,7 @@ const createPatient = async (req, res) => {
                         <li><strong>Contraseña temporal:</strong> <span style="font-size: 1.2rem; font-family: monospace; background-color: #F4FAF8; padding: 2px 6px; border-radius: 4px; color: #55A98A; font-weight: bold;">${generatedPassword}</span></li>
                     </ul>
                     <p>Te recomendamos cambiar la contraseña una vez que accedas.</p>
-                    <p>Puedes acceder aquí: <a href="http://localhost" style="color: #55A98A; font-weight: bold;">Acceder a Kinefy</a></p>
+                    <p>Puedes acceder aquí: <a href="${process.env.FRONTEND_URL || 'https://kinefy.vercel.app'}" style="color: #55A98A; font-weight: bold;">Acceder a Kinefy</a></p>
                 </div>
             `
         }).catch(err => console.error('Error background mail:', err));
@@ -133,42 +133,70 @@ const updatePatient = async (req, res) => {
             { new: true, runValidators: true }
         );
 
-        // Si el fisio ha enviado una nueva contraseña, la actualizamos y notificamos al paciente
-        const { newPassword } = req.body;
-        if (newPassword && newPassword.trim().length >= 6) {
-            const user = await User.findById(patient.usuario?._id || patient.usuario);
-            if (user) {
+        // Si el fisio ha enviado un nuevo email, lo actualizamos en el User y también actualizamos nombre si cambió
+        const { email, newPassword } = req.body;
+        const user = await User.findById(patient.usuario?._id || patient.usuario);
+        if (user) {
+            let userNeedsSave = false;
+            if (email !== undefined) {
+                const trimmedEmail = email.trim().toLowerCase();
+                if (user.email !== trimmedEmail) {
+                    // Verificamos si ya existe otro usuario con ese email
+                    const emailConflict = await User.findOne({ email: trimmedEmail });
+                    if (emailConflict) {
+                        return res.status(400).json({ error: 'Este email ya está registrado por otro usuario', code: 'EMAIL_ALREADY_EXISTS' });
+                    }
+                    user.email = trimmedEmail;
+                    userNeedsSave = true;
+                }
+            }
+            if (updates.nombre && user.name !== updates.nombre) {
+                user.name = updates.nombre;
+                userNeedsSave = true;
+            }
+            if (newPassword && newPassword.trim().length >= 6) {
                 user.password = newPassword;
-                await user.save();
+                userNeedsSave = true;
+            }
 
-                const userEmail = user.email;
-                if (userEmail) {
-                    sendEmail({
-                        email: userEmail,
-                        subject: 'Tu contraseña en Kinefy ha sido actualizada',
-                        html: `
-                            <div style="font-family: sans-serif; color: #1A2E35; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #E8F5F1; border-radius: 10px;">
-                                <h1 style="color: #55A98A; font-size: 24px;">Hola, ${patient.nombre}</h1>
-                                <p>Tu fisioterapeuta ha actualizado tu contraseña de acceso a <strong>Kinefy</strong>.</p>
-                                <p>Tu nueva contraseña de acceso es:</p>
-                                <div style="background-color: #F4FAF8; border: 2px dashed #55A98A; padding: 15px; border-radius: 8px; text-align: center; margin: 20px 0;">
-                                    <span style="font-size: 1.4rem; font-family: monospace; font-weight: bold; letter-spacing: 2px; color: #1A2E35;">${newPassword}</span>
+            if (userNeedsSave) {
+                await user.save();
+                
+                // Si la contraseña cambió, enviamos notificación por correo
+                if (newPassword && newPassword.trim().length >= 6) {
+                    const userEmail = user.email;
+                    if (userEmail) {
+                        sendEmail({
+                            email: userEmail,
+                            subject: 'Tu contraseña en Kinefy ha sido actualizada',
+                            html: `
+                                <div style="font-family: sans-serif; color: #1A2E35; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #E8F5F1; border-radius: 10px;">
+                                    <h1 style="color: #55A98A; font-size: 24px;">Hola, ${patient.nombre}</h1>
+                                    <p>Tu fisioterapeuta ha actualizado tu contraseña de acceso a <strong>Kinefy</strong>.</p>
+                                    <p>Tu nueva contraseña de acceso es:</p>
+                                    <div style="background-color: #F4FAF8; border: 2px dashed #55A98A; padding: 15px; border-radius: 8px; text-align: center; margin: 20px 0;">
+                                        <span style="font-size: 1.4rem; font-family: monospace; font-weight: bold; letter-spacing: 2px; color: #1A2E35;">${newPassword}</span>
+                                    </div>
+                                    <p>Si no reconoces este cambio, contacta con tu fisioterapeuta lo antes posible.</p>
+                                    <hr style="border: 0; border-top: 1px solid #E8F5F1; margin: 20px 0;" />
+                                    <p>Accede a la plataforma aquí: <a href="${process.env.FRONTEND_URL || 'https://kinefy.vercel.app'}" style="color: #55A98A; font-weight: bold;">Iniciar Sesión en Kinefy</a></p>
                                 </div>
-                                <p>Si no reconoces este cambio, contacta con tu fisioterapeuta lo antes posible.</p>
-                                <hr style="border: 0; border-top: 1px solid #E8F5F1; margin: 20px 0;" />
-                                <p>Accede a la plataforma aquí: <a href="http://localhost" style="color: #55A98A; font-weight: bold;">Iniciar Sesión en Kinefy</a></p>
-                            </div>
-                        `
-                    }).then(() => {
-                        console.log(`[EMAIL] ✅ Notificación de cambio de contraseña enviada a ${userEmail}`);
-                    }).catch(err => {
-                        console.error('[EMAIL] ❌ Error al enviar notificación:', err.message);
-                    });
+                            `
+                        }).then(() => {
+                            console.log(`[EMAIL] ✅ Notificación de cambio de contraseña enviada a ${userEmail}`);
+                        }).catch(err => {
+                            console.error('[EMAIL] ❌ Error al enviar notificación:', err.message);
+                        });
+                    }
                 }
             }
         }
 
-        res.json(patient);
+        const updatedPatient = await Patient.findById(patient._id).populate('usuario', 'email name');
+        const patientData = updatedPatient.toObject();
+        patientData.email = patientData.usuario?.email || '';
+
+        res.json(patientData);
     } catch (err) {
         console.error("DEBUG - Error en updatePatient:", err);
 
@@ -387,7 +415,7 @@ const resetPatientPassword = async (req, res) => {
                         </div>
                         <p>Te recomendamos cambiar tu contraseña una vez que hayas iniciado sesión.</p>
                         <hr style="border: 0; border-top: 1px solid #E8F5F1; margin: 20px 0;" />
-                        <p>Puedes acceder a la plataforma desde el siguiente enlace: <a href="http://localhost" style="color: #55A98A; font-weight: bold;">Iniciar Sesión en Kinefy</a></p>
+                        <p>Puedes acceder a la plataforma desde el siguiente enlace: <a href="${process.env.FRONTEND_URL || 'https://kinefy.vercel.app'}" style="color: #55A98A; font-weight: bold;">Iniciar Sesión en Kinefy</a></p>
                     </div>
                 `
             });

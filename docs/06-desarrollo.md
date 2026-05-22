@@ -29,7 +29,7 @@ src/
 ├── app/
 │   ├── auth/         # Componentes y páginas de Login/Registro
 │   ├── components/   # Componentes reusables (Layouts, Sidebar, Icons)
-│   └── pages/        # Vistas principales (Dashboard, PatientsList, Reports)
+│   └── pages/        # Vistas principales (Dashboard - modularizado con PatientDetailSections.jsx, PatientsList, Reports)
 ├── styles/       # Arquitectura CSS Vanilla
 │   ├── 01-settings/  # Variables y tokens
 │   ├── 02-tools/     # (Opcional) Funciones/Mixins
@@ -68,6 +68,10 @@ Durante el desarrollo se presentaron diversos desafíos arquitectónicos que req
 ### 3. Problemas de HMR (Hot Module Replacement) con Vite
 *   **Reto:** En fases avanzadas de estilizado, se produjeron errores `500 Internal Server Error` y desconexiones del servidor Vite al inyectar reglas complejas o corruptas de CSS (problemas de codificación UTF-16 en Windows).
 *   **Solución:** Se sanearon los archivos `.css` problemáticos, asegurando una codificación UTF-8 estricta. Además, se modularizó el archivo gigante de estilos en componentes más pequeños dentro de `05-components/`, lo que redujo el tamaño de los módulos recargados por Vite y estabilizó por completo el entorno de desarrollo local.
+
+### 4. Refactorización de Componentes Complejos y Control de Calidad Estricto (ESLint en CI/CD)
+*   **Reto:** El componente `PatientDetail.jsx` creció en exceso de complejidad, superando las 800 líneas de código y mezclando lógica de diferentes secciones (datos del paciente, historial clínico, citas, etc.), lo cual dificultaba su mantenimiento y provocaba advertencias y errores de ESLint que bloqueaban el pipeline de CI/CD.
+*   **Solución:** Se realizó una refactorización modular extrema, extrayendo las secciones secundarias (citas, ejercicios, historial y evolución) a un nuevo archivo complementario `PatientDetailSections.jsx`. Además, se subsanaron más de 40 warnings y errores de ESLint en todo el frontend (como dependencias incorrectas de `useEffect`, referencias inútiles e importaciones huérfanas) y se configuró el pipeline de GitHub Actions para que fallara y bloqueara la integración si el linter detecta algún problema, garantizando la sostenibilidad y limpieza del código a largo plazo.
 
 ---
 

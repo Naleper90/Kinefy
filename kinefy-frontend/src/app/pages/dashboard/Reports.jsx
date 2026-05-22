@@ -9,7 +9,6 @@ const Reports = () => {
     const [loading, setLoading] = useState(true);
     const [modal, setModal] = useState({ show: false, type: null });
     const [selectedPatient, setSelectedPatient] = useState(null);
-    const [uploading, setUploading] = useState(false);
     const [statusMsg, setStatusMsg] = useState(null);
     const [filter, setFilter] = useState('');
 
@@ -83,7 +82,6 @@ const Reports = () => {
         const formData = new FormData();
         formData.append('file', file);
 
-        setUploading(true);
         try {
             const res = await api.post('/upload', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
@@ -103,8 +101,6 @@ const Reports = () => {
         } catch (err) {
             console.error("Error al subir el archivo", err);
             showNotification("Error al subir el archivo");
-        } finally {
-            setUploading(false);
         }
     };
 

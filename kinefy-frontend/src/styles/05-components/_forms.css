@@ -917,7 +917,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .btn-primary--soft {
   min-width: 200px;
   height: 54px;
-  border-radius: 14px;
+  border-radius: 22px 38px 25px 42px / 35px 28px 45px 32px;
   background: rgba(85, 169, 138, 0.15);
   color: var(--color-brand);
   border: none;
@@ -925,12 +925,13 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .btn-primary--soft:hover {
   background: rgba(85, 169, 138, 0.25);
-  transform: translateY(-2px);
+  transform: translateY(-3px) scale(1.02);
+  border-radius: 38px 22px 42px 25px / 28px 35px 32px 45px;
 }
 
 .btn-link {
@@ -1033,12 +1034,17 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   accent-color: var(--color-brand);
 }
 
-.btn.btn-sm, .btn-primary.btn-sm {
+.btn.btn-sm, .btn-primary.btn-sm, .btn-ghost.btn-sm, .btn-secondary.btn-sm {
   padding: 0.5rem 1.2rem;
   font-size: 0.85rem;
   height: auto;
   width: auto;
-  border-radius: 10px;
+  border-radius: 20px 30px 22px 35px / 28px 22px 38px 25px;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.btn.btn-sm:hover, .btn-primary.btn-sm:hover, .btn-ghost.btn-sm:hover, .btn-secondary.btn-sm:hover {
+  border-radius: 30px 20px 35px 22px / 22px 28px 25px 38px;
 }
 
 .btn-upload-label {
@@ -1048,17 +1054,20 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   background: #F0FAF6;
   color: var(--color-brand);
   padding: 0.6rem 1.2rem;
-  border-radius: 12px;
+  border-radius: 20px 30px 22px 35px / 28px 22px 38px 25px;
   font-size: 0.85rem;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s;
-  border: 1px solid rgba(85, 169, 138, 0.1);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border: 1.5px solid rgba(85, 169, 138, 0.1);
 }
 
 .btn-upload-label:hover {
   background: var(--color-brand);
   color: white;
+  transform: translateY(-2px) scale(1.02);
+  border-radius: 30px 20px 35px 22px / 22px 28px 25px 38px;
+  border-color: var(--color-brand);
 }
 
 .clinical-diagnosis {
@@ -1122,29 +1131,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   color: var(--color-text-dark);
 }
 
-.btn-delete-icon {
-  background-color: #FFF5F5;
-  border: 1.5px solid rgba(229, 115, 115, 0.4);
-  border-radius: 60% 40% 70% 30% / 50% 60% 40% 50%;
-  width: 36px;
-  height: 36px;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.03);
-  color: #E57373;
-  padding: 0;
-}
 
-.btn-delete-icon:hover {
-  transform: scale(1.1) rotate(4deg);
-  border-radius: 40% 60% 30% 70% / 60% 40% 60% 40%;
-  box-shadow: 0 6px 15px rgba(0,0,0,0.06);
-  background-color: #FFF5F5;
-  color: #E57373;
-}
 
 .dashboard__input--title {
   font-family: var(--font-display);
@@ -1308,7 +1295,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   box-shadow: 0 10px 25px rgba(26, 46, 53, 0.08);
 }
 
-.btn-primary--soft:hover, .reports__action-btn:hover, .modal-patient-btn:hover {
+.reports__action-btn:hover, .modal-patient-btn:hover {
   transform: translateY(-3px) scale(1.02);
   border-radius: 28px 18px 32px 20px / 22px 28px 25px 35px;
   border-color: var(--color-brand);
@@ -1702,7 +1689,25 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 .appointment-modal__toggle-btn {
-  /* Inherits from link-btn */
+  text-decoration: none;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--color-brand);
+  background: rgba(85, 169, 138, 0.08);
+  border: 1.5px solid rgba(85, 169, 138, 0.15);
+  border-radius: 20px 28px 22px 30px / 26px 20px 32px 22px;
+  padding: 0.3rem 0.8rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.appointment-modal__toggle-btn:hover {
+  background: rgba(85, 169, 138, 0.15);
+  border-color: var(--color-brand);
+  transform: translateY(-1px) scale(1.02);
+  border-radius: 28px 20px 30px 22px / 20px 26px 22px 32px;
 }
 
 .pain-dot--small {

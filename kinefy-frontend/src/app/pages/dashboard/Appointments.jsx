@@ -52,9 +52,11 @@ const Appointments = () => {
     
 
 
-    const now = new Date();
-    const [currentDate, setCurrentDate] = useState(new Date(now.getFullYear(), now.getMonth(), 1));
-    const [selectedDate, setSelectedDate] = useState(toLocalDateString(new Date()));
+    const [currentDate, setCurrentDate] = useState(() => {
+        const now = new Date();
+        return new Date(now.getFullYear(), now.getMonth(), 1);
+    });
+    const [selectedDate, setSelectedDate] = useState(() => toLocalDateString(new Date()));
     const [appointments, setAppointments] = useState([]);
     const [monthDays, setMonthDays] = useState([]);
 
@@ -82,6 +84,7 @@ const Appointments = () => {
     ];
 
     useEffect(() => {
+        const now = new Date();
         const year = currentDate.getFullYear();
         const month = currentDate.getMonth();
         const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -368,7 +371,7 @@ const Appointments = () => {
                 {searchTerm && (
                     <header className="search-results-header">
                         <h2 className="search-results-title">
-                            Resultados para: <span>"{searchTerm}"</span>
+                            Resultados para: <span>&quot;{searchTerm}&quot;</span>
                         </h2>
                         <button className="btn-link" onClick={() => setSearchTerm('')}>Limpiar búsqueda</button>
                     </header>

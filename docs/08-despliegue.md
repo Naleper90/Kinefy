@@ -58,7 +58,7 @@ jobs:
     
     strategy:
       matrix:
-        node-version: [18.x]
+        node-version: [18.x, 20.x]
 
     steps:
     - name: Checkout repository
@@ -69,25 +69,32 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         
+    # Backend Setup & Test
     - name: Install Backend Dependencies
       run: |
         cd kinefy-backend
-        npm ci || npm install
-        
-    - name: Install Frontend Dependencies
-      run: |
-        cd kinefy-frontend
-        npm ci || npm install
-        
-    - name: Build Frontend
-      run: |
-        cd kinefy-frontend
-        npm run build
+        npm ci
         
     - name: Run Backend Tests
       run: |
         cd kinefy-backend
         npm test
+
+    # Frontend Setup, Lint & Build
+    - name: Install Frontend Dependencies
+      run: |
+        cd kinefy-frontend
+        npm ci
+        
+    - name: Run Frontend Lint
+      run: |
+        cd kinefy-frontend
+        npm run lint
+        
+    - name: Build Frontend
+      run: |
+        cd kinefy-frontend
+        npm run build
 ```
 **Evidencia de ejecución continua:**
 El pipeline está integrado orgánicamente en el flujo de trabajo. Como evidencia, durante el desarrollo de ramas como feature/clinical-reports-professionalization, el CI se ha disparado con cada commit (ej. fix: make CORS origin matching more robust, feat: add production seed script), validando el build en un tiempo medio de ~30 segundos por ejecución antes de permitir la subida a producción.

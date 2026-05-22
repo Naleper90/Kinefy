@@ -1,8 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { KneeIcon, BlobIcon } from '../../components/dashboard/DashboardIcons';
 import api from '../../api/api';
+
+const toLocalDateString = (date) => {
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+};
 
 const DashboardHome = () => {
     const navigate = useNavigate();
@@ -10,25 +18,16 @@ const DashboardHome = () => {
     const [nextAppointment, setNextAppointment] = useState(null);
     const [todayAppointments, setTodayAppointments] = useState([]);
     const [lastHandledId, setLastHandledId] = useState(null);
-    const [loading, setLoading] = useState(true);
     const [statusMsg, setStatusMsg] = useState(null);
 
     const user = JSON.parse(localStorage.getItem('kinefy_user')) || { name: 'Profesional' };
-
-    const toLocalDateString = (date) => {
-        const d = new Date(date);
-        const year = d.getFullYear();
-        const month = String(d.getMonth() + 1).padStart(2, '0');
-        const day = String(d.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    };
 
     const showNotification = (msg) => {
         setStatusMsg(msg);
         setTimeout(() => setStatusMsg(null), 3000);
     };
 
-    const fetchDashboardData = async () => {
+    const fetchDashboardData = useCallback(async () => {
         try {
             const patientsRes = await api.get('/patients');
             const adaptedPatients = patientsRes.data.map(p => ({
@@ -73,14 +72,12 @@ const DashboardHome = () => {
             }
         } catch (err) {
             // Manejo de error silencioso para no interrumpir el flujo del profesional
-        } finally {
-            setLoading(false);
         }
-    };
+    }, [lastHandledId]);
 
     useEffect(() => {
         fetchDashboardData();
-    }, [lastHandledId]);
+    }, [fetchDashboardData]);
 
     const handleUpdateAppointmentStatus = async (newStatus) => {
         if (!nextAppointment) return;

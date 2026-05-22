@@ -1003,23 +1003,26 @@
 }
 
 .home-doc-item__link {
-  width: 30px;
-  height: 30px;
-  border-radius: 8px;
+  width: 34px;
+  height: 34px;
+  border-radius: 60% 40% 70% 30% / 50% 60% 40% 50%;
   background: #F0FAF6;
   color: var(--color-brand);
-  border: 1px solid rgba(85, 169, 138, 0.15);
+  border: 1.5px solid rgba(85, 169, 138, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
   text-decoration: none;
   flex-shrink: 0;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .home-doc-item__link:hover {
   background: var(--color-brand);
   color: #FFF;
+  transform: scale(1.12) rotate(5deg);
+  border-radius: 40% 60% 30% 70% / 60% 40% 60% 40%;
+  box-shadow: 0 6px 15px rgba(85, 169, 138, 0.25);
 }
 
 /* ==========================================================================

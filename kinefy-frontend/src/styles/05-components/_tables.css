@@ -219,44 +219,7 @@
   gap: 0.5rem;
 }
 
-.reports__item {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 0.75rem 1rem;
-  border-radius: 10px;
-  transition: background 0.2s ease;
-}
 
-.reports__item:hover {
-  background: rgba(85, 169, 138, 0.03);
-}
-
-.reports__item-icon {
-  background: #F0FAF6;
-  color: var(--color-brand);
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 10px;
-}
-
-.reports__item-info {
-  flex: 1;
-}
-
-.reports__item-title {
-  font-size: 0.85rem;
-  font-weight: 600;
-  margin-bottom: 0.1rem;
-}
-
-.reports__item-meta {
-  font-size: 0.7rem;
-  opacity: 0.5;
-}
 
 .reports__footer {
   margin-top: auto;
@@ -278,6 +241,13 @@
   border-radius: 18px;
   border: 1px solid #F0F4F4;
   margin-bottom: 1rem;
+  transition: all 0.2s ease;
+}
+
+.reports__item:hover {
+  border-color: var(--color-brand);
+  transform: translateX(5px);
+  box-shadow: 0 4px 12px rgba(85, 169, 138, 0.05);
 }
 
 .reports__item-icon {
@@ -328,21 +298,7 @@
   display: block;
 }
 
-.reports__item {
-  display: flex;
-  align-items: center;
-  padding: 1.2rem;
-  background: #F9FBFB;
-  border-radius: 18px;
-  border: 1px solid #F0F4F4;
-  margin-bottom: 1rem;
-  transition: all 0.2s;
-}
 
-.reports__item:hover {
-  border-color: var(--color-brand);
-  transform: translateX(5px);
-}
 
 .reports__action-icon {
   width: 40px;
@@ -516,6 +472,28 @@
   text-transform: uppercase;
 }
 
+.reports__item .status-badge {
+  padding: 0.5rem 1.2rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  border-radius: 20px 30px 22px 35px / 28px 22px 38px 25px; /* Forma orgánica */
+  background: #E8F5F1;
+  color: var(--color-brand);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.reports__item .status-badge:hover {
+  background: var(--color-brand);
+  color: #FFFFFF;
+  transform: translateY(-2px) scale(1.02) rotate(1deg);
+  border-radius: 30px 20px 35px 22px / 22px 28px 25px 38px;
+}
+
 @media (max-width: 992px) {
 
   .reports__folder-summary {
@@ -532,6 +510,7 @@
   .reports__item .status-badge {
     width: 100%;
     text-align: center;
+    box-sizing: border-box;
   }
 
 }

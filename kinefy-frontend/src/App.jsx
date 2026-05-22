@@ -16,12 +16,27 @@ const ProtectedRoute = ({ children, requiredRole }) => {
     const stored = localStorage.getItem('kinefy_user');
     if (!stored) return <Navigate to="/login" replace />;
     
-    const user = JSON.parse(stored);
-    if (requiredRole && user.role !== requiredRole) {
-        // Redirige al dashboard correcto según rol real de DB
-        return <Navigate to={user.role === 'paciente' ? '/dashboard/patient' : '/dashboard/physio'} replace />;
+    let user;
+    try {
+        user = JSON.parse(stored);
+        if (!user || !user.role) {
+            throw new Error('Usuario inválido');
+        }
+    } catch (err) {
+        console.error('Error parseando el usuario de sesión:', err);
+        localStorage.removeItem('kinefy_user');
+        return <Navigate to="/login" replace />;
     }
-    return children;
+    
+    if (requiredRole) {
+        if (user.role !== requiredRole) {
+            return <Navigate to={user.role === 'paciente' ? '/dashboard/patient' : '/dashboard/physio'} replace />;
+        }
+        return children;
+    }
+    
+    // Si no se solicita un rol específico, redirigimos al dashboard correspondiente a su rol
+    return <Navigate to={user.role === 'paciente' ? '/dashboard/patient' : '/dashboard/physio'} replace />;
 };
 
 function App() {

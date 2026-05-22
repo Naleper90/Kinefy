@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { KinefyLogo, BlobIcon } from './AuthIcons';
 
 
@@ -14,7 +13,7 @@ const AuthLayout = ({ children, title, subtitle, footerActions }) => {
                 <div className="auth-page__identity-content">
                     <KinefyLogo className="auth-page__logo" />
                     <blockquote className="auth-page__quote">
-                        "El camino a tu recuperación empieza aquí."
+                        &quot;El camino a tu recuperación empieza aquí.&quot;
                     </blockquote>
                 </div>
                 {/* Composición de acuarelas dual (Menta + Azul) */}

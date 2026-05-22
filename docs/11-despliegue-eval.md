@@ -68,7 +68,7 @@ En producción, el frontend y el backend se despliegan en servicios PaaS en la n
 | :--- | :--- | :--- | :--- | :--- |
 | **Frontend Web** | `kinefy-web` | `nginx:alpine` (con dist) | `80:80` (Público) | Servidor web estático y Proxy Inverso. Enruta `/api` al backend y `/uploads` a la carpeta de adjuntos del backend. |
 | **Backend API** | `kinefy-api` | `kinefy-backend` (Dockerfile) | `5000` (Interno en red) | Servidor de aplicaciones Express/Node que expone la API REST. |
-| **Base de Datos** | `kinefy-db` | `mongo:latest` | `27017` (Interno en red) | Motor de base de datos NoSQL para el almacenamiento de datos clínicos y del diario. |
+| **Base de Datos** | `kinefy-db` | `mongo:7.0` | `27017` (Interno en red) | Motor de base de datos NoSQL para el almacenamiento de datos clínicos y del diario. |
 
 ### Flujo de Comunicación y Seguridad de Red
 
@@ -146,7 +146,7 @@ Comprobamos que todos los contenedores se ejecutan sin errores:
 ```text
 $ docker compose ps
 NAME        IMAGE            COMMAND                  SERVICE   CREATED         STATUS         PORTS
-kinefy-db   mongo:latest     "docker-entrypoint.s…"   mongodb   2 minutes ago   Up 2 minutes   27017/tcp
+kinefy-db   mongo:7.0        "docker-entrypoint.s…"   mongodb   2 minutes ago   Up 2 minutes   27017/tcp
 kinefy-api  kinefy-backend   "docker-entrypoint.s…"   backend   2 minutes ago   Up 2 minutes   5000/tcp
 kinefy-web  nginx:alpine     "/docker-entrypoint.…"   frontend  2 minutes ago   Up 2 minutes   0.0.0.0:80->80/tcp, [::]:80->80/tcp
 ```
@@ -204,19 +204,27 @@ A continuación se muestra el archivo completo de orquestación `docker-compose.
 version: '3.8'
 
 services:
-  # Base de Datos (MongoDB) - Puerto interno aislado
+  # Base de Datos (MongoDB)
   mongodb:
-    image: mongo:latest
+    image: mongo:7.0
     container_name: kinefy-db
+    restart: unless-stopped
     volumes:
       - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     networks:
       - kinefy-network
 
-  # Backend (API) - Puerto interno aislado
+  # Backend (API)
   backend:
     build: ./kinefy-backend
     container_name: kinefy-api
+    restart: unless-stopped
     environment:
       - MONGO_URI=mongodb://mongodb:27017/kinefy
       - JWT_SECRET=${JWT_SECRET}
@@ -227,16 +235,18 @@ services:
       - EMAIL_PASS=${EMAIL_PASS}
       - NODE_ENV=production
     depends_on:
-      - mongodb
+      mongodb:
+        condition: service_healthy
     networks:
       - kinefy-network
 
-  # Frontend (Nginx) - ÚNICO servicio con puertos expuestos al host
+  # Frontend (Nginx)
   frontend:
     build: ./kinefy-frontend
     container_name: kinefy-web
     ports:
       - "80:80"
+    restart: unless-stopped
     depends_on:
       - backend
     networks:
@@ -292,10 +302,17 @@ En una base de datos NoSQL como MongoDB, si el contenedor se apaga, los datos se
 ```yaml
 services:
   mongodb:
-    image: mongo:latest
+    image: mongo:7.0
     container_name: kinefy-db
+    restart: unless-stopped
     volumes:
       - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     networks:
       - kinefy-network
 volumes:
@@ -336,7 +353,7 @@ Siguiendo las mejores prácticas de seguridad y para cumplir el criterio de "pue
 *Salida obtenida (Evidencia):*
 ```text
 NAME        IMAGE          COMMAND                  SERVICE   CREATED        STATUS       PORTS
-kinefy-db   mongo:latest   "docker-entrypoint.s…"   mongodb   38 hours ago   Up 9 hours   27017/tcp
+kinefy-db   mongo:7.0      "docker-entrypoint.s…"   mongodb   38 hours ago   Up 9 hours   27017/tcp
 kinefy-api  kinefy-backend "docker-entrypoint.s…"   backend   38 hours ago   Up 9 hours   5000/tcp
 kinefy-web  nginx:alpine   "/docker-entrypoint.…"   frontend  38 hours ago   Up 9 hours   0.0.0.0:80->80/tcp, [::]:80->80/tcp
 ```
@@ -557,39 +574,43 @@ jobs:
     
     strategy:
       matrix:
-        node-version: [18.x]
+        node-version: [18.x, 20.x]
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    # Backend Setup
     - name: Setup Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
         
+    # Backend Setup & Test
     - name: Install Backend Dependencies
       run: |
         cd kinefy-backend
-        npm ci || npm install
+        npm ci
         
-    # Frontend Setup & Build
+    - name: Run Backend Tests
+      run: |
+        cd kinefy-backend
+        npm test
+
+    # Frontend Setup, Lint & Build
     - name: Install Frontend Dependencies
       run: |
         cd kinefy-frontend
-        npm ci || npm install
+        npm ci
+        
+    - name: Run Frontend Lint
+      run: |
+        cd kinefy-frontend
+        npm run lint
         
     - name: Build Frontend
       run: |
         cd kinefy-frontend
         npm run build
-        
-    # Ejecución de Pruebas Unitarias e Integración
-    - name: Run Backend Tests
-      run: |
-        cd kinefy-backend
-        npm test
 ```
 
 ### 2. Descripción Técnica del Pipeline de Integración

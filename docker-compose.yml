@@ -3,10 +3,17 @@ version: '3.8'
 services:
   # Base de Datos (MongoDB)
   mongodb:
-    image: mongo:latest
+    image: mongo:7.0
     container_name: kinefy-db
+    restart: unless-stopped
     volumes:
       - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     networks:
       - kinefy-network
 
@@ -14,6 +21,7 @@ services:
   backend:
     build: ./kinefy-backend
     container_name: kinefy-api
+    restart: unless-stopped
     environment:
       - MONGO_URI=mongodb://mongodb:27017/kinefy
       - JWT_SECRET=${JWT_SECRET}
@@ -23,9 +31,9 @@ services:
       - EMAIL_USER=${EMAIL_USER}
       - EMAIL_PASS=${EMAIL_PASS}
       - NODE_ENV=production
-
     depends_on:
-      - mongodb
+      mongodb:
+        condition: service_healthy
     networks:
       - kinefy-network
 
@@ -35,6 +43,7 @@ services:
     container_name: kinefy-web
     ports:
       - "80:80"
+    restart: unless-stopped
     depends_on:
       - backend
     networks:

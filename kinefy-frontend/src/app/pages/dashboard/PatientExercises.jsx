@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../api/api';
-import { ExercisesIcon } from '../../components/dashboard/DashboardIcons';
 
 const PatientExercises = () => {
     const [exercises, setExercises] = useState([]);
@@ -140,7 +139,7 @@ const PatientExercises = () => {
                                     )
                                 ) : (
                                     <div className="empty-state--centered">
-                                        <div className="patient-exercises__empty-icon">🧘‍♂️</div>
+                                        <div className="patient-exercises__empty-icon"></div>
                                         <p className="patient-exercises__empty-text">Sin contenido multimedia asignado</p>
                                     </div>
                                 )}

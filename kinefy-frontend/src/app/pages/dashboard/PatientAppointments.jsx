@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useLocation } from 'react-router-dom';
 import api from '../../api/api';
@@ -29,16 +29,17 @@ const getNextDays = (count = 14) => {
     return days;
 };
 
+const getApptDateTime = (fecha, hora) => {
+    if (!fecha) return new Date(0);
+    const dateStr = toLocalDateString(fecha);
+    return new Date(`${dateStr}T${hora || '00:00'}`);
+};
+
 const PatientAppointments = () => {
     const location = useLocation();
     const [appointments, setAppointments] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    const getApptDateTime = (fecha, hora) => {
-        if (!fecha) return new Date(0);
-        const dateStr = toLocalDateString(fecha);
-        return new Date(`${dateStr}T${hora || '00:00'}`);
-    };
     const [showApptModal, setShowApptModal] = useState(false);
     const [statusMsg, setStatusMsg] = useState(null);
     const [occupiedAppointments, setOccupiedAppointments] = useState([]);
@@ -60,7 +61,7 @@ const PatientAppointments = () => {
         setTimeout(() => setStatusMsg(null), 3000);
     };
 
-    const fetchAppointments = async () => {
+    const fetchAppointments = useCallback(async () => {
         try {
             const res = await api.get('/appointments');
             const sorted = res.data.sort((a, b) => {
@@ -72,21 +73,21 @@ const PatientAppointments = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
-    const fetchOccupied = async () => {
+    const fetchOccupied = useCallback(async () => {
         try {
             const res = await api.get('/appointments/occupied');
             setOccupiedAppointments(res.data);
         } catch (err) {
             console.error("Error al obtener citas ocupadas:", err);
         }
-    };
+    }, []);
 
     useEffect(() => {
         fetchAppointments();
         fetchOccupied();
-    }, []);
+    }, [fetchAppointments, fetchOccupied]);
 
     // Hook de auto-scroll con retry loop adaptativo de alta precisión
     useEffect(() => {
