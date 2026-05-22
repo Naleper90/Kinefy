@@ -449,16 +449,16 @@ const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 
-// Security HTTP headers
+// Configuración de cabeceras de seguridad HTTP
 app.use(helmet());
 
-// HTTP request logger
+// Registro de solicitudes HTTP en consola (logs)
 app.use(morgan('combined'));
 
-// Rate limiter for login route (DWES/Despliegue)
+// Limitador de peticiones para prevenir ataques de fuerza bruta en el login
 const loginLimiter = rateLimit({
-    windowMs: 60 * 1000,
-    max: 20,
+    windowMs: 60 * 1000, // 1 minuto
+    max: 20, // máximo de 20 intentos por minuto
     message: { error: 'Demasiadas peticiones desde esta IP, por favor intente de nuevo en un minuto' }
 });
 app.use('/api/auth/login', loginLimiter);
