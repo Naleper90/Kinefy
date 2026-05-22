@@ -194,15 +194,69 @@ local     kinefy_mongo-data
 
 Nota: Al principio no teníamos el volumen configurado y perdimos datos de prueba al recrear el contenedor. A partir de ahí lo añadimos como parte fija del compose.yaml.
 
-### 5. Exposición Única del Puerto 80 (Nginx Reverse Proxy)
+### 5. Exposición Única del Puerto 80 y Aislamiento de Puertos (Seguridad de Red)
 
-En la configuración del entorno Docker local, únicamente se ha expuesto públicamente el puerto **80** del servicio `frontend` (`kinefy-web`) a la máquina host. Los puertos del `backend` (puerto `5000` del contenedor `kinefy-api`) y del motor de base de datos (puerto `27017` del contenedor `kinefy-db`) no están expuestos al exterior.
+En la configuración del entorno Docker local, únicamente se ha expuesto públicamente el puerto **80** del servicio `frontend` (`kinefy-web`) a la máquina host. Los puertos del `backend` (puerto `5000` del contenedor `kinefy-api`) y de la base de datos (puerto `27017` del contenedor `kinefy-db`) no están mapeados hacia el sistema anfitrión.
 
-**Justificación técnica:**
-La decisión fue exponer solo el puerto 80 para reducir la superficie de ataque. Si también expusiéramos el 27017, cualquiera con acceso a la red podría conectarse directamente a MongoDB sin pasar por ningún middleware. Lo mismo con el 5000 del backend — al dejarlo interno, toda petición tiene que pasar obligatoriamente por Nginx.
+A continuación se muestra el archivo completo de orquestación `docker-compose.yml` como evidencia:
 
+```yaml
+version: '3.8'
+
+services:
+  # Base de Datos (MongoDB) - Puerto interno aislado
+  mongodb:
+    image: mongo:latest
+    container_name: kinefy-db
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - kinefy-network
+
+  # Backend (API) - Puerto interno aislado
+  backend:
+    build: ./kinefy-backend
+    container_name: kinefy-api
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017/kinefy
+      - JWT_SECRET=${JWT_SECRET}
+      - PORT=5000
+      - EMAIL_HOST=${EMAIL_HOST}
+      - EMAIL_PORT=${EMAIL_PORT}
+      - EMAIL_USER=${EMAIL_USER}
+      - EMAIL_PASS=${EMAIL_PASS}
+      - NODE_ENV=production
+    depends_on:
+      - mongodb
+    networks:
+      - kinefy-network
+
+  # Frontend (Nginx) - ÚNICO servicio con puertos expuestos al host
+  frontend:
+    build: ./kinefy-frontend
+    container_name: kinefy-web
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - kinefy-network
+
+networks:
+  kinefy-network:
+    driver: bridge
+
+volumes:
+  mongo-data:
+```
+
+**Justificación técnica de la seguridad de red:**
+- **Aislamiento y Mitigación de Riesgos:** La decisión fue exponer solo el puerto 80 para reducir drásticamente la superficie de ataque. Si expusiéramos públicamente el puerto `27017`, cualquier servicio externo o intruso en la red local podría intentar ataques de fuerza bruta o inyecciones directamente contra la base de datos de MongoDB, puenteando todas las políticas de control y seguridad.
+- **Canalización Obligatoria por Proxy:** Al dejar el puerto `5000` del backend cerrado de cara al exterior, toda petición REST API tiene que pasar obligatoriamente a través de Nginx (`kinefy-web`). Esto permite centralizar la aplicación de políticas de seguridad (como cabeceras Helmet, rate limiting y validaciones) en el punto de entrada Nginx.
+- **Ahorro de Conflictos en Host:** Garantiza un "puerto limpio" en la máquina anfitriona, evitando conflictos si el puerto 5000 o 27017 ya están ocupados localmente por otros desarrollos.
 
 ---
+
 
 ## Criterio 7: Gestión Básica de Ficheros y Artefactos (RA4)
 
@@ -401,3 +455,137 @@ app.use('/api/auth/login', loginLimiter);
 ```text
 ::ffff:127.0.0.1 - - [21/May/2026:06:59:07 +0000] "GET /api/patients HTTP/1.1" 401 80 "-" "-"
 ```
+
+---
+
+## Criterio 3: Configuración del Servidor Web y Proxy Inverso (Nginx) (RA2 / RA3)
+
+Para gestionar las peticiones web en el entorno local de Docker, el frontend viene empaquetado junto a un servidor **Nginx** que actúa como Servidor de Estáticos y **Proxy Inverso**.
+
+### 1. Archivo de Configuración Completo: `nginx.conf`
+
+El archivo de configuración de Nginx (`kinefy-frontend/nginx.conf`) se define a continuación:
+
+```nginx
+server {
+    listen 80;
+    server_name localhost;
+    
+    # PERMITIR SUBIDA DE ARCHIVOS CLÍNICOS GRANDES (Evita error 413 Payload Too Large)
+    client_max_body_size 10M;
+
+    location / {
+        root /usr/share/nginx/html;
+        index index.html index.htm;
+        try_files $uri $uri/ /index.html;
+        
+        # Cabeceras de Seguridad Básicas
+        add_header X-Frame-Options "SAMEORIGIN";
+        add_header X-XSS-Protection "1; mode=block";
+        add_header X-Content-Type-Options "nosniff";
+    }
+
+    # Proxy para la API REST del backend
+    location /api {
+        proxy_pass http://backend:5000/api;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+    # PROXY PARA DOCUMENTOS Y ADJUNTOS CLÍNICOS (uploads)
+    location /uploads {
+        proxy_pass http://backend:5000/uploads;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+    }
+
+    error_page 500 502 503 504 /50x.html;
+    location = /50x.html {
+        root /usr/share/nginx/html;
+    }
+}
+```
+
+### 2. Justificación Técnica de las Directivas Clave
+
+#### A. Redirección de Archivos Clínicos y Adjuntos (`location /uploads`)
+- **Problema en Docker:** Sin esta configuración, cuando un fisioterapeuta o paciente intenta descargar un informe médico (PDF) o documento clínico almacenado en la carpeta `/uploads` del backend, Nginx interceptaría la petición en el puerto 80 del host y la buscaría en la carpeta de distribución local del frontend (`/usr/share/nginx/html/uploads/`), respondiendo con un error **404 Not Found**.
+- **Solución:** Al añadir el bloque `location /uploads`, Nginx actúa como proxy inverso redirigiendo la petición al servicio interno del backend (`http://backend:5000/uploads`) a través de la red de Docker. Las descargas de imágenes clínicas y documentos adjuntos funcionan transparentemente bajo la URL única del puerto 80.
+
+#### B. Directiva `client_max_body_size 10M;`
+- **Problema en Docker:** El valor por defecto de Nginx para el tamaño máximo permitido de las peticiones es de **1 MB**. Si un paciente o fisioterapeuta intenta subir un archivo PDF de historial clínico, radiografía o informe médico que supere este tamaño, Nginx bloqueará la subida inmediatamente en el proxy de entrada, respondiendo con un código de estado HTTP **413 Payload Too Large** sin llegar a contactar con Express.
+- **Solución:** Configurar `client_max_body_size 10M;` incrementa el límite a 10 MB, permitiendo la subida segura de PDFs médicos más densos sin comprometer la seguridad del servidor ante ataques de denegación de servicio por subidas masivas.
+
+---
+
+## Criterio de Integración Continua (CI/CD): Pipeline con GitHub Actions (RA5 / C5)
+
+Para garantizar la calidad de software y automatizar la verificación del código fuente con cada contribución al repositorio, se ha implementado un flujo de trabajo (workflow) de **Integración Continua (CI)** a través de **GitHub Actions**.
+
+### 1. Fichero del Workflow: `.github/workflows/ci.yml`
+
+El archivo de automatización se ubica en el repositorio y consta de las siguientes directivas:
+
+```yaml
+name: Kinefy CI Workflow
+
+on:
+  push:
+    branches: [ "master", "develop", "feature/*" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    # Backend Setup
+    - name: Setup Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        
+    - name: Install Backend Dependencies
+      run: |
+        cd kinefy-backend
+        npm ci || npm install
+        
+    # Frontend Setup & Build
+    - name: Install Frontend Dependencies
+      run: |
+        cd kinefy-frontend
+        npm ci || npm install
+        
+    - name: Build Frontend
+      run: |
+        cd kinefy-frontend
+        npm run build
+        
+    # Ejecución de Pruebas Unitarias e Integración
+    - name: Run Backend Tests
+      run: |
+        cd kinefy-backend
+        npm test
+```
+
+### 2. Descripción Técnica del Pipeline de Integración
+El flujo se activa de manera autónoma en cada `push` sobre la rama `master`, `develop` o cualquier rama de funcionalidad (`feature/*`), ejecutando los siguientes pasos de control en un contenedor virtualizado limpio de Ubuntu:
+1. **Checkout del Repositorio:** Descarga el código fuente del commit subido.
+2. **Entorno Node.js:** Instala el runtime en la versión certificada.
+3. **Instalación de Dependencias:** Ejecuta `npm ci` (instalación limpia basada en `package-lock.json`) para recrear los entornos deterministas del backend y frontend de forma exacta.
+4. **Verificación de Compilación (Build):** Compila el código del frontend de React/Vite. Si existe algún fallo de enrutado, sintaxis o importación rota en el frontend, el build fallará y notificará de inmediato al desarrollador.
+5. **Ejecución de Pruebas (Tests):** Lanza las pruebas automatizadas Jest del backend para comprobar que los cambios no rompen ninguna regla de negocio crítica (como autenticación o roles de pacientes).
+
+Este pipeline asegura que solo el código que compila de forma correcta y supera todos los tests automatizados sea apto para fusionarse con las ramas principales, manteniendo la integridad del producto antes del despliegue en producción.
+
