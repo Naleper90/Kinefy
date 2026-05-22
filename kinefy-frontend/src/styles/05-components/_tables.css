@@ -298,51 +298,6 @@
   display: block;
 }
 
-
-
-.reports__action-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-  background: var(--color-brand);
-  color: #FFFFFF;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.reports__action-text {
-  display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
-  flex: 1;
-}
-
-.reports__action-name {
-  font-weight: 700;
-  color: #FFFFFF;
-  font-size: 0.95rem;
-}
-
-.reports__action-desc {
-  font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.reports__footer {
-  margin-top: 3rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  text-align: center;
-}
-
-.reports__footer-text {
-  font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.4);
-  font-weight: 500;
-  letter-spacing: 0.02em;
-}
-
 .modal-patient-info {
   display: flex;
   flex-direction: column;

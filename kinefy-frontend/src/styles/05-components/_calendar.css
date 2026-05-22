@@ -222,6 +222,10 @@
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 }
 
+.appt-card--active-dropdown {
+  z-index: 10 !important;
+}
+
 .appt-card__time {
   min-width: 70px;
   display: flex;
@@ -629,6 +633,29 @@
   position: relative;
 }
 
+.date-carousel-wrapper {
+  position: relative;
+  margin-bottom: 0.8rem;
+}
+
+.date-carousel-wrapper .date-badge-scroll {
+  padding-left: 2.8rem;
+  padding-right: 2.8rem;
+}
+
+.date-carousel-wrapper .calendar-nav-btn {
+  width: 30px;
+  height: 30px;
+}
+
+.date-carousel-wrapper .calendar-nav-btn--left {
+  left: 5px;
+}
+
+.date-carousel-wrapper .calendar-nav-btn--right {
+  right: 5px;
+}
+
 .date-badge-scroll {
   display: flex;
   gap: 0.6rem;
@@ -777,4 +804,20 @@
   margin-bottom: 0.6rem;
   gap: 0.5rem;
 }
+
+/* Estados seleccionados de los botones rápidos de fecha y hora */
+.date-btn-select--selected {
+  background: var(--color-brand) !important;
+  color: #ffffff !important;
+  border-color: var(--color-brand) !important;
+  box-shadow: 0 4px 12px rgba(85, 169, 138, 0.2) !important;
+}
+
+.hour-btn-select--selected {
+  background: var(--color-brand) !important;
+  color: #ffffff !important;
+  border-color: var(--color-brand) !important;
+  box-shadow: 0 4px 12px rgba(85, 169, 138, 0.2) !important;
+}
+
 

@@ -2,6 +2,19 @@ import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import api from '../../api/api';
 
+const toLocalDateString = (date) => {
+    if (!date) return '';
+    if (typeof date === 'string') {
+        const match = date.match(/^\d{4}-\d{2}-\d{2}/);
+        if (match) return match[0];
+    }
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+};
+
 const PatientEvolution = () => {
     const [painHistory, setPainHistory] = useState([]);
     const [patientData, setPatientData] = useState(null);
@@ -40,6 +53,15 @@ const PatientEvolution = () => {
                 // Ordenar por fecha cronológica (el más antiguo primero para el gráfico, pero el timeline al revés)
                 const sorted = historyRes.data.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
                 setPainHistory(sorted);
+
+                // Verificar si ya registró hoy
+                const todayStr = toLocalDateString(new Date());
+                const todayEntry = sorted.find(entry => toLocalDateString(entry.fecha) === todayStr);
+                if (todayEntry) {
+                    setSubmitted(true);
+                    setPainLevel(todayEntry.nivelDolor);
+                    setObservation(todayEntry.observaciones || '');
+                }
             }
         } catch (err) {
             // Manejo silencioso
@@ -63,8 +85,6 @@ const PatientEvolution = () => {
             });
             setSubmitted(true);
             showNotification("Registro diario completado");
-            setObservation('');
-            setPainLevel(null);
             fetchData();
         } catch (err) {
             showNotification("No se pudo enviar el registro");
@@ -276,15 +296,17 @@ const PatientEvolution = () => {
                                 </div>
 
                                 <button type="submit" className="btn-primary pain-form__submit-btn" disabled={painLevel === null} style={{ opacity: painLevel === null ? 0.5 : 1 }}>
-                                    Guardar Diario Diario
+                                    Guardar Diario
                                 </button>
                             </form>
                         ) : (
                             <div className="pain-success-view">
                                 <div className="pain-success-view__icon">✓</div>
                                 <h3 className="pain-success-view__title">¡Diario Completado!</h3>
-                                <p className="pain-success-view__text">Has registrado tu nivel de dolor de hoy. Tu fisioterapeuta podrá ver estos datos en tiempo real.</p>
-                                <button className="btn-ghost pain-success-view__btn" onClick={() => setSubmitted(false)}>Hacer Otro Registro</button>
+                                <p className="pain-success-view__text">Ya has registrado tu nivel de dolor para el día de hoy.</p>
+                                <span className="pain-scale__summary-text" style={{ color: getPainTextColor(painLevel), fontWeight: 'bold', marginTop: '0.5rem', display: 'inline-block' }}>
+                                    Nivel de dolor de hoy: EVA {painLevel}/10
+                                </span>
                             </div>
                         )}
                     </article>

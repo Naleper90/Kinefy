@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useLocation } from 'react-router-dom';
 import api from '../../api/api';
 import { CustomCalendar, CustomTimePicker } from '../../components/dashboard/DatePickerPremium';
-import { EditIcon, CloseIcon, PlusIcon } from '../../components/dashboard/DashboardIcons';
+import { EditIcon, CloseIcon, PlusIcon, ChevronIcon } from '../../components/dashboard/DashboardIcons';
 
 const toLocalDateString = (date) => {
     if (!date) return '';
@@ -37,7 +37,15 @@ const getApptDateTime = (fecha, hora) => {
 
 const PatientAppointments = () => {
     const location = useLocation();
+    const dateScrollRef = useRef(null);
     const [appointments, setAppointments] = useState([]);
+    
+    const scrollDateCarousel = (direction) => {
+        if (dateScrollRef.current) {
+            const scrollAmount = direction === 'left' ? -250 : 250;
+            dateScrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+        }
+    };
     const [loading, setLoading] = useState(true);
 
     const [showApptModal, setShowApptModal] = useState(false);
@@ -435,44 +443,60 @@ const PatientAppointments = () => {
                                             onSelectDate={date => setApptForm({...apptForm, fecha: date})} 
                                         />
                                     ) : (
-                                        <div className="date-badge-scroll no-scrollbar">
-                                            {getNextDays().map((d, index) => {
-                                                const isoStr = toLocalDateString(d);
-                                                const isSelected = apptForm.fecha === isoStr;
-                                                return (
-                                                    <button
-                                                        key={index}
-                                                        type="button"
-                                                        onClick={() => setApptForm(prev => ({ ...prev, fecha: isoStr }))}
-                                                        className="date-btn-select"
-                                                        style={{
-                                                            background: isSelected ? 'var(--color-brand)' : '#F4FAF8',
-                                                            color: isSelected ? '#FFFFFF' : '#1A2E35',
-                                                            border: isSelected ? 'none' : '1px solid #C2DFD4'
-                                                        }}
-                                                    >
-                                                        <span 
-                                                            className="date-btn-select__weekday"
-                                                            style={{ 
-                                                                color: isSelected ? '#E2F1EC' : '#7A8C8E' 
+                                        <div className="date-carousel-wrapper">
+                                            <button 
+                                                type="button" 
+                                                className="calendar-nav-btn calendar-nav-btn--left" 
+                                                onClick={() => scrollDateCarousel('left')}
+                                            >
+                                                <ChevronIcon size={20} direction="left" />
+                                            </button>
+                                            <button 
+                                                type="button" 
+                                                className="calendar-nav-btn calendar-nav-btn--right" 
+                                                onClick={() => scrollDateCarousel('right')}
+                                            >
+                                                <ChevronIcon size={20} direction="right" />
+                                            </button>
+                                            <div className="date-badge-scroll no-scrollbar" ref={dateScrollRef}>
+                                                {getNextDays().map((d, index) => {
+                                                    const isoStr = toLocalDateString(d);
+                                                    const isSelected = apptForm.fecha === isoStr;
+                                                    return (
+                                                        <button
+                                                            key={index}
+                                                            type="button"
+                                                            onClick={() => setApptForm(prev => ({ ...prev, fecha: isoStr }))}
+                                                            className="date-btn-select"
+                                                            style={{
+                                                                background: isSelected ? 'var(--color-brand)' : '#F4FAF8',
+                                                                color: isSelected ? '#FFFFFF' : '#1A2E35',
+                                                                border: isSelected ? 'none' : '1px solid #C2DFD4'
                                                             }}
                                                         >
-                                                            {d.toLocaleDateString('es-ES', { weekday: 'short' })}
-                                                        </span>
-                                                        <span className="date-btn-select__day">
-                                                            {d.getDate()}
-                                                        </span>
-                                                        <span 
-                                                            className="date-btn-select__month"
-                                                            style={{ 
-                                                                color: isSelected ? '#E2F1EC' : '#7A8C8E' 
-                                                            }}
-                                                        >
-                                                            {d.toLocaleDateString('es-ES', { month: 'short' })}
-                                                        </span>
-                                                    </button>
-                                                );
-                                            })}
+                                                            <span 
+                                                                className="date-btn-select__weekday"
+                                                                style={{ 
+                                                                    color: isSelected ? '#E2F1EC' : '#7A8C8E' 
+                                                                }}
+                                                            >
+                                                                {d.toLocaleDateString('es-ES', { weekday: 'short' })}
+                                                            </span>
+                                                            <span className="date-btn-select__day">
+                                                                {d.getDate()}
+                                                            </span>
+                                                            <span 
+                                                                className="date-btn-select__month"
+                                                                style={{ 
+                                                                    color: isSelected ? '#E2F1EC' : '#7A8C8E' 
+                                                                }}
+                                                            >
+                                                                {d.toLocaleDateString('es-ES', { month: 'short' })}
+                                                            </span>
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
                                         </div>
                                     )}
                                 </div>

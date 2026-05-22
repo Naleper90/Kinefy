@@ -25,6 +25,23 @@ exports.createEntry = async (req, res) => {
             return res.status(403).json({ error: 'Acceso denegado: No estás autorizado para añadir evolución a este paciente' });
         }
 
+        // Verificar si ya existe un registro de evolución hoy para este paciente
+        const today = new Date();
+        const startOfDay = new Date(today.setHours(0, 0, 0, 0));
+        const endOfDay = new Date(today.setHours(23, 59, 59, 999));
+
+        const existingEntry = await Evolution.findOne({
+            paciente: pacienteId,
+            fecha: {
+                $gte: startOfDay,
+                $lte: endOfDay
+            }
+        });
+
+        if (existingEntry) {
+            return res.status(400).json({ error: 'Ya has registrado tu nivel de dolor hoy' });
+        }
+
         const newEntry = new Evolution({
             paciente: pacienteId,
             nivelDolor,

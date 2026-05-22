@@ -10,9 +10,10 @@ const {
     updateAppointment 
 } = require('../controllers/appointment.controller');
 const auth = require('../middleware/auth.middleware');
+const checkRole = require('../middleware/role.middleware');
 
 router.post('/', auth, createAppointment);
-router.post('/bulk', auth, createBulkAppointments);
+router.post('/bulk', auth, checkRole('fisioterapeuta'), createBulkAppointments);
 router.get('/', auth, getAppointments);
 router.get('/occupied', auth, getOccupiedAppointments);
 router.patch('/:id/status', auth, updateAppointmentStatus);

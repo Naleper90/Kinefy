@@ -399,7 +399,7 @@ const Appointments = () => {
                         </p>
                     </div>
                 ) : filteredAppointments.map((appt) => (
-                    <article key={appt.id} className="appt-card">
+                    <article key={appt.id} className={`appt-card ${activeStatusMenu === appt.id ? 'appt-card--active-dropdown' : ''}`}>
                         <time className="appt-card__time">
                             {appt.time}
                             {searchTerm && <span className="appt-card__date-hint">{new Date(appt.date + 'T00:00:00').toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' })}</span>}
@@ -410,10 +410,10 @@ const Appointments = () => {
                                 <BlobIcon color={getStatusStyle(appt.status).bg} />
                                 <span style={{ color: getStatusStyle(appt.status).color }}>{appt.patient[0]}</span>
                             </figure>
-                            <hgroup className="appt-card__info appt-card__info--clickable" onClick={() => navigate(`/dashboard/physio/patients/${appt.patientId}`)}>
+                            <button type="button" className="appt-card__info appt-card__info--clickable" onClick={() => navigate(`/dashboard/physio/patients/${appt.patientId}`)}>
                                 <h4>{appt.patient}</h4>
                                 <span>{appt.type}</span>
-                            </hgroup>
+                            </button>
                         </div>
 
                         <div className="appt-card__actions">
@@ -430,14 +430,15 @@ const Appointments = () => {
                                 {activeStatusMenu === appt.id && (
                                     <div className="status-dropdown animate-in">
                                         {['pendiente', 'confirmada', 'en-curso', 'completada', 'cancelada'].map(statusKey => (
-                                            <div 
+                                            <button 
+                                                type="button"
                                                 key={statusKey} 
                                                 className="status-option"
                                                 style={{ color: getStatusStyle(statusKey).color }}
                                                 onClick={() => handleUpdateStatus(appt.id, statusKey)}
                                             >
                                                 {getStatusStyle(statusKey).label}
-                                            </div>
+                                            </button>
                                         ))}
                                     </div>
                                 )}
@@ -486,26 +487,35 @@ const Appointments = () => {
                                 <form onSubmit={handleCreateAppointment} className="clinical-form">
                                     <div className="clinical-input-group relative">
                                         <label className="meta-label meta-label--brand">Paciente Clínico</label>
-                                        <div className="select-clinical__trigger" onClick={() => setShowPatientList(!showPatientList)}>
+                                        <button 
+                                            type="button"
+                                            className="select-clinical__trigger" 
+                                            onClick={() => setShowPatientList(!showPatientList)}
+                                            aria-haspopup="listbox"
+                                            aria-expanded={showPatientList}
+                                        >
                                             <span style={{ color: newApptData.pacienteId ? '#1A2E35' : '#A0AEC0' }}>
                                                 {newApptData.pacienteId ? allPatients.find(p => p._id === newApptData.pacienteId)?.nombre : 'Seleccionar paciente...'}
                                             </span>
                                             <ChevronIcon size={20} direction={showPatientList ? 'up' : 'down'} />
-                                        </div>
+                                        </button>
                                         {showPatientList && (
                                             <div className="select-clinical__dropdown animate-in">
                                                 {allPatients.map(p => (
-                                                    <div 
+                                                    <button 
+                                                        type="button"
                                                         key={p._id} 
                                                         className={`select-clinical__option ${newApptData.pacienteId === p._id ? 'select-clinical__option--selected' : ''}`}
                                                         onClick={() => { setNewApptData({...newApptData, pacienteId: p._id}); setShowPatientList(false); }}
                                                     >
                                                         {p.nombre}
-                                                    </div>
+                                                    </button>
                                                 ))}
                                             </div>
                                         )}
-                                                               <div className="clinical-input-group clinical-input-group--mb-lg">
+                                    </div>
+                                    
+                                    <div className="clinical-input-group clinical-input-group--mb-lg">
                                         <div className="clinical-input-group__header">
                                             <label className="meta-label meta-label--brand meta-label--no-margin">Fecha de Inicio</label>
                                             <button 
@@ -586,7 +596,7 @@ const Appointments = () => {
                                                 })}
                                             </div>
                                         )}
-                                    </div>               </div>
+                                    </div>
 
                                     <div className="clinical-input-group">
                                         <label className="meta-label meta-label--brand">Motivo de Sesión</label>

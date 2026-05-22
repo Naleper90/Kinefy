@@ -122,6 +122,15 @@ const PatientDashboardHome = () => {
                 const resHistory = await api.get(`/patients/evolution/${res.data._id}`);
                 if (resHistory.data && resHistory.data.length > 0) {
                     setPainHistory(resHistory.data.map(e => e.nivelDolor));
+                    
+                    // Verificar si ya registró hoy
+                    const todayStr = toLocalDateString(new Date());
+                    const todayEntry = resHistory.data.find(e => toLocalDateString(e.fecha) === todayStr);
+                    if (todayEntry) {
+                        setSubmitted(true);
+                        setPainLevel(todayEntry.nivelDolor);
+                        setObservation(todayEntry.observaciones || '');
+                    }
                 } else {
                     setPainHistory([0, 0, 0, 0, 0]); // Base vacía si no hay datos
                 }

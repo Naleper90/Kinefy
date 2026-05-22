@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import api from '../../api/api';
-import { SearchIcon, PlusIcon } from '../../components/dashboard/DashboardIcons';
+import { SearchIcon, PlusIcon, UploadIcon } from '../../components/dashboard/DashboardIcons';
 
 const ExerciseLibrary = () => {
     const [exercises, setExercises] = useState([]);
@@ -14,10 +14,32 @@ const ExerciseLibrary = () => {
         nombre: '', descripcion: '', categoria: 'Fuerza', mediaUrl: '', seriesDefecto: ''
     });
     const [statusMsg, setStatusMsg] = useState(null);
+    const [uploading, setUploading] = useState(false);
 
     const showNotification = (msg) => {
         setStatusMsg(msg);
         setTimeout(() => setStatusMsg(null), 3000);
+    };
+
+    const handleFileUpload = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        setUploading(true);
+        try {
+            const res = await api.post('/upload', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+            setCurrentExercise(prev => ({ ...prev, mediaUrl: res.data.url }));
+            showNotification("Archivo multimedia subido correctamente");
+        } catch (err) {
+            showNotification("Error al subir el archivo");
+        } finally {
+            setUploading(false);
+        }
     };
 
     useEffect(() => {
@@ -242,14 +264,27 @@ const ExerciseLibrary = () => {
                                 </div>
 
                                 <div className="clinical-input-group">
-                                    <label className="meta-label meta-label--brand">URL Multimedia</label>
-                                    <input 
-                                        className="input-clinical"
-                                        type="url" 
-                                        placeholder="YouTube, Vimeo..."
-                                        value={currentExercise.mediaUrl} 
-                                        onChange={(e) => setCurrentExercise({ ...currentExercise, mediaUrl: e.target.value })} 
-                                    />
+                                    <label className="meta-label meta-label--brand">URL Multimedia o Archivo Propio</label>
+                                    <div className="exercise-card__media-actions" style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: '4px' }}>
+                                        <input 
+                                            className="input-clinical"
+                                            type="text" 
+                                            placeholder="YouTube, Vimeo o archivo subido..."
+                                            value={currentExercise.mediaUrl} 
+                                            onChange={(e) => setCurrentExercise({ ...currentExercise, mediaUrl: e.target.value })} 
+                                            style={{ flex: 1, margin: 0 }}
+                                        />
+                                        <label className="btn-upload-label" style={{ margin: 0, padding: '10px 14px', height: '100%', boxSizing: 'border-box', display: 'inline-flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
+                                            <UploadIcon size={14} />
+                                            <span>{uploading ? '...' : 'Subir'}</span>
+                                            <input 
+                                                type="file" 
+                                                hidden 
+                                                onChange={handleFileUpload} 
+                                                accept="image/*,video/*" 
+                                            />
+                                        </label>
+                                    </div>
                                 </div>
                             </form>
                         </div>

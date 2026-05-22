@@ -117,17 +117,21 @@ export const PatientInfoSection = ({
                     <dd>
                         {isEditing ? (
                             <div className="clinical-select">
-                                <div
+                                <button
+                                    type="button"
                                     className="clinical-select__trigger"
                                     onClick={() => setShowActivityMenu(!showActivityMenu)}
+                                    aria-haspopup="listbox"
+                                    aria-expanded={showActivityMenu}
                                 >
                                     <span>{activityOptions.find(o => o.value === editForm.actividadFisica)?.label || 'Seleccionar...'}</span>
                                     <ChevronIcon />
-                                </div>
+                                </button>
                                 {showActivityMenu && (
                                     <div className="clinical-select__menu">
                                         {activityOptions.map(o => (
-                                            <div 
+                                            <button 
+                                                type="button"
                                                 key={o.value} 
                                                 className="clinical-select__option" 
                                                 onClick={() => { 
@@ -136,7 +140,7 @@ export const PatientInfoSection = ({
                                                 }}
                                             >
                                                 {o.label}
-                                            </div>
+                                            </button>
                                         ))}
                                     </div>
                                 )}
@@ -430,12 +434,10 @@ export const EvolutionSection = ({ evolution }) => {
             </article>
 
             <article className="dashboard-card patient-detail__card patient-detail__card--full">
-                <hgroup className="card-header-flex">
-                    <div>
-                        <h3 className="card-title-big">Diario de Observaciones</h3>
-                        <p className="card-subtitle">Comentarios detallados del paciente sobre su evolución diaria.</p>
-                    </div>
-                </hgroup>
+                <header className="card-header-flex">
+                    <h3 className="card-title-big">Diario de Observaciones</h3>
+                    <p className="card-subtitle">Comentarios detallados del paciente sobre su evolución diaria.</p>
+                </header>
 
                 <div className="evolution-feed">
                     {evolution.length > 0 ? (

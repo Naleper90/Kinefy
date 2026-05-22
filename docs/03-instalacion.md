@@ -8,7 +8,7 @@ Para garantizar la reproducibilidad del entorno de desarrollo y facilitar la eva
 
 *   **Motor de Contenedores:** Docker Engine v20.10+ y Docker Compose v2+. (Se recomienda Docker Desktop en Windows/Mac).
 *   **Git:** Para la clonación del repositorio.
-*   **Puertos libres:** Asegurarse de que los puertos `5000` (Backend) y `80` (Frontend Nginx) no estén siendo utilizados por otros servicios locales.
+*   **Puertos libres:** Asegurarse de que el puerto `80` (Frontend Nginx) no esté siendo utilizado por otros servicios locales en el anfitrión. El puerto `5000` (Backend) es puramente interno a la red aislada de Docker, por lo que no es necesario liberarlo en el host.
 
 ---
 
@@ -25,7 +25,7 @@ Antes de arrancar, es obligatorio configurar las variables de entorno:
 
 2. Duplicar los archivos de ejemplo en cada subproyecto y renombrarlos a `.env`:
    * En `kinefy-backend`: Copiar `.env.example` a `.env` y establecer una cadena secreta para `JWT_SECRET`.
-   * En `kinefy-frontend`: Copiar `.env.example` a `.env` y verificar que `VITE_API_URL` apunte al puerto correcto (ej. `http://localhost:5000/api` para desarrollo local, o dejar vacío en producción).
+   * En `kinefy-frontend`: Copiar `.env.example` a `.env` y verificar que `VITE_API_URL` apunte a `/api` (bajo Docker Compose se utiliza el proxy inverso de Nginx de manera transparente) o apuntando directamente al backend para desarrollo local nativo.
 
 ---
 
@@ -41,14 +41,14 @@ docker compose up --build -d
 
 ### 3.3.1. Verificación del despliegue local
 Una vez finalizado el proceso de *build* e *install*, la aplicación estará accesible en:
-*   **Frontend (App):** [http://localhost](http://localhost)
-*   **Backend (API):** [http://localhost:5000](http://localhost:5000) (acceso directo al backend, solo para desarrollo sin Docker)
+*   **Frontend (App) y API (Proxy):** [http://localhost](http://localhost)
+*   **Backend (API directo):** [http://localhost:5000](http://localhost:5000) (acceso directo únicamente para desarrollo nativo fuera de Docker)
 
 Se puede comprobar el estado de los contenedores ejecutando:
 ```bash
 docker ps
 ```
-La salida mostrará tres contenedores activos (`kinefy-front`, `kinefy-api` y un contenedor de `mongo`).
+La salida mostrará tres contenedores activos (`kinefy-web` para el frontend/nginx, `kinefy-api` para el backend y `kinefy-db` para la base de datos MongoDB).
 
 ### 3.3.2. Persistencia de Datos en Local
 El entorno Docker está configurado para mapear un volumen local a la base de datos de MongoDB. Esto garantiza que, aunque los contenedores se detengan o se destruyan mediante `docker compose down`, los datos de los pacientes y las rutinas permanecerán intactos en la próxima ejecución.

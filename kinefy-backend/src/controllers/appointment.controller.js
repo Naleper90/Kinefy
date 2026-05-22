@@ -108,10 +108,6 @@ const createAppointment = async (req, res) => {
 
 const createBulkAppointments = async (req, res) => {
     try {
-        if (req.user.role !== 'fisioterapeuta') {
-            return res.status(403).json({ error: 'Acceso denegado: Solo los fisioterapeutas pueden crear citas en lote' });
-        }
-
         const { appointments } = req.body;
         
         if (!appointments || !Array.isArray(appointments)) {

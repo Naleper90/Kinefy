@@ -15,14 +15,18 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (req, file, cb) => {
-    const allowedExtensions = ['.pdf', '.png', '.jpg', '.jpeg', '.doc', '.docx'];
+    const allowedExtensions = ['.pdf', '.png', '.jpg', '.jpeg', '.doc', '.docx', '.mp4', '.webm', '.mov', '.avi'];
     const allowedMimeTypes = [
         'application/pdf',
         'image/png',
         'image/jpeg',
         'image/jpg',
         'application/msword',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'video/mp4',
+        'video/webm',
+        'video/quicktime',
+        'video/x-msvideo'
     ];
 
     const fileExt = path.extname(file.originalname).toLowerCase();
@@ -32,7 +36,7 @@ const fileFilter = (req, file, cb) => {
     if (isExtensionAllowed && isMimeTypeAllowed) {
         cb(null, true);
     } else {
-        cb(new Error('Tipo de archivo no permitido. Solo se aceptan imágenes (PNG, JPG, JPEG) y documentos (PDF, DOC, DOCX)'), false);
+        cb(new Error('Tipo de archivo no permitido. Solo se aceptan imágenes (PNG, JPG, JPEG), vídeos (MP4, WEBM, MOV, AVI) y documentos (PDF, DOC, DOCX)'), false);
     }
 };
 

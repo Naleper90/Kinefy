@@ -2,14 +2,40 @@ const Patient = require('../models/Patient');
 const User = require('../models/User');
 const sendEmail = require('../utils/mailer');
 
+/**
+ * Verifica si los ejercicios completados del paciente fueron marcados en un día diferente al actual.
+ * Si es así, limpia el estado de completado para que comience el día sin marcar.
+ */
+const checkAndResetExercises = async (patient) => {
+    let modified = false;
+    const todayStr = new Date().toDateString(); // "Fri May 22 2026"
+    
+    if (patient.ejercicios && patient.ejercicios.length > 0) {
+        patient.ejercicios.forEach(ex => {
+            if (ex.completado && ex.fechaCompletado) {
+                const completedStr = new Date(ex.fechaCompletado).toDateString();
+                if (completedStr !== todayStr) {
+                    ex.completado = false;
+                    ex.fechaCompletado = undefined;
+                    modified = true;
+                }
+            } else if (ex.completado && !ex.fechaCompletado) {
+                ex.fechaCompletado = new Date();
+                modified = true;
+            }
+        });
+    }
+    
+    if (modified) {
+        await patient.save();
+    }
+    return patient;
+};
+
 
 const createPatient = async (req, res) => {
     try {
         const { nombre, email, telefono, diagnostico, notas, fechaNacimiento, profesion, actividadFisica } = req.body;
-
-        if (req.user.role !== 'fisioterapeuta') {
-            return res.status(403).json({ error: 'Acceso denegado' });
-        }
 
         // Generar contraseña temporal
         const chars = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -78,16 +104,14 @@ const createPatient = async (req, res) => {
 
 const getPatients = async (req, res) => {
     try {
-        if (req.user.role !== 'fisioterapeuta') {
-            return res.status(403).json({
-                error: 'Acceso denegado',
-                code: 'FORBIDDEN_ACCESS'
-            });
-        }
-
-        const patients = await Patient.find({ fisioterapeuta: req.user.id })
+        let patients = await Patient.find({ fisioterapeuta: req.user.id })
             .populate('usuario', 'email')
             .sort({ createdAt: -1 });
+
+        // Resetear ejercicios de días anteriores para cada paciente
+        for (let i = 0; i < patients.length; i++) {
+            patients[i] = await checkAndResetExercises(patients[i]);
+        }
 
         const patientsWithEmail = patients.map(p => ({
             ...p.toObject(),
@@ -103,10 +127,6 @@ const getPatients = async (req, res) => {
 
 const updatePatient = async (req, res) => {
     try {
-        if (req.user.role !== 'fisioterapeuta') {
-            return res.status(403).json({ error: 'Acceso denegado', code: 'FORBIDDEN_ACCESS' });
-        }
-
         let patient = await Patient.findById(req.params.id).populate('usuario', 'email name');
 
         if (!patient) {
@@ -218,10 +238,6 @@ const updatePatient = async (req, res) => {
 
 const deletePatient = async (req, res) => {
     try {
-        if (req.user.role !== 'fisioterapeuta') {
-            return res.status(403).json({ error: 'Acceso denegado', code: 'FORBIDDEN_ACCESS' });
-        }
-
         const patient = await Patient.findById(req.params.id);
 
         if (!patient) {
@@ -250,10 +266,6 @@ const deletePatient = async (req, res) => {
 
 const assignExercises = async (req, res) => {
     try {
-        if (req.user.role !== 'fisioterapeuta') {
-            return res.status(403).json({ error: 'Acceso denegado', code: 'FORBIDDEN_ACCESS' });
-        }
-
         const { ejercicios } = req.body;
         const patient = await Patient.findById(req.params.id);
 
@@ -277,10 +289,14 @@ const assignExercises = async (req, res) => {
 
 const getMyPatientData = async (req, res) => {
     try {
-        const patient = await Patient.findOne({ usuario: req.user.id });
+        let patient = await Patient.findOne({ usuario: req.user.id });
         if (!patient) {
             return res.status(404).json({ error: 'Ficha de paciente no encontrada' });
         }
+        
+        // Resetear ejercicios hechos en días anteriores
+        patient = await checkAndResetExercises(patient);
+        
         res.json(patient);
     } catch (err) {
         console.error(err);
@@ -367,10 +383,6 @@ const deleteDocument = async (req, res) => {
 
 const resetPatientPassword = async (req, res) => {
     try {
-        if (req.user.role !== 'fisioterapeuta') {
-            return res.status(403).json({ error: 'Acceso denegado', code: 'FORBIDDEN_ACCESS' });
-        }
-
         const patient = await Patient.findById(req.params.id);
         if (!patient) {
             return res.status(404).json({ error: 'Paciente no encontrado', code: 'NOT_FOUND' });

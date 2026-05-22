@@ -301,13 +301,13 @@ const PatientDetail = () => {
                             </button>
                         )}
                         {isEditing ? (
-                            <hgroup className="patient-detail__edit-actions">
+                            <div className="patient-detail__edit-actions">
                                 <button type="button" className="btn-ghost" onClick={() => { setIsEditing(false); setShowPassword(false); }}>Cancelar</button>
                                 <button type="button" className="btn-primary" onClick={handleUpdate}>
                                     <SaveIcon />
                                     <span>Guardar Cambios</span>
                                 </button>
-                            </hgroup>
+                            </div>
                         ) : (
                             <button type="button" className="btn-primary" onClick={() => { setIsEditing(true); setShowPassword(false); }}>
                                 <EditIcon />
@@ -381,18 +381,18 @@ const PatientDetail = () => {
                             {(library && Array.isArray(library) && library.length > 0) ? (
                                 <div className="library-grid">
                                     {library.map(ex => (
-                                        <div key={ex._id} className="library-item"
+                                        <button type="button" key={ex._id} className="library-item"
                                             onClick={() => importFromLibrary(ex)}
                                         >
-                                            <hgroup>
+                                            <div className="library-item__header">
                                                 <h4 className="library-item__name">{ex.nombre}</h4>
                                                 <span className="library-item__tag">{ex.categoria}</span>
-                                            </hgroup>
+                                            </div>
                                             <div className="library-item__meta">
                                                 <span className="library-item__value">{ex.seriesDefecto || '—'}</span>
                                                 <span className="library-item__label">Series Sugeridas</span>
                                             </div>
-                                        </div>
+                                        </button>
                                     ))}
                                 </div>
                             ) : (
