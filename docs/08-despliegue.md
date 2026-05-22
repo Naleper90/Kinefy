@@ -3,7 +3,7 @@
 > [!IMPORTANT]
 > **Nota para el Tribunal Evaluador (Módulo Despliegue):**
 > La documentación técnica específica exigida para la rúbrica del módulo de Despliegue de Aplicaciones Web (Justificación de herramientas, Criterio 7 sobre artefactos y ficheros, y Criterio 8 sobre verificación de red) ha sido extraída a un documento anexo para facilitar su corrección. 
-> **Por favor, diríjase a: [08-despliegue-eval.md](08-despliegue-eval.md)**
+> **Por favor, diríjase a: [11-despliegue-eval.md](11-despliegue-eval.md)**
 
 ---
 

@@ -53,6 +53,8 @@ El detalle técnico y académico se encuentra en la carpeta `docs/`:
 8.  [Despliegue](docs/08-despliegue.md)
 9.  [Guía de Uso](docs/09-manual-usuario.md)
 10. [Conclusiones finales](docs/10-conclusiones.md)
+11. [Evaluación de Despliegue](docs/11-despliegue-eval.md)
+12. [Credenciales de Prueba](docs/12-credenciales-prueba.md)
 ---
 
 ## Credenciales de Acceso Rápido (Pruebas)
@@ -66,7 +68,7 @@ Para facilitar la evaluación del proyecto por el tribunal, se han pre-configura
     *   **Email:** `paciente@test.com`
     *   **Contraseña:** `PacienteDemo2026`
 
-> **Nota:** Para mayor detalle sobre el flujo de correos y variables, consulta la documentación en [docs/10-credenciales-prueba.md](file:///c:/Users/esana/Desktop/Kinefy/docs/10-credenciales-prueba.md).
+> **Nota:** Para mayor detalle sobre el flujo de correos y variables, consulta la documentación en [docs/12-credenciales-prueba.md](docs/12-credenciales-prueba.md).
 
 ---
 
