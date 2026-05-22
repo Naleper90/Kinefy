@@ -474,3 +474,30 @@ nav.auth__nav button.auth__nav-link-btn:hover {
   background: var(--color-brand-hover, #6BA38E);
 }
 
+/* --- Alternar Visibilidad de Contraseña --- */
+
+.auth__visibility-toggle {
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-soft, #7A8C92);
+  transition: color 0.2s ease, transform 0.2s ease;
+  opacity: 0.7;
+}
+
+.auth__visibility-toggle:hover {
+  color: var(--color-brand, #55A98A);
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.auth__visibility-icon {
+  width: 20px;
+  height: 20px;
+}
+
+
