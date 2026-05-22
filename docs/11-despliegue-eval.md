@@ -255,6 +255,11 @@ volumes:
 - **Canalización Obligatoria por Proxy:** Al dejar el puerto `5000` del backend cerrado de cara al exterior, toda petición REST API tiene que pasar obligatoriamente a través de Nginx (`kinefy-web`). Esto permite centralizar la aplicación de políticas de seguridad (como cabeceras Helmet, rate limiting y validaciones) en el punto de entrada Nginx.
 - **Ahorro de Conflictos en Host:** Garantiza un "puerto limpio" en la máquina anfitriona, evitando conflictos si el puerto 5000 o 27017 ya están ocupados localmente por otros desarrollos.
 
+#### Evidencia de Ejecución en Docker Desktop (Aislamiento de Puertos)
+A continuación se adjunta la captura de pantalla de los contenedores levantados localmente con Docker Compose. Se evidencia el grupo de contenedores `kinefy` en funcionamiento y la distribución interna de puertos:
+
+![Evidencia de Contenedores y Puertos en Docker Desktop](assets/evidence-docker.png)
+
 ---
 
 
@@ -589,3 +594,7 @@ El flujo se activa de manera autónoma en cada `push` sobre la rama `master`, `d
 
 Este pipeline asegura que solo el código que compila de forma correcta y supera todos los tests automatizados sea apto para fusionarse con las ramas principales, manteniendo la integridad del producto antes del despliegue en producción.
 
+#### Evidencia de Ejecución del CI/CD (GitHub Actions)
+Como evidencia de funcionamiento continuo, a continuación se adjunta la captura de pantalla de la pestaña **Actions** en el repositorio remoto, que muestra el paso satisfactorio (checks en verde) de todas las compilaciones y conjuntos de pruebas automatizadas en los commits de entrega:
+
+![Lista de ejecuciones exitosas de GitHub Actions](assets/evidence-ci.png)
