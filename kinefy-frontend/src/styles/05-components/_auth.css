@@ -401,3 +401,76 @@ nav.auth__nav button.auth__nav-link-btn:hover {
   from { transform: scale(0.9) translateY(10px); }
   to { transform: scale(1) translateY(0); }
 }
+
+/* --- Estilos Adicionales de Pie y Modal Legal --- */
+
+.auth__footer-meta {
+  margin-top: 1.5rem;
+  font-size: 0.8rem;
+  color: var(--color-text-soft, #7A8C92);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.auth__footer-link {
+  color: var(--color-text-soft, #7A8C92);
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 0.8rem;
+  font-family: var(--font-main);
+  text-decoration: underline;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.auth__footer-link:hover {
+  color: var(--color-brand, #55A98A);
+  transform: translateY(-1px);
+}
+
+.auth__footer-separator {
+  color: var(--color-mint-pale, #C5E6DA);
+  user-select: none;
+}
+
+.auth__modal-subtitle {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  color: var(--color-text-dark, #1A2E35);
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  border-left: 3px solid var(--color-brand);
+  padding-left: 0.5rem;
+}
+
+.auth__modal-body {
+  max-height: 45vh;
+  overflow-y: auto;
+  margin-bottom: 1.5rem;
+  padding-right: 0.75rem;
+  text-align: left;
+}
+
+/* Barra de desplazamiento personalizada */
+.auth__modal-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.auth__modal-body::-webkit-scrollbar-track {
+  background: var(--color-mint-pale, #F4FAF8);
+  border-radius: 4px;
+}
+
+.auth__modal-body::-webkit-scrollbar-thumb {
+  background: var(--color-brand, #55A98A);
+  border-radius: 4px;
+}
+
+.auth__modal-body::-webkit-scrollbar-thumb:hover {
+  background: var(--color-brand-hover, #6BA38E);
+}
+
