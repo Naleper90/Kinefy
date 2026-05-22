@@ -500,4 +500,40 @@ nav.auth__nav button.auth__nav-link-btn:hover {
   height: 20px;
 }
 
+/* --- Contenedor unificado para contraseña (Input + Ojo) --- */
+
+.auth__input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1;
+  background: #F9FBFB;
+  border: 1px solid rgba(26, 46, 53, 0.08);
+  border-radius: 14px;
+  padding: 0 1.2rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.01);
+}
+
+.auth__input-wrapper:focus-within {
+  background: #FFFFFF;
+  border-color: var(--color-brand);
+  box-shadow: 0 0 0 4px rgba(85, 169, 138, 0.1);
+}
+
+.auth__input-wrapper input.auth__input {
+  border: none;
+  background: transparent;
+  padding: 1rem 0;
+  box-shadow: none;
+  border-radius: 0;
+  flex: 1;
+}
+
+.auth__input-wrapper input.auth__input:focus {
+  box-shadow: none;
+  background: transparent;
+}
+
+
 

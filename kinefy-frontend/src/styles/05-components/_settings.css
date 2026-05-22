@@ -122,6 +122,65 @@
   box-shadow: 0 0 0 3px rgba(85, 169, 138, 0.1);
 }
 
+/* --- Contenedor unificado para contraseña en Configuración --- */
+
+.settings-form__input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1;
+  background: var(--color-white);
+  border: 1.5px solid #E2E8E7;
+  border-radius: var(--radius-sm);
+  padding: 0 1rem;
+  transition: all 0.3s ease;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.01);
+}
+
+.settings-form__input-wrapper:focus-within {
+  background: var(--color-white);
+  border-color: var(--color-brand);
+  box-shadow: 0 0 0 3px rgba(85, 169, 138, 0.1);
+}
+
+.settings-form__input-wrapper input.settings-form__input {
+  border: none;
+  background: transparent;
+  padding: 0.8rem 0;
+  box-shadow: none;
+  border-radius: 0;
+  flex: 1;
+}
+
+.settings-form__input-wrapper input.settings-form__input:focus {
+  box-shadow: none;
+  background: transparent;
+}
+
+.settings-form__visibility-toggle {
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-soft, #7A8C92);
+  transition: color 0.2s ease, transform 0.2s ease;
+  opacity: 0.7;
+}
+
+.settings-form__visibility-toggle:hover {
+  color: var(--color-brand, #55A98A);
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.settings-form__visibility-icon {
+  width: 20px;
+  height: 20px;
+}
+
 /* Button with Organic Border Radius */
 .settings-form__btn {
   background: var(--color-brand);
