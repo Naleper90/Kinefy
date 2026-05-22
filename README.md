@@ -63,11 +63,11 @@ El detalle técnico y académico se encuentra en la carpeta `docs/`:
 Para facilitar la evaluación del proyecto por el tribunal, se han pre-configurado dos cuentas de prueba en el entorno local:
 
 *   **Fisioterapeuta (Administrador):**
-    *   **Email:** `fisio@test.com`
-    *   **Contraseña:** `FisioDemo2026`
+    *   **Email:** `natalia@kinefy.com`
+    *   **Contraseña:** `Kinefy2024!`
 *   **Paciente (Demo):**
-    *   **Email:** `paciente@test.com`
-    *   **Contraseña:** `PacienteDemo2026`
+    *   **Email:** `carlos.mendoza@gmail.com`
+    *   **Contraseña:** `Paciente2024!`
 
 > **Nota:** Para mayor detalle sobre el flujo de correos y variables, consulta la documentación en [docs/12-credenciales-prueba.md](docs/12-credenciales-prueba.md).
 
