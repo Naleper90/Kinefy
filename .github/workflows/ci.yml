@@ -27,7 +27,7 @@ jobs:
     - name: Install Backend Dependencies
       run: |
         cd kinefy-backend
-        npm ci
+        npm install --ignore-scripts
         
     - name: Run Backend Tests
       run: |
